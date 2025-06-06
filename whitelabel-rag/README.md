@@ -52,9 +52,27 @@ A scalable Retrieval-Augmented Generation (RAG) application that provides a conv
    ```
 
 4. **Run the application**
-   ```bash
-   python run.py
-   ```
+
+You can start the application using one of the following methods:
+
+- **Using Docker Compose (Recommended)**
+
+  From the `whitelabel-rag/scripts` directory, run:
+
+  ```bat
+  run-docker.bat
+  ```
+
+  This script will build and start the application, Redis, and optionally the Nginx reverse proxy.
+
+- **Locally in Development Mode**
+
+  From the `whitelabel-rag/scripts` directory, run one of the following scripts:
+
+  - `run-local.bat`: Starts the application locally by setting necessary environment variables and running `python run.py`.
+  - `run-dev.bat`: Starts the development environment with virtual environment activation, environment variable checks, and debug mode enabled.
+
+Make sure to set the required environment variables such as `GEMINI_API_KEY` before running these scripts.
 
 5. **Open your browser**
    Navigate to `http://localhost:5000`

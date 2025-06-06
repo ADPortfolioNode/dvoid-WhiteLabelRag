@@ -1182,6 +1182,25 @@ The system supports the following document types:
 - Word Documents (`.docx`)
 - Markdown (`.md`)
 
+## Starting the Application
+
+### Using Docker
+To start the application using Docker, run the following script from the `whitelabel-rag/scripts` directory:
+
+```bat
+run-docker.bat
+```
+
+This script will build and start the application, Redis, and optionally the Nginx reverse proxy using Docker Compose.
+
+### Local Development
+For local development, you can use the following scripts from the `whitelabel-rag/scripts` directory:
+
+- `run-local.bat`: Starts the application locally in development mode by setting necessary environment variables and running `python run.py`.
+- `run-dev.bat`: Starts the development environment with virtual environment activation, environment variable checks, and debug mode enabled.
+
+Make sure to set the required environment variables such as `GEMINI_API_KEY` before running these scripts.
+
 ## Integration Guidelines
 When integrating with your application:
 1. Initialize the RAG system with your document repository
