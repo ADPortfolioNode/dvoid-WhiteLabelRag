@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  whitelabel-rag-dev:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: whitelabel-rag-dev
+    ports:
+      - "${PORT:-5000}:5000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY:?GEMINI_API_KEY environment variable is required}
+      - FLASK_ENV=development
+      - FLASK_DEBUG=True
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key}
+      - CHROMA_DB_PATH=/app/chromadb_data
+      - UPLOAD_FOLDER=/app/uploads
+      - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
+    volumes:
+      # Mount source code for live reloading
+      - .:/app
+      - /app/venv  # Exclude virtual environment
+      - dev_uploads:/app/uploads
+      - dev_chromadb:/app/chromadb_data
+      - dev_logs:/app/logs
+    networks:
+      - whitelabel-rag-dev-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      - redis-dev
+    stdin_open: true
+    tty: true
+
+  redis-dev:
+    image: redis:7-alpine
+    container_name: whitelabel-rag-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - whitelabel-rag-dev-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  whitelabel-rag-dev-network:
+    driver: bridge
+
+volumes:
+  dev_uploads:
+  dev_chromadb:
+  dev_logs:
+  redis_dev_data:

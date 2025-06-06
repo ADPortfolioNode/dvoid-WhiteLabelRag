@@ -33,6 +33,18 @@ def check_environment():
     print(f"✅ GEMINI_API_KEY is set (length: {len(api_key)} characters)")
     return True
 
+# Create app instance for Gunicorn
+def create_application():
+    """Create application instance for Gunicorn."""
+    if not check_environment():
+        raise ValueError("Environment validation failed")
+    
+    from app import create_app
+    return create_app()
+
+# For Gunicorn
+app = create_application()
+
 if __name__ == '__main__':
     print("🚀 Starting WhiteLabelRAG...")
     print()
@@ -42,8 +54,7 @@ if __name__ == '__main__':
         sys.exit(1)
     
     try:
-        from app import create_app, socketio
-        app = create_app()
+        from app import socketio
         
         # Development server
         port = int(os.environ.get('PORT', 5000))

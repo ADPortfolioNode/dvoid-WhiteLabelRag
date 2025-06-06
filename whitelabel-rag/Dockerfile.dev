@@ -1,0 +1,59 @@
+# WhiteLabelRAG Development Dockerfile
+FROM python:3.11-slim
+
+# Set metadata
+LABEL maintainer="WhiteLabelRAG Team"
+LABEL description="Development environment for WhiteLabelRAG"
+LABEL version="1.0.0-dev"
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies including development tools
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    curl \
+    git \
+    vim \
+    htop \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies including development tools
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir \
+        pytest \
+        pytest-flask \
+        pytest-cov \
+        black \
+        flake8 \
+        ipython \
+        jupyter
+
+# Copy application code
+COPY . .
+
+# Create necessary directories
+RUN mkdir -p uploads chromadb_data logs
+
+# Set environment variables for development
+ENV PYTHONPATH=/app
+ENV FLASK_APP=run.py
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=True
+ENV PYTHONUNBUFFERED=1
+
+# Expose port
+EXPOSE 5000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:5000/health || exit 1
+
+# Run the application in development mode
+CMD ["python", "run.py"]
