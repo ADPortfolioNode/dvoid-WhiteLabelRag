@@ -1,0 +1,492 @@
+# WhiteLabelRAG .gitignore
+
+# Environment Variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff (if applicable)
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff
+instance/
+.webassets-cache
+
+# Scrapy stuff
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Node.js (if frontend dependencies)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+.npm
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.node_repl_history
+*.tgz
+*.tar.gz
+.yarn-integrity
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+.parcel-cache
+
+# Project Specific Files
+
+# ChromaDB Data
+chromadb_data/
+test_chromadb_data/
+*.chroma
+
+# Upload Directory
+uploads/
+temp_uploads/
+
+# Log Files
+*.log
+logs/
+app.log
+error.log
+access.log
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup Files
+*.bak
+*.backup
+*.old
+
+# Temporary Files
+tmp/
+temp/
+.tmp/
+.temp/
+
+# API Keys and Secrets (extra protection)
+*secret*
+*key*
+*token*
+*password*
+*credentials*
+config/secrets.py
+secrets.json
+credentials.json
+
+# Model Files (if storing large ML models)
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.hdf5
+*.pb
+models/
+checkpoints/
+
+# Vector Database Files
+*.faiss
+*.index
+embeddings/
+vectors/
+
+# Cache Directories
+.cache/
+cache/
+__cache__/
+
+# Session Files
+flask_session/
+sessions/
+
+# Redis Dump
+dump.rdb
+
+# Celery Beat Schedule
+celerybeat-schedule.db
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Kubernetes
+*.yaml.local
+*.yml.local
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# AWS
+.aws/
+
+# Google Cloud
+.gcloud/
+service-account-key.json
+
+# Azure
+.azure/
+
+# Monitoring and Profiling
+.prof
+*.prof
+
+# IDE and Editor Files
+*.swp
+*.swo
+.project
+.pydevproject
+.settings/
+.metadata
+.recommenders/
+
+# OS Generated Files
+.fseventsd
+.Spotlight-V100
+.Trashes
+
+# Jupyter
+.jupyter/
+
+# IPython
+.ipython/
+
+# Local Configuration
+local_config.py
+local_settings.py
+
+# Test Files
+test_*.py
+*_test.py
+tests/fixtures/
+tests/data/
+
+# Documentation Build
+docs/build/
+docs/_build/
+
+# Coverage Reports
+htmlcov/
+.coverage
+coverage.xml
+
+# Profiling
+*.prof
+*.lprof
+
+# Memory Profiling
+*.mprof
+
+# Benchmarking
+benchmark_results/
+
+# Experimental
+experiments/
+sandbox/
+playground/
+
+# Data Files (if not needed in repo)
+data/
+datasets/
+*.csv
+*.json
+*.xml
+*.xlsx
+*.xls
+
+# Media Files
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.svg
+*.ico
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+*.mp3
+*.wav
+*.flac
+*.aac
+
+# Archive Files
+*.zip
+*.tar
+*.tar.gz
+*.tar.bz2
+*.rar
+*.7z
+
+# Compiled Files
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Package Files
+*.dmg
+*.pkg
+*.deb
+*.rpm
+
+# Virtual Environment Markers
+pyvenv.cfg
+
+# PyCharm
+.idea/
+
+# Rope
+.ropeproject/
+
+# Spyder
+.spyderproject
+.spyproject
+
+# VS Code
+.vscode/
+
+# Sublime Text
+*.sublime-*
+
+# Atom
+.atom/
+
+# JetBrains
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.project
+.pydevproject
+.settings/
+
+# NetBeans
+nbproject/
+
+# Local History
+.history/
+
+# Temporary
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# End of .gitignore
