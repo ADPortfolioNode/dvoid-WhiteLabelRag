@@ -16,13 +16,17 @@ class Config:
     
     # File Upload Configuration
     UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')
-    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'docx', 'md', 'csv'}
+    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'docx', 'md', 'csv', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'mp3', 'wav', 'mp4', 'avi', 'mov'}
     
     # ChromaDB Configuration
     CHROMA_DB_PATH = os.environ.get('CHROMA_DB_PATH', './chromadb_data')
     
     # LLM Configuration
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+
+    # Internet Search API Configuration
+    INTERNET_SEARCH_API_KEY = os.environ.get('INTERNET_SEARCH_API_KEY', '')
+    INTERNET_SEARCH_ENGINE_ID = os.environ.get('INTERNET_SEARCH_ENGINE_ID', '')
     
     @classmethod
     def validate_config(cls):
@@ -71,6 +75,13 @@ class Config:
             'temperature': 0.1,
             'max_tokens': 512,
             'system_prompt': 'You are a function execution specialist that runs operations safely based on user needs.'
+        },
+        'MultimediaAgent': {
+            'name': 'MultimediaAgent',
+            'task': 'fast',
+            'temperature': 0.1,
+            'max_tokens': 512,
+            'system_prompt': 'You are a multimedia processing specialist that handles uploads, downloads, and processing of images, audio, and video files.'
         }
     }
 

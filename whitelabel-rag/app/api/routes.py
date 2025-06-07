@@ -13,7 +13,10 @@ from app.services.concierge import get_concierge_instance
 from app.services.chroma_service import get_chroma_service_instance
 from app.services.rag_manager import get_rag_manager
 from app.services.document_processor import DocumentProcessor
+from app.services.internet_search_agent import get_internet_search_agent_instance
+from app.services.multimedia_agent import get_multimedia_agent_instance
 from app.utils.file_utils import allowed_file
+
 
 logger = logging.getLogger(__name__)
 
@@ -181,6 +184,53 @@ def upload_file():
         logger.error(f"Error in upload_file: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
+@api_bp.route('/multimedia/upload', methods=['POST'])
+def upload_multimedia():
+    """Upload a multimedia file."""
+    try:
+        multimedia_agent = get_multimedia_agent_instance()
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        result = multimedia_agent.save_file(file)
+        if result.get('error'):
+            return jsonify({'error': result['text']}), 400
+        
+        return jsonify({
+            'message': 'Multimedia file uploaded successfully',
+            'filename': result.get('filename')
+        })
+    except Exception as e:
+        logger.error(f"Error in upload_multimedia: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@api_bp.route('/multimedia/info/<filename>', methods=['GET'])
+def multimedia_file_info(filename):
+    """Get information about a multimedia file."""
+    try:
+        multimedia_agent = get_multimedia_agent_instance()
+        if not multimedia_agent.is_supported_format(filename):
+            return jsonify({'error': 'Unsupported file type'}), 400
+        
+        file_path = os.path.join(multimedia_agent.uploads_path, filename)
+        if not os.path.exists(file_path):
+            return jsonify({'error': 'File not found'}), 404
+        
+        file_info = {
+            'filename': filename,
+            'size': os.path.getsize(file_path),
+            'modified': datetime.fromtimestamp(os.path.getmtime(file_path)).isoformat()
+        }
+        
+        return jsonify({'file_info': file_info})
+    except Exception as e:
+        logger.error(f"Error in multimedia_file_info: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
 @api_bp.route('/documents/upload_and_ingest_document', methods=['POST'])
 def upload_and_ingest_document():
     """Upload and ingest a document into the vector database."""
@@ -290,14 +340,24 @@ def query_documents():
         
         query = data['query']
         top_k = data.get('top_k', 3)
+        use_internet_search = data.get('use_internet_search', False)
         
-        rag_manager = get_rag_manager()
-        results = rag_manager.query_documents(query, n_results=top_k)
-        
-        return jsonify({
-            'success': True,
-            'results': results.get('results', [])
-        })
+        if use_internet_search:
+            internet_search_agent = get_internet_search_agent_instance()
+            result = internet_search_agent.search(query, num_results=top_k)
+            return jsonify({
+                'success': not result.get('error'),
+                'results': result.get('additional_data', {}).get('results', []),
+                'text': result.get('text', ''),
+                'agent': 'InternetSearchAgent'
+            })
+        else:
+            rag_manager = get_rag_manager()
+            results = rag_manager.query_documents(query, n_results=top_k)
+            return jsonify({
+                'success': True,
+                'results': results.get('results', [])
+            })
         
     except Exception as e:
         logger.error(f"Error in query_documents: {str(e)}")

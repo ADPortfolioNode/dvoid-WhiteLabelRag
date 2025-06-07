@@ -92,7 +92,7 @@ class BaseAssistant(ABC):
     
     def _validate_input(self, message):
         """Validate input message."""
-        if not message or not isinstance(message, str):
+        if message is None or not isinstance(message, str):
             return False, "Invalid message format"
         
         if len(message.strip()) == 0:

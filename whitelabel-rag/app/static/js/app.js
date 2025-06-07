@@ -413,7 +413,7 @@ class WhiteLabelRAGApp {
     
     validateFileSelection() {
         const files = this.fileInput.files;
-        const allowedTypes = ['.pdf', '.docx', '.txt', '.md', '.csv'];
+        const allowedTypes = ['.pdf', '.docx', '.txt', '.md', '.csv', '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.mp3', '.wav', '.mp4', '.avi', '.mov'];
         const maxSize = 16 * 1024 * 1024; // 16MB
         
         for (let file of files) {
@@ -481,23 +481,6 @@ class WhiteLabelRAGApp {
     autoResizeInput() {
         this.messageInput.style.height = 'auto';
         this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 120) + 'px';
-    }
-    
-    generateSessionId() {
-        return 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-    }
-    
-    formatFileSize(bytes) {
-        if (bytes === 0) return '0 B';
-        const k = 1024;
-        const sizes = ['B', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-    }
-    
-    formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     }
     
     showError(message) {

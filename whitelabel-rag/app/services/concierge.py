@@ -153,46 +153,36 @@ class Concierge(BaseAssistant):
             return self.report_failure("Error searching documents")
     
     def _handle_task_decomposition(self, message: str, conversation) -> Dict[str, Any]:
-        """Handle complex task requests that require decomposition."""
+        """Handle complex task requests that require decomposition using TaskAssistant."""
         try:
-            self._update_status("running", 60, "Decomposing task...")
+            self._update_status("running", 60, "Delegating to TaskAssistant...")
             
-            # Use LLM to decompose the task
-            system_prompt = """
-            You are a task decomposition expert. Break down the user's request into logical steps.
-            For each step, determine if it requires:
-            - SearchAgent: For finding information in documents
-            - FileAgent: For file operations
-            - FunctionAgent: For executing specific functions
-            - Direct response: For simple conversational responses
+            # Import TaskAssistant
+            from app.services.task_assistant import get_task_assistant_instance
             
-            Provide a clear, step-by-step plan and then execute it by providing a comprehensive response.
-            """
+            # Get TaskAssistant instance
+            task_assistant = get_task_assistant_instance()
             
-            context = conversation.get_context_string(1000)
-            prompt = f"Conversation context:\n{context}\n\nTask to decompose: {message}"
+            # Prepare context for TaskAssistant
+            context = {
+                'session_id': conversation.session_id if hasattr(conversation, 'session_id') else None,
+                'conversation_context': conversation.get_context_string(500)
+            }
             
-            response_text = LLMFactory.generate_response(
-                prompt=prompt,
-                system_prompt=system_prompt,
-                temperature=0.2,
-                task='reasoning'
-            )
+            # Delegate to TaskAssistant
+            result = task_assistant.handle_message(message, context)
             
-            # For now, provide the decomposed response directly
-            # In a full implementation, this would create and execute individual steps
+            if result.get('error'):
+                # Fallback to simple response if TaskAssistant fails
+                logger.warning(f"TaskAssistant failed, falling back to simple response: {result.get('text')}")
+                return self._generate_direct_response(message, conversation)
             
-            return self.report_success(
-                text=response_text,
-                additional_data={
-                    'task_type': 'decomposed',
-                    'sources': []
-                }
-            )
+            return result
             
         except Exception as e:
             logger.error(f"Error in task decomposition: {str(e)}")
-            return self.report_failure("Error processing complex task")
+            # Fallback to simple response
+            return self._generate_direct_response(message, conversation)
     
     def _handle_meta_query(self, message: str, conversation) -> Dict[str, Any]:
         """Handle questions about the system itself."""
