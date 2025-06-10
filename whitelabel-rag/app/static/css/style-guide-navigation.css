@@ -1,0 +1,54 @@
+/* 
+ * style-guide-navigation.css
+ * Navigation component for the Bootstrap style guide
+ */
+
+.style-guide-nav {
+  position: sticky;
+  top: 20px;
+}
+
+.style-guide-nav .nav-link {
+  color: var(--text-primary);
+  padding: 0.5rem 0;
+  transition: color 0.2s ease-in-out;
+}
+
+.style-guide-nav .nav-link:hover {
+  color: var(--primary-color);
+}
+
+.style-guide-nav .nav-link.active {
+  color: var(--primary-color);
+  font-weight: var(--bs-font-weight-medium);
+  border-left: 2px solid var(--primary-color);
+  padding-left: 0.5rem;
+}
+
+@media (max-width: 991.98px) {
+  .style-guide-nav {
+    position: relative;
+    top: 0;
+    margin-bottom: 2rem;
+  }
+  
+  .style-guide-nav .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .style-guide-nav .nav-link {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--color-gray-300);
+    border-radius: 0.25rem;
+  }
+  
+  .style-guide-nav .nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    border-left: none;
+    padding-left: 0.5rem;
+  }
+}

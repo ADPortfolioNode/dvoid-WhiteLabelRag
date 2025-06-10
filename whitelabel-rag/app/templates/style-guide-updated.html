@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhiteLabelRAG - Bootstrap Style Guide Example</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/color-palette.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-style-guide.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/enhancements.css">
+    <link rel="stylesheet" href="/static/css/mobile.css">
+    <link rel="stylesheet" href="/static/css/style-guide-navigation.css">
+    
+    <style>
+        .example-section {
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: var(--bs-spacer-5);
+            margin-bottom: var(--bs-spacer-5);
+        }
+        
+        .example-code {
+            background: var(--color-gray-100);
+            padding: var(--bs-spacer-3);
+            border-radius: 0.375rem;
+            font-family: var(--bs-font-monospace);
+            margin-bottom: var(--bs-spacer-3);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="row">
+            <!-- Navigation Sidebar -->
+            <div class="col-12 col-lg-3 mb-4 mb-lg-0">
+                <div class="style-guide-nav">
+                    <h5 class="mb-3">Contents</h5>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="#typography">Typography</a>
+                        <a class="nav-link" href="#grid">Grid System</a>
+                        <a class="nav-link" href="#components">Components</a>
+                        <a class="nav-link" href="#utilities">Utility Classes</a>
+                        <a class="nav-link" href="#examples">Real-world Examples</a>
+                        <a class="nav-link" href="#azure-components">Azure Components</a>
+                        <a class="nav-link" href="#responsive-layout">Responsive Layout</a>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-12 col-lg-9">
+                <div class="standard-card mb-5">
+                    <div class="standard-card-header">
+                        <h1 class="standard-card-title">WhiteLabelRAG Bootstrap Style Guide</h1>
+                    </div>
+                    <div class="standard-card-body">
+                        <p class="mb-4">This page demonstrates the standard UI components and styles for WhiteLabelRAG following Bootstrap conventions and Azure design patterns.</p>
+                        <p><span class="standard-badge standard-badge-primary">Version 1.0</span></p>
+                    </div>
+                </div>
+                
+                <!-- Typography -->
+                <div class="example-section" id="typography">
+                    <h2 class="mb-4">Typography</h2>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Headings</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <h1>Heading 1 (2.5rem)</h1>
+                            <h2>Heading 2 (2rem)</h2>
+                            <h3>Heading 3 (1.75rem)</h3>
+                            <h4>Heading 4 (1.5rem)</h4>
+                            <h5>Heading 5 (1.25rem)</h5>
+                            <h6>Heading 6 (1rem)</h6>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Text Styles</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <p class="text-primary">Primary text color</p>
+                            <p class="text-secondary">Secondary text color</p>
+                            <p class="text-muted">Muted text color</p>
+                            <p><strong>Bold text</strong> - font-weight: 700</p>
+                            <p><span class="font-medium">Medium text</span> - font-weight: 500</p>
+                            <p><em>Italic text</em></p>
+                            <p><code>Monospace text</code> - for code snippets</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grid System -->
+                <div class="example-section" id="grid">
+                    <h2 class="mb-4">Grid System</h2>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">12-Column Grid</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <div class="standard-row mb-3">
+                                <div class="standard-col-12" style="background: var(--color-gray-200); padding: 1rem; text-align: center;">
+                                    12 Columns (Full Width)
+                                </div>
+                            </div>
+                            
+                            <div class="standard-row mb-3">
+                                <div class="standard-col-6" style="background: var(--color-gray-200); padding: 1rem; text-align: center;">
+                                    6 Columns
+                                </div>
+                                <div class="standard-col-6" style="background: var(--color-gray-300); padding: 1rem; text-align: center;">
+                                    6 Columns
+                                </div>
+                            </div>
+                            
+                            <div class="standard-row mb-3">
+                                <div class="standard-col-4" style="background: var(--color-gray-200); padding: 1rem; text-align: center;">
+                                    4 Columns
+                                </div>
+                                <div class="standard-col-4" style="background: var(--color-gray-300); padding: 1rem; text-align: center;">
+                                    4 Columns
+                                </div>
+                                <div class="standard-col-4" style="background: var(--color-gray-200); padding: 1rem; text-align: center;">
+                                    4 Columns
+                                </div>
+                            </div>
+                            
+                            <div class="example-code">
+<pre><code>&lt;div class="standard-row"&gt;
+  &lt;div class="standard-col-6"&gt;6 Columns&lt;/div&gt;
+  &lt;div class="standard-col-6"&gt;6 Columns&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Responsive Grid</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <div class="standard-row mb-3">
+                                <div class="standard-col-12 standard-col-md-6 standard-col-lg-4" style="background: var(--color-gray-200); padding: 1rem; text-align: center; margin-bottom: 0.5rem;">
+                                    12 → 6 → 4 Columns
+                                </div>
+                                <div class="standard-col-12 standard-col-md-6 standard-col-lg-4" style="background: var(--color-gray-300); padding: 1rem; text-align: center; margin-bottom: 0.5rem;">
+                                    12 → 6 → 4 Columns
+                                </div>
+                                <div class="standard-col-12 standard-col-md-12 standard-col-lg-4" style="background: var(--color-gray-200); padding: 1rem; text-align: center; margin-bottom: 0.5rem;">
+                                    12 → 12 → 4 Columns
+                                </div>
+                            </div>
+                            
+                            <div class="example-code">
+<pre><code>&lt;div class="standard-row"&gt;
+  &lt;div class="standard-col-12 standard-col-md-6 standard-col-lg-4"&gt;
+    12 → 6 → 4 Columns
+  &lt;/div&gt;
+  &lt;div class="standard-col-12 standard-col-md-6 standard-col-lg-4"&gt;
+    12 → 6 → 4 Columns
+  &lt;/div&gt;
+  &lt;div class="standard-col-12 standard-col-md-12 standard-col-lg-4"&gt;
+    12 → 12 → 4 Columns
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Components -->
+                <div class="example-section" id="components">
+                    <h2 class="mb-4">Components</h2>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Buttons</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <button class="standard-btn standard-btn-primary mb-2 me-2">Primary Button</button>
+                            <button class="standard-btn standard-btn-secondary mb-2 me-2">Secondary Button</button>
+                            <button class="standard-btn standard-btn-outline-primary mb-2">Outline Button</button>
+                            
+                            <div class="example-code mt-3">
+<pre><code>&lt;button class="standard-btn standard-btn-primary"&gt;Primary Button&lt;/button&gt;
+&lt;button class="standard-btn standard-btn-secondary"&gt;Secondary Button&lt;/button&gt;
+&lt;button class="standard-btn standard-btn-outline-primary"&gt;Outline Button&lt;/button&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Form Elements</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <div class="standard-form-group">
+                                <label class="standard-form-label" for="exampleInput">Text Input</label>
+                                <input type="text" class="standard-form-control" id="exampleInput" placeholder="Enter text">
+                            </div>
+                            
+                            <div class="standard-form-group">
+                                <label class="standard-form-label" for="exampleSelect">Select</label>
+                                <select class="standard-form-control" id="exampleSelect">
+                                    <option>Option 1</option>
+                                    <option>Option 2</option>
+                                    <option>Option 3</option>
+                                </select>
+                            </div>
+                            
+                            <div class="example-code mt-3">
+<pre><code>&lt;div class="standard-form-group"&gt;
+  &lt;label class="standard-form-label" for="exampleInput"&gt;Text Input&lt;/label&gt;
+  &lt;input type="text" class="standard-form-control" id="exampleInput"&gt;
+&lt;/div&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Utility Classes -->
+                <div class="example-section" id="utilities">
+                    <h2 class="mb-4">Utility Classes</h2>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Spacing Utilities</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <div style="background: var(--color-gray-200);" class="p-3 mb-3">
+                                Padding 1rem (p-3)
+                            </div>
+                            
+                            <div style="background: var(--color-gray-200);" class="p-3 mb-3">
+                                <div style="background: var(--color-gray-300);" class="m-3">
+                                    Margin 1rem (m-3)
+                                </div>
+                            </div>
+                            
+                            <div class="example-code mt-3">
+<pre><code>&lt;div class="p-3"&gt;Padding 1rem&lt;/div&gt;
+&lt;div class="m-3"&gt;Margin 1rem&lt;/div&gt;
+&lt;div class="py-3"&gt;Padding Y-axis 1rem&lt;/div&gt;
+&lt;div class="px-3"&gt;Padding X-axis 1rem&lt;/div&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Flex Utilities</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <div class="d-flex justify-content-between mb-3" style="background: var(--color-gray-200); padding: 1rem;">
+                                <div style="background: var(--color-gray-300); padding: 0.5rem;">Item 1</div>
+                                <div style="background: var(--color-gray-300); padding: 0.5rem;">Item 2</div>
+                                <div style="background: var(--color-gray-300); padding: 0.5rem;">Item 3</div>
+                            </div>
+                            
+                            <div class="example-code mt-3">
+<pre><code>&lt;div class="d-flex justify-content-between"&gt;
+  &lt;div&gt;Item 1&lt;/div&gt;
+  &lt;div&gt;Item 2&lt;/div&gt;
+  &lt;div&gt;Item 3&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Real-world Examples -->
+                <div class="example-section" id="examples">
+                    <h2 class="mb-4">Real-world Examples</h2>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Document Upload Panel</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <div style="border: 2px dashed var(--color-gray-400); padding: 2rem; text-align: center; border-radius: 0.375rem;" class="mb-3">
+                                <i class="bi bi-cloud-upload fs-2 mb-2"></i>
+                                <p class="mb-1">Drag and drop files here</p>
+                                <p class="text-muted mb-2">or</p>
+                                <button class="standard-btn standard-btn-outline-primary">Browse Files</button>
+                            </div>
+                            
+                            <div class="standard-card mb-3">
+                                <div class="d-flex align-items-center justify-content-between p-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-file-earmark-pdf fs-4 me-2 text-danger"></i>
+                                        <div>
+                                            <div style="font-weight: 500;">Document.pdf</div>
+                                            <div class="text-muted small">PDF • 2.4 MB</div>
+                                        </div>
+                                    </div>
+                                    <button class="standard-btn standard-btn-outline-primary btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Chat Interface</h5>
+                        </div>
+                        <div class="standard-card-body" style="height: 300px; overflow-y: auto;">
+                            <div style="background: var(--color-gray-100); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                                <div>Hello! How can I help you with your documents today?</div>
+                                <div class="text-muted small mt-1">AI Assistant • 2:30 PM</div>
+                            </div>
+                            
+                            <div style="background: var(--primary-light); color: white; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; margin-left: 2rem;">
+                                <div>I need to analyze the financial report. Can you help me extract the key metrics?</div>
+                                <div class="text-white-50 small mt-1">You • 2:31 PM</div>
+                            </div>
+                        </div>
+                        <div class="standard-card-footer">
+                            <div class="d-flex">
+                                <input type="text" class="standard-form-control" placeholder="Type your message...">
+                                <button class="standard-btn standard-btn-primary ms-2">
+                                    <i class="bi bi-send"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Azure Style Components -->
+                <div class="example-section" id="azure-components">
+                    <h2 class="mb-4">Azure-Style Components</h2>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Azure Cards</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <div class="azure-card mb-4">
+                                <div class="azure-card-header">
+                                    <h5 class="azure-card-title">Resource Overview</h5>
+                                </div>
+                                <div class="azure-card-body">
+                                    <p>This card follows Azure Portal design patterns with subtle shadows and clean lines.</p>
+                                </div>
+                                <div class="azure-card-footer">
+                                    <button class="azure-btn azure-btn-primary">Configure</button>
+                                    <button class="azure-btn azure-btn-secondary">Cancel</button>
+                                </div>
+                            </div>
+                            
+                            <div class="example-code">
+<pre><code>&lt;div class="azure-card"&gt;
+  &lt;div class="azure-card-header"&gt;
+    &lt;h5 class="azure-card-title"&gt;Resource Overview&lt;/h5&gt;
+  &lt;/div&gt;
+  &lt;div class="azure-card-body"&gt;
+    &lt;p&gt;This card follows Azure Portal design patterns.&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="azure-card-footer"&gt;
+    &lt;button class="azure-btn azure-btn-primary"&gt;Configure&lt;/button&gt;
+    &lt;button class="azure-btn azure-btn-secondary"&gt;Cancel&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Azure Panels</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <div class="azure-panel mb-3">
+                                <h5>Default Panel</h5>
+                                <p>This panel provides contextual information.</p>
+                            </div>
+                            
+                            <div class="azure-panel azure-panel-info mb-3">
+                                <h5>Information Panel</h5>
+                                <p>This panel provides important information.</p>
+                            </div>
+                            
+                            <div class="azure-panel azure-panel-success mb-3">
+                                <h5>Success Panel</h5>
+                                <p>This panel indicates a successful operation.</p>
+                            </div>
+                            
+                            <div class="example-code">
+<pre><code>&lt;div class="azure-panel"&gt;
+  &lt;h5&gt;Default Panel&lt;/h5&gt;
+  &lt;p&gt;This panel provides contextual information.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div class="azure-panel azure-panel-info"&gt;
+  &lt;h5&gt;Information Panel&lt;/h5&gt;
+  &lt;p&gt;This panel provides important information.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Azure Blade Layout</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <div class="azure-blade mb-4">
+                                <div class="azure-blade-header">
+                                    <h5 class="azure-blade-title">Configuration</h5>
+                                </div>
+                                <div class="azure-blade-body">
+                                    <div class="azure-content-section">
+                                        <div class="azure-content-section-header">
+                                            <h6 class="azure-content-section-title">General Settings</h6>
+                                            <p class="azure-content-section-subtitle">Configure basic application parameters</p>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="settingName" class="form-label">Setting Name</label>
+                                            <input type="text" class="azure-form-control" id="settingName" placeholder="Enter setting name">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="example-code">
+<pre><code>&lt;div class="azure-blade"&gt;
+  &lt;div class="azure-blade-header"&gt;
+    &lt;h5 class="azure-blade-title"&gt;Configuration&lt;/h5&gt;
+  &lt;/div&gt;
+  &lt;div class="azure-blade-body"&gt;
+    &lt;div class="azure-content-section"&gt;
+      &lt;div class="azure-content-section-header"&gt;
+        &lt;h6 class="azure-content-section-title"&gt;General Settings&lt;/h6&gt;
+        &lt;p class="azure-content-section-subtitle"&gt;Configure basic parameters&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;!-- Form fields go here --&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Azure Grid System</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <div class="azure-grid azure-grid-3col mb-4">
+                                <div class="azure-card">
+                                    <div class="azure-card-header">
+                                        <h5 class="azure-card-title">Item 1</h5>
+                                    </div>
+                                    <div class="azure-card-body">
+                                        <p>Grid item content</p>
+                                    </div>
+                                </div>
+                                <div class="azure-card">
+                                    <div class="azure-card-header">
+                                        <h5 class="azure-card-title">Item 2</h5>
+                                    </div>
+                                    <div class="azure-card-body">
+                                        <p>Grid item content</p>
+                                    </div>
+                                </div>
+                                <div class="azure-card">
+                                    <div class="azure-card-header">
+                                        <h5 class="azure-card-title">Item 3</h5>
+                                    </div>
+                                    <div class="azure-card-body">
+                                        <p>Grid item content</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="example-code">
+<pre><code>&lt;div class="azure-grid azure-grid-3col"&gt;
+  &lt;div class="azure-card"&gt;
+    &lt;div class="azure-card-header"&gt;
+      &lt;h5 class="azure-card-title"&gt;Item 1&lt;/h5&gt;
+    &lt;/div&gt;
+    &lt;div class="azure-card-body"&gt;
+      &lt;p&gt;Grid item content&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;!-- Additional grid items --&gt;
+&lt;/div&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Responsive Layout -->
+                <div class="example-section" id="responsive-layout">
+                    <h2 class="mb-4">Responsive Layout Utilities</h2>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Responsive Columns</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <p class="mb-3">These columns stack on mobile and display in multiple columns on larger screens.</p>
+                            
+                            <div class="standard-row mb-4">
+                                <div class="standard-col-12 standard-col-md-6 standard-col-lg-3 mb-3">
+                                    <div style="background: var(--color-gray-200); padding: 1rem; text-align: center;">
+                                        Column 1
+                                    </div>
+                                </div>
+                                <div class="standard-col-12 standard-col-md-6 standard-col-lg-3 mb-3">
+                                    <div style="background: var(--color-gray-200); padding: 1rem; text-align: center;">
+                                        Column 2
+                                    </div>
+                                </div>
+                                <div class="standard-col-12 standard-col-md-6 standard-col-lg-3 mb-3">
+                                    <div style="background: var(--color-gray-200); padding: 1rem; text-align: center;">
+                                        Column 3
+                                    </div>
+                                </div>
+                                <div class="standard-col-12 standard-col-md-6 standard-col-lg-3 mb-3">
+                                    <div style="background: var(--color-gray-200); padding: 1rem; text-align: center;">
+                                        Column 4
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="example-code">
+<pre><code>&lt;div class="standard-row"&gt;
+  &lt;div class="standard-col-12 standard-col-md-6 standard-col-lg-3"&gt;
+    Column 1
+  &lt;/div&gt;
+  &lt;div class="standard-col-12 standard-col-md-6 standard-col-lg-3"&gt;
+    Column 2
+  &lt;/div&gt;
+  &lt;div class="standard-col-12 standard-col-md-6 standard-col-lg-3"&gt;
+    Column 3
+  &lt;/div&gt;
+  &lt;div class="standard-col-12 standard-col-md-6 standard-col-lg-3"&gt;
+    Column 4
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="standard-card mb-4">
+                        <div class="standard-card-header">
+                            <h5 class="standard-card-title">Azure Responsive Utilities</h5>
+                        </div>
+                        <div class="standard-card-body">
+                            <p class="mb-3">Azure-style responsive utilities for visibility control:</p>
+                            
+                            <div class="azure-panel mb-3">
+                                <p class="azure-d-block azure-d-md-none">This text is only visible on mobile (smaller than 768px).</p>
+                                <p class="azure-d-none azure-d-md-block azure-d-lg-none">This text is only visible on tablets (768px - 991px).</p>
+                                <p class="azure-d-none azure-d-lg-block">This text is only visible on desktops (992px and up).</p>
+                            </div>
+                            
+                            <div class="example-code">
+<pre><code>&lt;p class="azure-d-block azure-d-md-none"&gt;
+  This text is only visible on mobile (smaller than 768px).
+&lt;/p&gt;
+&lt;p class="azure-d-none azure-d-md-block azure-d-lg-none"&gt;
+  This text is only visible on tablets (768px - 991px).
+&lt;/p&gt;
+&lt;p class="azure-d-none azure-d-lg-block"&gt;
+  This text is only visible on desktops (992px and up).
+&lt;/p&gt;</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/style-guide-navigation.js"></script>
+</body>
+</html>
