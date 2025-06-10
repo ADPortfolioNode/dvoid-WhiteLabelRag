@@ -13,6 +13,7 @@ WhiteLabelRAG is a complete, production-ready Retrieval-Augmented Generation (RA
 - ✅ **SearchAgent** - Document retrieval and RAG operations specialist  
 - ✅ **FileAgent** - File operations and document management specialist
 - ✅ **FunctionAgent** - Function execution and API integration specialist
+- ✅ **InternetSearchAgent** - Web search with Google Custom Search integration
 - ✅ **BaseAssistant** - Common foundation for all agents
 
 ### 🔄 RAG Workflows Implemented
@@ -21,6 +22,7 @@ WhiteLabelRAG is a complete, production-ready Retrieval-Augmented Generation (RA
 - ✅ **Advanced RAG** - Multi-stage with query processing and reranking
 - ✅ **Recursive RAG** - Multi-part queries with targeted retrieval
 - ✅ **Adaptive RAG** - Automatically selects optimal workflow
+- ✅ **Internet Search Fallback** - Google Custom Search when document search fails
 
 ### 📄 Document Processing
 
@@ -44,6 +46,7 @@ WhiteLabelRAG is a complete, production-ready Retrieval-Augmented Generation (RA
 - ✅ **Flask Backend** - Modular REST API architecture
 - ✅ **ChromaDB Integration** - Vector database for semantic search
 - ✅ **Google Gemini API** - LLM and embedding services
+- ✅ **Google Custom Search** - Internet search fallback capability
 - ✅ **WebSocket Support** - Flask-SocketIO for real-time updates
 - ✅ **Environment Configuration** - Comprehensive .env support
 - ✅ **Error Handling** - Robust error management and recovery
@@ -194,9 +197,11 @@ python scripts/demo.py
 - [ ] Ask questions about the uploaded document
 - [ ] Test system commands ("What can you do?", "List files")
 - [ ] Test function execution ("What time is it?", "Calculate 5+3")
+- [ ] Test internet search fallback for queries not in documents
 - [ ] Verify real-time status updates
 - [ ] Check WebSocket connectivity
 - [ ] Test file management operations
+- [ ] Verify Google Custom Search integration (if configured)
 
 ## 🔧 Configuration Options
 

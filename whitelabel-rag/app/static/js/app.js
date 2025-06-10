@@ -9,10 +9,34 @@ class WhiteLabelRAGApp {
         this.isConnected = false;
         this.messageHistory = [];
         
+        // Wait for DOM and Socket.IO to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.initialize());
+        } else {
+            this.initialize();
+        }
+    }
+    
+    initialize() {
+        // Check if Socket.IO is available
+        if (typeof io === 'undefined') {
+            console.error('Socket.IO not loaded. Retrying in 100ms...');
+            setTimeout(() => this.initialize(), 100);
+            return;
+        }
+        
         this.initializeElements();
         this.initializeSocket();
         this.bindEvents();
         this.loadFiles();
+        this.startHealthCheck();
+        
+        console.log('WhiteLabelRAG application initialized');
+    }
+    
+    generateSessionId() {
+        // Generate a unique session ID using timestamp and random number
+        return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
     
     initializeElements() {
@@ -29,6 +53,12 @@ class WhiteLabelRAGApp {
         this.progressBar = document.getElementById('progressBar');
         this.connectionStatus = document.getElementById('connectionStatus');
         
+        // Workflow elements
+        this.workflowWaypoints = document.getElementById('workflowWaypoints');
+        this.workflowProgress = document.getElementById('workflowProgress');
+        this.taskStepsContainer = document.getElementById('taskStepsContainer');
+        this.taskSteps = document.getElementById('taskSteps');
+        
         // File elements
         this.uploadForm = document.getElementById('uploadForm');
         this.fileInput = document.getElementById('fileInput');
@@ -42,6 +72,15 @@ class WhiteLabelRAGApp {
         // Stats elements
         this.docCount = document.getElementById('docCount');
         this.systemStatus = document.getElementById('systemStatus');
+        
+        // Mobile elements
+        this.mobileUploadForm = document.getElementById('mobileUploadForm');
+        this.mobileFileInput = document.getElementById('mobileFileInput');
+        this.mobileUploadStatus = document.getElementById('mobileUploadStatus');
+        this.mobileFilesList = document.getElementById('mobileFilesList');
+        this.mobileRefreshFiles = document.getElementById('mobileRefreshFiles');
+        this.mobileDocCount = document.getElementById('mobileDocCount');
+        this.mobileSystemStatus = document.getElementById('mobileSystemStatus');
     }
     
     initializeSocket() {
@@ -91,6 +130,16 @@ class WhiteLabelRAGApp {
         
         this.socket.on('assistant_status_update', (data) => {
             this.updateAssistantStatus(data);
+            
+            // If we have workflow information, update the waypoints
+            if (data.workflow) {
+                this.updateWorkflowWaypoints(data.workflow);
+            }
+            
+            // If we have task steps information, update the steps
+            if (data.steps) {
+                this.updateTaskSteps(data.steps);
+            }
         });
         
         // Health check
@@ -118,10 +167,38 @@ class WhiteLabelRAGApp {
             this.uploadFiles();
         });
         
+        // Mobile file upload
+        if (this.mobileUploadForm) {
+            this.mobileUploadForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Use the mobile file input but the same upload method
+                this.fileInput = this.mobileFileInput;
+                this.uploadStatus = this.mobileUploadStatus;
+                this.uploadFiles();
+                // Reset to desktop references
+                setTimeout(() => {
+                    this.fileInput = document.getElementById('fileInput');
+                    this.uploadStatus = document.getElementById('uploadStatus');
+                }, 500);
+            });
+            
+            // Mobile file input change
+            this.mobileFileInput.addEventListener('change', () => {
+                this.validateFileSelection();
+            });
+        }
+        
         // Refresh files
         this.refreshFiles.addEventListener('click', () => {
             this.loadFiles();
         });
+        
+        // Mobile refresh files
+        if (this.mobileRefreshFiles) {
+            this.mobileRefreshFiles.addEventListener('click', () => {
+                this.loadFiles();
+            });
+        }
         
         // Clear chat
         this.clearChat.addEventListener('click', () => {
@@ -163,6 +240,11 @@ class WhiteLabelRAGApp {
         this.messageInput.value = '';
         this.autoResizeInput();
         
+        // Show typing indicator if available
+        if (window.typingIndicator) {
+            window.typingIndicator.show('Processing your request...');
+        }
+        
         // Send via WebSocket
         this.socket.emit('chat_message', {
             message: message,
@@ -173,7 +255,46 @@ class WhiteLabelRAGApp {
         this.updateAssistantStatus({
             status: 'processing',
             progress: 0,
-            details: 'Sending message...'
+            details: 'Sending message...',
+            workflow: {
+                steps: [
+                    { label: 'Query' },
+                    { label: 'Search Docs' },
+                    { label: 'Analyze' },
+                    { label: 'Generate' },
+                    { label: 'Respond' }
+                ],
+                currentStep: 0,
+                taskSteps: [
+                    { 
+                        icon: 'bi-search', 
+                        title: 'Process Query', 
+                        description: 'Analyzing your question for key information'
+                    },
+                    { 
+                        icon: 'bi-database-search', 
+                        title: 'Search Documents', 
+                        description: 'Finding relevant information in your documents'
+                    },
+                    { 
+                        icon: 'bi-lightbulb', 
+                        title: 'Context Building', 
+                        description: 'Building context from search results'
+                    },
+                    { 
+                        icon: 'bi-cpu', 
+                        title: 'Generate Response', 
+                        description: 'Creating an accurate and helpful response'
+                    },
+                    { 
+                        icon: 'bi-check-circle', 
+                        title: 'Final Review', 
+                        description: 'Reviewing and polishing the response'
+                    }
+                ],
+                currentTaskStep: 0,
+                taskProgress: 20
+            }
         });
     }
     
@@ -192,8 +313,76 @@ class WhiteLabelRAGApp {
             sources: sources
         });
         
+        // Update document count progress based on sources length
+        this.updateDocumentProgress(sources.length);
+        
+        // Complete the workflow visualization
+        this.updateAssistantStatus({
+            status: 'completed',
+            progress: 100,
+            details: 'Response delivered',
+            workflow: {
+                steps: [
+                    { label: 'Query' },
+                    { label: 'Search Docs' },
+                    { label: 'Analyze' },
+                    { label: 'Generate' },
+                    { label: 'Respond' }
+                ],
+                currentStep: 4,  // Last step
+                taskSteps: [
+                    { 
+                        icon: 'bi-search', 
+                        title: 'Process Query', 
+                        description: 'Analyzing your question for key information'
+                    },
+                    { 
+                        icon: 'bi-database-search', 
+                        title: 'Search Documents', 
+                        description: 'Finding relevant information in your documents'
+                    },
+                    { 
+                        icon: 'bi-lightbulb', 
+                        title: 'Context Building', 
+                        description: 'Building context from search results'
+                    },
+                    { 
+                        icon: 'bi-cpu', 
+                        title: 'Generate Response', 
+                        description: 'Creating an accurate and helpful response'
+                    },
+                    { 
+                        icon: 'bi-check-circle', 
+                        title: 'Final Review', 
+                        description: 'Reviewing and polishing the response'
+                    }
+                ],
+                currentTaskStep: 4,  // Last task step
+                taskProgress: 100
+            }
+        });
+        
         // Clear status
         this.clearAssistantStatus();
+    }
+    
+    updateDocumentProgress(sourceCount) {
+        // Update document progress bars
+        const docProgress = document.getElementById('docProgress');
+        const mobileDocProgress = document.getElementById('mobileDocProgress');
+        
+        if (docProgress) {
+            // Calculate percentage based on sources used vs total docs
+            const totalDocs = parseInt(this.docCount.textContent) || 1;
+            const percentage = Math.min(100, (sourceCount / totalDocs) * 100);
+            docProgress.style.width = `${percentage}%`;
+        }
+        
+        if (mobileDocProgress) {
+            const totalDocs = parseInt(this.docCount.textContent) || 1;
+            const percentage = Math.min(100, (sourceCount / totalDocs) * 100);
+            mobileDocProgress.style.width = `${percentage}%`;
+        }
     }
     
     addMessage(content, isUser = false, isError = false, sources = []) {
@@ -273,10 +462,73 @@ class WhiteLabelRAGApp {
         // Show/hide status badge
         if (status !== 'idle' && status !== 'completed') {
             this.statusBadge.style.display = 'flex';
+            
+            // Update typing indicator if available
+            if (window.typingIndicator) {
+                if (details) {
+                    window.typingIndicator.update(details);
+                }
+                
+                // Determine phase based on workflow data
+                if (data.workflow && data.workflow.currentStep !== undefined) {
+                    const phase = data.workflow.currentStep === 0 ? 'query' :
+                                 data.workflow.currentStep === 1 ? 'search' :
+                                 data.workflow.currentStep === 2 ? 'analyze' : 
+                                 data.workflow.currentStep === 3 ? 'generate' : 'final';
+                    window.typingIndicator.showLoadingMessage(phase, progress);
+                }
+            }
         } else {
             setTimeout(() => {
                 this.statusBadge.style.display = 'none';
+                
+                // Hide typing indicator
+                if (window.typingIndicator && status === 'completed') {
+                    window.typingIndicator.hide();
+                }
             }, 2000);
+        }
+        
+        // Update workflow visualization if available
+        this.updateWorkflowVisualization(data);
+    }
+    
+    updateWorkflowVisualization(data) {
+        // Check if we have workflow data
+        if (data.workflow) {
+            // If we have steps, setup the workflow
+            if (data.workflow.steps && data.workflow.steps.length > 0) {
+                if (typeof window.setupWorkflow === 'function') {
+                    window.setupWorkflow(data.workflow.steps);
+                }
+                
+                // If we have a current step, update progress
+                if (data.workflow.currentStep !== undefined) {
+                    if (typeof window.updateWorkflowProgress === 'function') {
+                        window.updateWorkflowProgress(
+                            data.workflow.currentStep, 
+                            data.workflow.steps.length
+                        );
+                    }
+                }
+            }
+            
+            // If we have task steps, show them
+            if (data.workflow.taskSteps && data.workflow.taskSteps.length > 0) {
+                if (typeof window.showTaskSteps === 'function') {
+                    window.showTaskSteps(data.workflow.taskSteps);
+                }
+                
+                // If we have a current task step and progress, update it
+                if (data.workflow.currentTaskStep !== undefined && data.workflow.taskProgress !== undefined) {
+                    if (typeof window.updateTaskStepProgress === 'function') {
+                        window.updateTaskStepProgress(
+                            data.workflow.currentTaskStep, 
+                            data.workflow.taskProgress
+                        );
+                    }
+                }
+            }
         }
     }
     
@@ -340,11 +592,29 @@ class WhiteLabelRAGApp {
         const formData = new FormData();
         formData.append('file', file);
         
+        // Show upload progress animation
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += 5;
+            if (progress > 90) clearInterval(progressInterval);
+            if (window.showUploadProgress) {
+                window.showUploadProgress('uploadStatus', progress);
+                window.showUploadProgress('mobileUploadStatus', progress);
+            }
+        }, 200);
+        
         try {
             const response = await fetch('/api/documents/upload_and_ingest_document', {
                 method: 'POST',
                 body: formData
             });
+            
+            // Complete the progress animation
+            clearInterval(progressInterval);
+            if (window.showUploadProgress) {
+                window.showUploadProgress('uploadStatus', 100);
+                window.showUploadProgress('mobileUploadStatus', 100);
+            }
             
             const result = await response.json();
             
@@ -354,11 +624,13 @@ class WhiteLabelRAGApp {
                 // Add a message to chat about the upload
                 this.addMessage(`📄 Document "${file.name}" has been uploaded and processed. You can now ask questions about it!`, false);
             } else {
-                this.showUploadStatus(`❌ Error uploading ${file.name}: ${result.error}`, 'error');
+                this.showUploadStatus(`❌ Error uploading ${file.name}: ${result.error || 'Unknown error'}`, 'error');
             }
         } catch (error) {
+            // Clear progress animation on error
+            clearInterval(progressInterval);
             console.error('Upload error:', error);
-            this.showUploadStatus(`❌ Error uploading ${file.name}: ${error.message}`, 'error');
+            this.showUploadStatus(`❌ Error uploading ${file.name}: ${error.message || 'Connection error'}`, 'error');
         }
     }
     
@@ -396,19 +668,145 @@ class WhiteLabelRAGApp {
             return;
         }
         
-        const filesHtml = files.map(file => `
-            <div class="file-item">
-                <div class="file-name">${file.name}</div>
-                <div class="file-meta">${this.formatFileSize(file.size)} • ${this.formatDate(file.modified)}</div>
-            </div>
-        `).join('');
-        
-        this.filesList.innerHTML = filesHtml;
+        // If we have the enhanceFileCards function from our UI enhancer, use it
+        if (typeof window.enhanceFileCards === 'function') {
+            // First show skeleton loading
+            if (typeof window.showSkeletonLoading === 'function') {
+                window.showSkeletonLoading('filesList', Math.min(files.length, 5));
+            }
+            
+            // Convert the files to the format expected by enhanceFileCards
+            const enhancedFiles = files.map(file => ({
+                filename: file.name,
+                size: this.formatFileSize(file.size),
+                date: this.formatDate(file.modified),
+                // Random usage percentage for visual interest - would be replaced with real data in production
+                usage: Math.floor(Math.random() * 100)
+            }));
+            
+            // Slight delay to show the skeleton effect
+            setTimeout(() => {
+                const fileCardsHtml = enhancedFiles.map(file => {
+                    // Determine file type icon
+                    let iconClass = 'bi-file-earmark';
+                    if (file.filename.match(/\.pdf$/i)) {
+                        iconClass = 'bi-file-earmark-pdf file-icon-pdf';
+                    } else if (file.filename.match(/\.(docx?|rtf|txt|md)$/i)) {
+                        iconClass = 'bi-file-earmark-text file-icon-doc';
+                    } else if (file.filename.match(/\.(jpe?g|png|gif|bmp|svg)$/i)) {
+                        iconClass = 'bi-file-earmark-image file-icon-image';
+                    } else if (file.filename.match(/\.(mp3|wav|ogg|flac)$/i)) {
+                        iconClass = 'bi-file-earmark-music file-icon-audio';
+                    } else if (file.filename.match(/\.(mp4|mov|avi|mkv|webm)$/i)) {
+                        iconClass = 'bi-file-earmark-play file-icon-video';
+                    }
+                    
+                    return `
+                    <div class="file-card elevation-1 elevation-hover">
+                        <div class="d-flex">
+                            <div class="file-icon">
+                                <i class="bi ${iconClass}"></i>
+                            </div>
+                            <div class="file-info">
+                                <div class="file-name">${file.filename}</div>
+                                <div class="file-meta">
+                                    ${file.size || 'Unknown size'} • ${file.date || 'Recently added'}
+                                </div>
+                                <div class="file-stats">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">Usage</small>
+                                        <small class="text-muted">${file.usage}%</small>
+                                    </div>
+                                    <div class="file-stat-bar">
+                                        <div class="file-stat-fill" style="width: ${file.usage}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+                
+                this.filesList.innerHTML = fileCardsHtml;
+                
+                // Do the same for mobile file list if it exists
+                if (this.mobileFilesList) {
+                    this.mobileFilesList.innerHTML = fileCardsHtml;
+                }
+            }, 500);
+        } else {
+            // Fallback to original implementation
+            const filesHtml = files.map(file => `
+                <div class="file-item">
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-meta">${this.formatFileSize(file.size)} • ${this.formatDate(file.modified)}</div>
+                </div>
+            `).join('');
+            
+            this.filesList.innerHTML = filesHtml;
+            
+            // Update mobile file list if it exists
+            if (this.mobileFilesList) {
+                this.mobileFilesList.innerHTML = filesHtml;
+            }
+        }
     }
     
     updateStats(fileCount) {
         this.docCount.textContent = fileCount;
         this.systemStatus.textContent = this.isConnected ? 'Ready' : 'Disconnected';
+    }
+    
+    formatFileSize(sizeInBytes) {
+        if (sizeInBytes === undefined || sizeInBytes === null) return 'Unknown size';
+        
+        // Convert to number if it's a string
+        const size = typeof sizeInBytes === 'string' ? parseInt(sizeInBytes, 10) : sizeInBytes;
+        
+        if (isNaN(size) || size === 0) return 'Unknown size';
+        
+        const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        let i = 0;
+        let fileSize = size;
+        
+        while (fileSize >= 1024 && i < units.length - 1) {
+            fileSize /= 1024;
+            i++;
+        }
+        
+        return `${fileSize.toFixed(1)} ${units[i]}`;
+    }
+    
+    formatDate(dateStr) {
+        if (!dateStr) return 'Unknown date';
+        
+        try {
+            const date = new Date(dateStr);
+            
+            // Check if date is valid
+            if (isNaN(date.getTime())) return 'Unknown date';
+            
+            // Get current date for comparison
+            const now = new Date();
+            const yesterday = new Date(now);
+            yesterday.setDate(now.getDate() - 1);
+            
+            // Format based on how recent the date is
+            if (date.toDateString() === now.toDateString()) {
+                return `Today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            } else if (date.toDateString() === yesterday.toDateString()) {
+                return `Yesterday at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            } else {
+                // For older dates
+                return date.toLocaleDateString([], { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric'
+                });
+            }
+        } catch (e) {
+            console.error('Date formatting error:', e);
+            return 'Unknown date';
+        }
     }
     
     validateFileSelection() {
@@ -495,6 +893,143 @@ class WhiteLabelRAGApp {
             }
         }, 30000); // Every 30 seconds
     }
+    
+    // Workflow Waypoints Methods
+    updateWorkflowWaypoints(workflow) {
+        if (!this.workflowWaypoints || !workflow) return;
+        
+        // Show the workflow waypoints container
+        this.workflowWaypoints.classList.remove('d-none');
+        
+        // Clear existing waypoints
+        const waypointElements = this.workflowWaypoints.querySelectorAll('.waypoint, .waypoint-label');
+        waypointElements.forEach(el => el.remove());
+        
+        const steps = workflow.steps || [];
+        const currentStep = workflow.currentStep || 0;
+        const totalSteps = steps.length;
+        
+        if (totalSteps === 0) {
+            this.workflowWaypoints.classList.add('d-none');
+            return;
+        }
+        
+        // Calculate progress percentage
+        const progressPercentage = (currentStep / totalSteps) * 100;
+        this.workflowProgress.style.width = `${progressPercentage}%`;
+        
+        // Add waypoints
+        steps.forEach((step, index) => {
+            const position = (index / (totalSteps - 1)) * 100;
+            
+            // Create waypoint dot
+            const waypoint = document.createElement('div');
+            waypoint.className = 'waypoint';
+            if (index < currentStep) {
+                waypoint.classList.add('completed');
+            } else if (index === currentStep) {
+                waypoint.classList.add('active');
+            }
+            waypoint.style.left = `${position}%`;
+            this.workflowWaypoints.querySelector('.workflow-track').appendChild(waypoint);
+            
+            // Create waypoint label
+            const label = document.createElement('div');
+            label.className = 'waypoint-label';
+            if (index === currentStep) {
+                label.classList.add('active');
+            }
+            label.style.left = `${position}%`;
+            label.textContent = step.name || `Step ${index + 1}`;
+            label.title = step.description || label.textContent;
+            this.workflowWaypoints.appendChild(label);
+        });
+    }
+    
+    updateTaskSteps(steps) {
+        if (!this.taskStepsContainer || !this.taskSteps || !steps || !steps.length) {
+            if (this.taskStepsContainer) {
+                this.taskStepsContainer.classList.add('d-none');
+            }
+            return;
+        }
+        
+        // Show the task steps container
+        this.taskStepsContainer.classList.remove('d-none');
+        
+        // Clear existing steps
+        this.taskSteps.innerHTML = '';
+        
+        // Add task steps
+        steps.forEach((step, index) => {
+            const stepEl = document.createElement('div');
+            stepEl.className = 'task-step';
+            
+            if (step.status === 'active') {
+                stepEl.classList.add('active');
+            } else if (step.status === 'completed') {
+                stepEl.classList.add('completed');
+            }
+            
+            const iconClass = this.getStepIconClass(step.status, step.type);
+            
+            stepEl.innerHTML = `
+                <div class="step-icon">
+                    <i class="${iconClass}"></i>
+                </div>
+                <div class="step-content">
+                    <div class="step-title">${step.title || `Step ${index + 1}`}</div>
+                    <div class="step-description">${step.description || ''}</div>
+                    <div class="step-progress">
+                        <div class="step-progress-bar" style="width: ${step.progress || 0}%"></div>
+                    </div>
+                </div>
+            `;
+            
+            this.taskSteps.appendChild(stepEl);
+        });
+    }
+    
+    getStepIconClass(status, type) {
+        // Default icon is a circle
+        let iconClass = 'bi bi-circle';
+        
+        // Determine icon by type
+        switch (type) {
+            case 'processing':
+                iconClass = 'bi bi-gear';
+                break;
+            case 'search':
+                iconClass = 'bi bi-search';
+                break;
+            case 'document':
+                iconClass = 'bi bi-file-text';
+                break;
+            case 'generation':
+                iconClass = 'bi bi-stars';
+                break;
+            case 'analysis':
+                iconClass = 'bi bi-graph-up';
+                break;
+            case 'completion':
+                iconClass = 'bi bi-check-circle';
+                break;
+            case 'error':
+                iconClass = 'bi bi-exclamation-triangle';
+                break;
+        }
+        
+        // Add status-specific classes
+        if (status === 'completed') {
+            iconClass = 'bi bi-check-circle-fill text-success';
+        } else if (status === 'error') {
+            iconClass = 'bi bi-x-circle-fill text-danger';
+        } else if (status === 'active') {
+            iconClass += ' text-primary';
+        }
+        
+        return iconClass;
+    }
 }
 
 // Global functions for quick actions
@@ -504,10 +1039,6 @@ window.sendQuickMessage = function(message) {
     }
 };
 
-// Initialize app when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    window.app = new WhiteLabelRAGApp();
-    window.app.startHealthCheck();
-    
-    console.log('WhiteLabelRAG application initialized');
-});
+// Initialize app - the constructor will handle DOM ready checking
+window.app = new WhiteLabelRAGApp();
+console.log('WhiteLabelRAG application started');

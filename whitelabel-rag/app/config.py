@@ -20,12 +20,14 @@ class Config:
     
     # ChromaDB Configuration
     CHROMA_DB_PATH = os.environ.get('CHROMA_DB_PATH', './chromadb_data')
+    # Add Chroma API implementation setting for FastAPI or AsyncFastAPI
+    CHROMA_API_IMPL = os.environ.get('CHROMA_API_IMPL', 'chromadb.api.fastapi.FastAPI')
     
     # LLM Configuration
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 
     # Internet Search API Configuration
-    INTERNET_SEARCH_API_KEY = os.environ.get('INTERNET_SEARCH_API_KEY', '')
+    INTERNET_SEARCH_API_KEY = os.environ.get('GOOGLE_API_KEY', '')
     INTERNET_SEARCH_ENGINE_ID = os.environ.get('INTERNET_SEARCH_ENGINE_ID', '')
     
     @classmethod

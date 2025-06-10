@@ -1,0 +1,269 @@
+/**
+ * WhiteLabelRAG UI Enhancements
+ * Additional styles to improve visual consistency and user experience
+ */
+
+/* Consistent card elevation system */
+.elevation-1 {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.elevation-2 {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.elevation-3 {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.elevation-hover {
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.elevation-hover:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Enhanced upload status indicator */
+.upload-progress {
+  height: 3px;
+  background-color: #fff;
+  border-radius: 1.5px;
+  overflow: hidden;
+  margin-top: 5px;
+}
+
+.upload-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* Enhanced file cards */
+.file-card {
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-color);
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.file-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.file-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--light-color);
+  border-radius: 6px;
+  margin-right: 12px;
+}
+
+.file-info {
+  flex: 1;
+}
+
+.file-name {
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.file-meta {
+  font-size: 0.75rem;
+  color: var(--secondary-color);
+}
+
+.file-stats {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.file-stat-bar {
+  height: 4px;
+  background-color: #f0f0f0;
+  border-radius: 2px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.file-stat-fill {
+  height: 100%;
+  background-color: var(--primary-color);
+  border-radius: 2px;
+}
+
+/* Enhanced loading states */
+.skeleton-loading {
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* File type icons */
+.file-icon-pdf {
+  color: #f44336;
+}
+
+.file-icon-doc {
+  color: #2196f3;
+}
+
+.file-icon-image {
+  color: #4caf50;
+}
+
+.file-icon-text {
+  color: #9e9e9e;
+}
+
+.file-icon-audio {
+  color: #ff9800;
+}
+
+.file-icon-video {
+  color: #e91e63;
+}
+
+/* Dark mode extensions */
+@media (prefers-color-scheme: dark) {  .file-card {
+    background-color: #fff;
+    border-color: #000080;
+  }
+  
+  .file-card:hover {
+    border-color: var(--primary-light);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  
+  .skeleton-loading {
+    background: linear-gradient(90deg, #fff 25%, #fff 50%, #fff 75%);
+  }
+  
+  .upload-progress {
+    background-color: #fff;
+  }
+  
+  .file-stat-bar {
+    background-color: #fff;
+  }
+}
+
+/* Better focus states for accessibility */
+:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 768px) {
+  button, 
+  .btn, 
+  .form-control {
+    min-height: 44px;
+  }
+  
+  .form-check-input {
+    min-width: 20px;
+    min-height: 20px;
+  }
+}
+
+/* Additional animation effects */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.scale-in {
+  animation: scaleIn 0.3s ease-in-out;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* File upload droppable area */
+.upload-dropzone {
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  background-color: rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+}
+
+.upload-dropzone:hover,
+.upload-dropzone.dragover {
+  border-color: var(--primary-color);
+  background-color: rgba(25, 118, 210, 0.05);
+}
+
+.upload-dropzone i {
+  font-size: 2rem;
+  color: var(--secondary-color);
+  margin-bottom: 10px;
+}
+
+.upload-dropzone.dragover i {
+  color: var(--primary-color);
+}
+
+/* Improved scrollbars for all containers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+@media (prefers-color-scheme: dark) {  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #fff;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #fff;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #fff;
+  }
+}

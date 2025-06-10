@@ -15,6 +15,7 @@ from app.services.rag_manager import get_rag_manager
 from app.services.document_processor import DocumentProcessor
 from app.services.internet_search_agent import get_internet_search_agent_instance
 from app.services.multimedia_agent import get_multimedia_agent_instance
+from app.services.file_manager import get_file_manager_instance
 from app.utils.file_utils import allowed_file
 
 
@@ -208,6 +209,26 @@ def upload_multimedia():
         logger.error(f"Error in upload_multimedia: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
+@api_bp.route('/file/summarize', methods=['POST'])
+def summarize_file():
+    """Summarize a document file content."""
+    try:
+        data = request.get_json()
+        document_text = data.get('document_text')
+        if not document_text:
+            return jsonify({'error': 'No document_text provided'}), 400
+        
+        file_manager = get_file_manager_instance()
+        summary_result = file_manager.summarize_document(document_text)
+        
+        if summary_result.get('success'):
+            return jsonify({'summary': summary_result['summary']})
+        else:
+            return jsonify({'error': summary_result.get('error', 'Unknown error')}), 500
+    except Exception as e:
+        logger.error(f"Error in summarize_file: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
 @api_bp.route('/multimedia/info/<filename>', methods=['GET'])
 def multimedia_file_info(filename):
     """Get information about a multimedia file."""
@@ -332,7 +353,7 @@ def store_step_embedding():
 
 @api_bp.route('/query', methods=['POST'])
 def query_documents():
-    """Search documents using vector similarity."""
+    """Search documents using vector similarity with optional internet search fallback."""
     try:
         data = request.get_json()
         if not data or 'query' not in data:
@@ -340,24 +361,20 @@ def query_documents():
         
         query = data['query']
         top_k = data.get('top_k', 3)
-        use_internet_search = data.get('use_internet_search', False)
+        use_internet_search = data.get('use_internet_search', True)  # Default to True for fallback
         
-        if use_internet_search:
-            internet_search_agent = get_internet_search_agent_instance()
-            result = internet_search_agent.search(query, num_results=top_k)
-            return jsonify({
-                'success': not result.get('error'),
-                'results': result.get('additional_data', {}).get('results', []),
-                'text': result.get('text', ''),
-                'agent': 'InternetSearchAgent'
-            })
-        else:
-            rag_manager = get_rag_manager()
-            results = rag_manager.query_documents(query, n_results=top_k)
-            return jsonify({
-                'success': True,
-                'results': results.get('results', [])
-            })
+        rag_manager = get_rag_manager()
+        combined_response = rag_manager.query_documents(
+            query, 
+            n_results=top_k,
+            force_internet_search=use_internet_search
+        )
+        
+        return jsonify({
+            'success': True,
+            'rag_response': combined_response.get('rag_response', {}),
+            'internet_search_response': combined_response.get('internet_search_response', None)
+        })
         
     except Exception as e:
         logger.error(f"Error in query_documents: {str(e)}")

@@ -1,0 +1,111 @@
+/**
+ * WhiteLabelRAG - Standard Color Palette
+ * Defines a comprehensive set of color variables for consistent UI
+ */
+
+:root {
+  /* Core Palette */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-navy: #000080;
+  --color-navy-light: #1a1a95;
+  --color-navy-dark: #00004d;
+  
+  /* Grayscale Palette */
+  --color-gray-100: #f8f9fa;
+  --color-gray-200: #e9ecef;
+  --color-gray-300: #dee2e6;
+  --color-gray-400: #ced4da;
+  --color-gray-500: #adb5bd;
+  --color-gray-600: #6c757d;
+  --color-gray-700: #495057;
+  --color-gray-800: #343a40;
+  --color-gray-900: #212529;
+  
+  /* Accent Colors */
+  --accent-blue: #0d6efd;
+  --accent-indigo: #6610f2;
+  --accent-purple: #6f42c1;
+  --accent-pink: #d63384;
+  --accent-red: #dc3545;
+  --accent-orange: #fd7e14;
+  --accent-yellow: #ffc107;
+  --accent-green: #198754;
+  --accent-teal: #20c997;
+  --accent-cyan: #0dcaf0;
+  
+  /* Semantic Mappings - Use these in components */
+  --text-primary: var(--color-gray-900);
+  --text-secondary: var(--color-gray-700);
+  --text-muted: var(--color-gray-600);
+  --text-light: var(--color-gray-500);
+  
+  --bg-primary: var(--color-white);
+  --bg-secondary: var(--color-gray-100);
+  --bg-light: var(--color-white);
+  --bg-dark: var(--color-gray-800);
+  
+  --border-primary: var(--color-navy);
+  --border-secondary: var(--color-gray-300);
+  --border-light: var(--color-gray-200);
+  
+  /* Component-specific colors */
+  --chat-user-bg: var(--accent-blue);
+  --chat-user-text: var(--color-white);
+  --chat-assistant-bg: var(--color-white);
+  --chat-assistant-text: var(--color-gray-900);
+  --chat-assistant-border: var(--color-navy);
+  
+  --status-success-bg: rgba(25, 135, 84, 0.1);
+  --status-success-text: var(--accent-green);
+  --status-warning-bg: rgba(255, 193, 7, 0.1);
+  --status-warning-text: var(--accent-yellow);
+  --status-danger-bg: rgba(220, 53, 69, 0.1);
+  --status-danger-text: var(--accent-red);
+  --status-info-bg: rgba(13, 202, 240, 0.1);
+  --status-info-text: var(--accent-cyan);
+}
+
+/* Map existing variables to new color system for backward compatibility */
+:root {
+  --background-color: var(--bg-primary);
+  --light-color: var(--bg-light);
+  --dark-color: var(--text-primary);
+  --text-color: var(--text-primary);
+  --border-color: var(--border-primary);
+  
+  --primary-color: var(--accent-blue);
+  --primary-light: var(--accent-blue);
+  --primary-dark: #115293;
+  
+  --secondary-color: var(--color-gray-600);
+  --secondary-light: var(--color-gray-500);
+  --secondary-dark: var(--color-gray-700);
+  
+  --success-color: var(--accent-green);
+  --success-light: var(--accent-green);
+  --danger-color: var(--accent-red);
+  --danger-light: var(--accent-red);
+  --warning-color: var(--accent-yellow);
+  --warning-light: var(--accent-yellow);
+  --info-color: var(--accent-cyan);
+  --info-light: var(--accent-cyan);
+}
+
+/* Dark mode color adjustments */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Override with light backgrounds and dark text for dark mode too, as per requirements */
+    --bg-primary: var(--color-white);
+    --bg-secondary: var(--color-white);
+    --bg-light: var(--color-white);
+    --text-primary: var(--color-gray-900);
+    --text-secondary: var(--color-gray-800);
+    --text-muted: var(--color-gray-700);
+    --text-light: var(--color-gray-600);
+    --border-primary: var(--color-navy);
+    
+    /* Ensure all text remains dark in dark mode */
+    --dark-color: var(--color-gray-900);
+  }
+}

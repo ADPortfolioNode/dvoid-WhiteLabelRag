@@ -7,10 +7,49 @@ A scalable Retrieval-Augmented Generation (RAG) application that provides a conv
 - 🤖 **Conversational AI** - Natural language interaction with context awareness
 - 📄 **Document Processing** - Upload and process PDF, DOCX, TXT, MD, and CSV files
 - 🔍 **Advanced Search** - Multiple RAG workflows (Basic, Advanced, Recursive, Adaptive)
+- 🌐 **Internet Search** - Fallback to internet search when documents don't contain the answer
 - 🏗️ **Modular Architecture** - Hub-and-spoke model with specialized agents
 - ⚡ **Real-time Updates** - WebSocket-based status updates and communication
 - 🎯 **Task Decomposition** - Break down complex tasks into manageable steps
 - 📊 **File Management** - Upload, process, and manage document collections
+
+## What's New - June 2025 Update
+
+### Internet Search Integration
+We've added Google Custom Search integration to provide answers when your document repository doesn't contain the information:
+
+- **Automatic Fallback**: When the RAG system can't find an answer, it automatically searches the internet
+- **Explicit Search Option**: Force internet search with the `use_internet_search` parameter
+- **Comprehensive Results**: Get both document-based and internet-based results in one response
+
+### Enhanced Documentation
+- **[GOOGLE_SEARCH_SETUP.md](GOOGLE_SEARCH_SETUP.md)**: Detailed guide for setting up Google Custom Search
+- **[INTERNET_SEARCH_CHANGES.md](INTERNET_SEARCH_CHANGES.md)**: Summary of all internet search-related changes
+- **Testing Scripts**: New scripts to verify your Google API configuration
+
+## Setting Up Google Custom Search
+
+For the internet search feature to work properly, you need to set up Google Custom Search API:
+
+1. **Create a Google Custom Search Engine**
+   - Go to [Programmable Search Engine](https://programmablesearchengine.google.com/about/)
+   - Click "Get Started" to create a new search engine
+   - Configure your search engine (you can choose to search the entire web)
+   - Note your Search Engine ID (cx)
+
+2. **Get a Google API Key**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create or select a project
+   - Enable the "Custom Search API"
+   - Create credentials and get your API key
+
+3. **Configure WhiteLabelRAG**
+   - Add your API key to .env file: `GOOGLE_API_KEY=your_api_key_here`
+   - Add your Search Engine ID to .env file: `INTERNET_SEARCH_ENGINE_ID=your_search_engine_id_here`
+
+For detailed instructions and troubleshooting, see [GOOGLE_SEARCH_SETUP.md](GOOGLE_SEARCH_SETUP.md).
+
+When documents in the RAG system don't contain the answer to a user's question, the system will automatically fall back to internet search if these credentials are configured.
 
 ## Technology Stack
 
@@ -28,6 +67,7 @@ A scalable Retrieval-Augmented Generation (RAG) application that provides a conv
 
 - Python 3.9+
 - Google Gemini API key
+- Google API key for internet search (optional)
 - Docker (optional)
 
 ### Installation
@@ -48,7 +88,7 @@ A scalable Retrieval-Augmented Generation (RAG) application that provides a conv
 3. **Configure environment variables**
    ```bash
    cp .env.example .env
-   # Edit .env and add your GEMINI_API_KEY
+   # Edit .env and add your GEMINI_API_KEY and GOOGLE_API_KEY
    ```
 
 4. **Run the application**
@@ -225,7 +265,7 @@ whitelabel-rag/
 │   ├── api/                 # API routes
 │   ├── main/                # Main routes and templates
 │   ├── services/            # Business logic and agents
-│   ├─�� static/              # Frontend assets
+│   ├── static/              # Frontend assets
 │   ├── templates/           # HTML templates
 │   └── utils/               # Utility functions
 ├── uploads/                 # Document storage

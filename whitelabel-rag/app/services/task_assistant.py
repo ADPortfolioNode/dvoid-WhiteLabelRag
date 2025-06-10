@@ -119,6 +119,19 @@ class TaskAssistant(BaseAssistant):
             'task_timeout': 1800  # 30 minutes
         }
     
+    def get_last_tasks(self, count: int = 3) -> List[Dict[str, Any]]:
+        """Return the last 'count' tasks sorted by creation time descending."""
+        # Sort tasks by created_at descending
+        sorted_tasks = sorted(
+            self.active_tasks.values(),
+            key=lambda t: t.created_at,
+            reverse=True
+        )
+        # Get the last 'count' tasks
+        last_tasks = sorted_tasks[:count]
+        # Convert to dict
+        return [task.to_dict() for task in last_tasks]
+    
     def handle_message(self, message: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Handle task decomposition and execution requests."""
         try:

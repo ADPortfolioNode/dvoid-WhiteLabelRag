@@ -36,17 +36,10 @@ class ChromaService:
             os.makedirs(chroma_path, exist_ok=True)
             
             # Initialize ChromaDB client with proper configuration
-            # Use PersistentClient for local storage
-            try:
-                self.client = chromadb.PersistentClient(
-                    path=chroma_path
-                )
-                logger.info(f"ChromaDB PersistentClient initialized at {chroma_path}")
-            except Exception as e:
-                logger.warning(f"PersistentClient failed: {e}, trying EphemeralClient")
-                # Fallback to EphemeralClient for testing
-                self.client = chromadb.EphemeralClient()
-                logger.info("ChromaDB EphemeralClient initialized (in-memory)")
+            self.client = chromadb.PersistentClient(
+                path=chroma_path
+            )
+            logger.info(f"ChromaDB PersistentClient initialized at {chroma_path}")
             
             # Setup embedding function
             self._setup_embedding_function()

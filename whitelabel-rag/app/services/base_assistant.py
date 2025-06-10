@@ -5,7 +5,6 @@ Base Assistant class for all specialized assistants
 import logging
 from datetime import datetime
 from abc import ABC, abstractmethod
-from app import socketio
 
 logger = logging.getLogger(__name__)
 
@@ -29,16 +28,20 @@ class BaseAssistant(ABC):
         
         # Emit WebSocket event with status update
         try:
-            socketio.emit('assistant_status_update', {
-                'assistant_id': id(self),
-                'name': self.name,
-                'status': status,
-                'progress': progress,
-                'details': details,
-                'timestamp': datetime.now().isoformat()
-            })
+            # Lazy import to avoid circular dependency
+            import sys
+            if 'app' in sys.modules:
+                from app import socketio
+                socketio.emit('assistant_status_update', {
+                    'assistant_id': id(self),
+                    'name': self.name,
+                    'status': status,
+                    'progress': progress,
+                    'details': details,
+                    'timestamp': datetime.now().isoformat()
+                })
         except Exception as e:
-            self.logger.error(f"Error emitting status update: {str(e)}")
+            self.logger.debug(f"WebSocket not available for status update: {str(e)}")
             
     def report_success(self, text, additional_data=None):
         """Report successful completion of task."""

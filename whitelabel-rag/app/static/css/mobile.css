@@ -1,0 +1,301 @@
+/**
+ * WhiteLabelRAG Mobile Enhancements
+ * 
+ * Additional styles and optimizations for mobile devices
+ */
+
+/* Small screen optimizations */
+@media (max-width: 576px) {
+  /* Better touch targets */
+  button, 
+  .btn, 
+  .form-control {
+    min-height: 44px;
+  }
+  
+  /* Optimized spacing */
+  .p-sm-2 {
+    padding: 0.5rem !important;
+  }
+  
+  .m-sm-2 {
+    margin: 0.5rem !important;
+  }
+  
+  /* Improve readability */
+  .small-screen-text {
+    font-size: 1rem !important;
+  }
+  
+  /* Fix modal overflow issues */
+  .modal-dialog {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+  
+  /* Fix bottom padding for chat container */
+  .chat-container {
+    padding-bottom: 1.5rem !important;
+  }
+  
+  /* Improved file cards for small screens */
+  .file-card {
+    padding: 0.75rem;
+  }
+  
+  .file-name {
+    font-size: 0.875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+  
+  /* Compress waypoints for smaller screens */
+  .waypoint-label {
+    font-size: 0.65rem;
+    width: 60px;
+  }
+  
+  /* Better task step display on small screens */
+  .task-step {
+    padding: 0.75rem;
+  }
+  
+  .step-icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 0.75rem;
+  }
+  
+  .step-title {
+    font-size: 0.875rem;
+  }
+  
+  .step-description {
+    font-size: 0.75rem;
+  }
+}
+
+/* Handle extreme small screens (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  /* Further compress UI elements */
+  .waypoint-label {
+    font-size: 0.6rem;
+    width: 45px;
+  }
+  
+  .file-name {
+    max-width: 150px;
+  }
+  
+  /* Stack buttons in very small screens */
+  .quick-actions .btn {
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+  
+  /* Improve message bubbles */
+  .message-content {
+    padding: 0.75rem;
+  }
+  
+  /* Better task steps */
+  .task-step {
+    padding: 0.5rem;
+  }
+  
+  .step-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 0.5rem;
+  }
+}
+
+/* Improve mobile workflow visualization */
+@media (max-width: 768px) {
+  /* Show workflow waypoints in mobile view */
+  .mobile-workflow-container {
+    display: block;
+    margin: 0.5rem 0;
+  }
+  
+  /* Mobile-friendly task steps */
+  .mobile-task-steps {
+    max-height: 250px;
+    overflow-y: auto;
+    margin: 0.5rem 0;
+  }
+  
+  /* Compact message display for mobile */
+  .message {
+    max-width: 90%;
+    margin-bottom: 0.75rem;
+  }
+  
+  .message-content {
+    padding: 0.75rem;
+  }
+  
+  /* File upload feedback for mobile */
+  .mobile-upload-progress {
+    height: 4px;
+    background-color: #fff;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+  
+  .mobile-upload-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  
+  /* Better drag & drop for mobile */
+  .upload-dropzone {
+    padding: 1rem;
+  }
+  
+  .upload-dropzone i {
+    font-size: 1.5rem;
+  }
+}
+
+/* Safe area insets for notched phones */
+@supports (padding: max(0px)) {
+  .mobile-safe-area-bottom {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom)) !important;
+  }
+  
+  .mobile-safe-area-top {
+    padding-top: max(0.5rem, env(safe-area-inset-top)) !important;
+  }
+  
+  .mobile-safe-area-left {
+    padding-left: max(0.5rem, env(safe-area-inset-left)) !important;
+  }
+  
+  .mobile-safe-area-right {
+    padding-right: max(0.5rem, env(safe-area-inset-right)) !important;
+  }
+}
+
+/* Landscape mode optimizations */
+@media (max-width: 896px) and (orientation: landscape) {
+  .chat-section-modern {
+    max-height: calc(100vh - 2rem);
+  }
+  
+  .chat-container {
+    max-height: calc(100vh - 10rem);
+  }
+  
+  .mobile-collapsible {
+    max-height: 150px;
+    overflow-y: auto;
+  }
+  
+  .landscape-compressed {
+    padding: 0.5rem !important;
+  }
+  
+  /* Hide some elements in landscape to maximize chat space */
+  .landscape-hidden {
+    display: none !important;
+  }
+  
+  /* Better use of horizontal space */
+  .landscape-flex-row {
+    display: flex !important;
+    flex-direction: row !important;
+  }
+  
+  .landscape-col-6 {
+    width: 50% !important;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 768px) and (max-width: 991px) {
+  /* Better use of space on tablets */
+  .tablet-p-2 {
+    padding: 0.5rem !important;
+  }
+  
+  .sidebar {
+    padding: 1rem !important;
+  }
+}
+
+/* Animations for mobile */
+.slide-in-bottom {
+  animation: slideInBottom 0.3s forwards;
+}
+
+@keyframes slideInBottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile upload animation */
+.pulse-upload {
+  animation: pulseUpload 1.5s infinite;
+}
+
+@keyframes pulseUpload {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Mobile haptic feedback styles (will be triggered by JavaScript) */
+.haptic-feedback {
+  position: relative;
+  overflow: hidden;
+}
+
+.haptic-feedback::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;  width: 5px;
+  height: 5px;
+  background: #fff;
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1) translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.haptic-feedback.active::after {
+  animation: hapticRipple 0.5s ease-out;
+}
+
+@keyframes hapticRipple {
+  0% {
+    transform: scale(0) translate(-50%, -50%);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(50) translate(-50%, -50%);
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(100) translate(-50%, -50%);
+  }
+}

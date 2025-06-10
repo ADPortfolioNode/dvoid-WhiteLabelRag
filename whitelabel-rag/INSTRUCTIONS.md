@@ -1,5 +1,5 @@
 # WHITE LABEL RAG - IMPLEMENTATION GUIDE
-Last updated: May 16, 2025
+Last updated: June 9, 2025
 
 ## PROJECT OVERVIEW
 
@@ -12,8 +12,33 @@ White Label RAG is a scalable Retrieval-Augmented Generation (RAG) application t
 | Backend   | Python Flask (port 5000) | REST API server with CORS and modular design |
 | Vector DB | ChromaDB (port 8000) | Stores document and step embeddings for semantic search |
 | LLM Service | Gemini API (Google) | Powers the conversational AI and task processing |
-| Frontend  |creat-react-app (port 3000) b React.js + Bootstrap grid layout | Mobile-first, responsive and adaptive UI with real-time updates |
+| Frontend  | React.js + Bootstrap grid layout | Mobile-first, responsive and adaptive UI with real-time updates |
 | WebSockets | Flask-SocketIO | Real-time communication between client and server |
+| Internet Search | Google Custom Search API | Provides internet search fallback when documents don't have answers |
+
+## RECENT UPDATES (JUNE 2025)
+
+### Internet Search Integration
+The application now supports internet search capabilities through Google Custom Search API:
+
+- **Implementation**: Added `InternetSearchAgent` module to handle external web searches
+- **Configuration**: Uses `GOOGLE_API_KEY` and `INTERNET_SEARCH_ENGINE_ID` environment variables
+- **API Enhancement**: Extended `/api/query` endpoint to support internet search via `use_internet_search` parameter
+- **Fallback Logic**: Automatically uses internet search when document search yields no results
+- **Testing**: Added comprehensive test scripts in `scripts/test_internet_search.py`
+
+### Documentation Updates
+- **[GOOGLE_SEARCH_SETUP.md](GOOGLE_SEARCH_SETUP.md)**: Step-by-step guide for setting up Google Custom Search
+- **[INTERNET_SEARCH_CHANGES.md](INTERNET_SEARCH_CHANGES.md)**: Technical summary of all internet search-related changes
+- **Environment Templates**: Updated `.env.example` with Google API configuration options
+- **Deployment Guides**: Updated Docker and deployment documentation to include new environment variables
+
+## ADDITIONAL RESOURCES
+
+- [README.md](README.md) - Main project documentation
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Deployment instructions
+- [GOOGLE_SEARCH_SETUP.md](GOOGLE_SEARCH_SETUP.md) - Google Custom Search setup guide
+- [INTERNET_SEARCH_CHANGES.md](INTERNET_SEARCH_CHANGES.md) - Technical details of internet search implementation
 
 ## ASSISTANT ARCHITECTURE AND WORKFLOWS
 

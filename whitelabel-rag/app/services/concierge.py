@@ -25,13 +25,19 @@ class Concierge(BaseAssistant):
         self.rag_manager = get_rag_manager()
         self.config = Config.ASSISTANT_CONFIGS['Concierge']
         
-        # Available functions for direct execution
+        # Greeting message on initialization
+        self.greeting = "Hello! How can I assist you today?"
+        
+    
         self.direct_functions = {
             'get_time': self._get_current_time,
             'get_stats': self._get_system_stats,
             'help': self._get_help
         }
     
+    def get_greeting(self) -> str:
+        """Return the greeting message."""
+        return self.greeting
     def handle_message(self, message: str, session_id: Optional[str] = None) -> Dict[str, Any]:
         """
         Main entry point for handling user messages.
@@ -52,6 +58,42 @@ class Concierge(BaseAssistant):
             
             # Get conversation context
             conversation = self.conversation_store.get_conversation(session_id)
+            
+            # Check conversation state for username prompt
+            if conversation.conversation_state == "awaiting_username":
+                username = message.strip()
+                from datetime import datetime
+                user_id = f"{username}-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+                conversation.user_info['user_id'] = user_id
+                conversation.user_info['username'] = username
+                
+                # Save initial topic name dialogue encoded into RAG
+                topic_dialogue = f"User {username} started session with user_id {user_id}."
+                self.rag_manager.store_document_chunk(
+                    content=topic_dialogue,
+                    metadata={"user_id": user_id, "username": username, "session_id": session_id}
+                )
+                
+                # Update conversation state to active
+                conversation.set_state("active")
+                
+                # Add user message to conversation
+                conversation.add_message("user", message)
+                
+                # Respond with greeting and confirmation
+                response_text = f"Hello {username}! How can I assist you today?"
+                conversation.add_message("assistant", response_text)
+                
+                self._update_status("completed", 100, "Username received and session started")
+                return self.report_success(text=response_text)
+            
+            # If new session, prompt for username
+            if len(conversation.messages) == 0:
+                conversation.set_state("awaiting_username")
+                prompt_text = "Welcome! Please tell me your name to get started."
+                conversation.add_message("assistant", prompt_text)
+                self._update_status("completed", 100, "Prompted for username")
+                return self.report_success(text=prompt_text)
             
             # Add user message to conversation
             conversation.add_message("user", message)

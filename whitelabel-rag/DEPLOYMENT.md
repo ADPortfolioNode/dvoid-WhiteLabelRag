@@ -10,8 +10,10 @@
 python scripts/setup.sh  # Linux/Mac
 scripts\setup.bat        # Windows
 
-# Configure API key
+# Configure API keys
 export GEMINI_API_KEY=your_api_key_here
+export GOOGLE_API_KEY=your_google_api_key_here  # For internet search (optional)
+export INTERNET_SEARCH_ENGINE_ID=your_search_engine_id_here  # For internet search (optional)
 
 # Run
 python run.py
@@ -24,11 +26,15 @@ python run.py
 **Prerequisites:**
 - Docker and Docker Compose installed
 - GEMINI_API_KEY environment variable set
+- GOOGLE_API_KEY environment variable set (optional for internet search)
+- INTERNET_SEARCH_ENGINE_ID environment variable set (optional for internet search)
 
 **Single Container:**
 ```bash
-# Set API key
+# Set API keys
 export GEMINI_API_KEY=your_api_key_here
+export GOOGLE_API_KEY=your_google_api_key_here  # Optional
+export INTERNET_SEARCH_ENGINE_ID=your_search_engine_id_here  # Optional
 
 # Build and run
 docker build -t whitelabel-rag .
@@ -37,8 +43,12 @@ docker run -p 5000:5000 -e GEMINI_API_KEY=$GEMINI_API_KEY whitelabel-rag
 
 **Docker Compose (Recommended):**
 ```bash
-# Create .env file
-echo "GEMINI_API_KEY=your_api_key_here" > .env
+# Create .env file with all required API keys
+cat > .env << EOL
+GEMINI_API_KEY=your_api_key_here
+GOOGLE_API_KEY=your_google_api_key_here
+INTERNET_SEARCH_ENGINE_ID=your_search_engine_id_here
+EOL
 
 # Start services
 docker-compose up -d

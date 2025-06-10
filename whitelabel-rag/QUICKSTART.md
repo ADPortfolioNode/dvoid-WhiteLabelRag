@@ -4,7 +4,8 @@
 
 1. **Python 3.9+** - [Download Python](https://www.python.org/downloads/)
 2. **Google Gemini API Key** - [Get API Key](https://makersuite.google.com/app/apikey)
-3. **Git** (optional) - [Download Git](https://git-scm.com/downloads)
+3. **Google API Key** (optional, for internet search) - [Get API Key](https://console.cloud.google.com/)
+4. **Git** (optional) - [Download Git](https://git-scm.com/downloads)
 
 ## 🚀 Quick Setup (5 minutes)
 
@@ -15,7 +16,7 @@
 # Run the setup script
 scripts\setup.bat
 
-# Edit .env file and add your API key
+# Edit .env file and add your API keys
 notepad .env
 
 # Start the development server
@@ -30,12 +31,31 @@ chmod +x scripts/*.sh
 # Run the setup script
 ./scripts/setup.sh
 
-# Edit .env file and add your API key
+# Edit .env file and add your API keys
 nano .env
 
 # Start the development server
 ./scripts/run-dev.sh
 ```
+
+### Optional: Set Up Internet Search
+
+For internet search capability:
+
+1. Set up a Google Custom Search Engine - [Instructions](GOOGLE_SEARCH_SETUP.md)
+2. Add to your `.env` file:
+   ```
+   GOOGLE_API_KEY=your_google_api_key_here
+   INTERNET_SEARCH_ENGINE_ID=your_search_engine_id_here
+   ```
+3. Test the configuration:
+   ```
+   # Windows
+   scripts\test_google_search.bat
+   
+   # Linux/Mac
+   ./scripts/test_google_search.sh
+   ```
 
 ### Option 2: Manual Setup
 

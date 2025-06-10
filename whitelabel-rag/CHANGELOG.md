@@ -5,6 +5,25 @@ All notable changes to WhiteLabelRAG will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-06-09
+
+### Added
+- **Internet Search Integration**: Added fallback to Google Custom Search when documents don't contain answers
+- **InternetSearchAgent Module**: New agent for handling internet search operations
+- **Configuration Options**: Support for `GOOGLE_API_KEY` and `INTERNET_SEARCH_ENGINE_ID` environment variables
+- **API Enhancement**: Extended `/api/query` endpoint with `use_internet_search` parameter
+- **Testing Tools**: Added test scripts for verifying Google API integration
+- **Documentation**: Created comprehensive guides for Google Custom Search setup
+
+### Changed
+- Updated API response format to include both document and internet search results
+- Enhanced RAG Manager to intelligently determine when to use internet search
+- Improved error handling for API requests and key validation
+- Updated Docker configuration to support new environment variables
+
+### Fixed
+- Fixed issues with missing results when RAG system doesn't have relevant documents
+
 ## [1.0.0] - 2024-12-19
 
 ### Added
