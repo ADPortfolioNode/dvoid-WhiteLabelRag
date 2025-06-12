@@ -26,20 +26,74 @@ class RAGManager:
             self.chroma_service = None
             self.llm = LLMFactory.get_llm()
             self.internet_search_agent = None
+            # Ensure logger is available
+            global logger
+            if logger is None: # Should be already configured if module level
+                logger = logging.getLogger(__name__)
+
 
     def initialize_services(self):
-        self.chroma_service = get_chroma_service_instance()
-        self.internet_search_agent = get_internet_search_agent_instance()
+        try:
+            self.chroma_service = get_chroma_service_instance()
+            if self.chroma_service is None:
+                logger.warning("RAGManager: get_chroma_service_instance() returned None.")
+        except Exception as e:
+            logger.error(f"RAGManager: Failed to initialize chroma_service: {e}", exc_info=True)
+            self.chroma_service = None # Ensure it's None on failure
+
+        try:
+            self.internet_search_agent = get_internet_search_agent_instance()
+            if self.internet_search_agent is None:
+                logger.warning("RAGManager: get_internet_search_agent_instance() returned None.")
+        except Exception as e:
+            logger.error(f"RAGManager: Failed to initialize internet_search_agent: {e}", exc_info=True)
+            self.internet_search_agent = None # Ensure it's None on failure
 
     def store_document_chunk(self, content: str, metadata: Dict[str, Any]) -> str:
         """Store a document chunk in the vector database."""
+        if not self.chroma_service:
+            logger.info("RAGManager.store_document_chunk: chroma_service not initialized. Attempting to initialize.")
+            self.initialize_services()
+        
+        if not self.chroma_service:
+            logger.error("RAGManager.store_document_chunk: ChromaDB service is not available after initialization attempt.")
+            raise RuntimeError("ChromaDB service not available for storing document chunk.")
+            
         return self.chroma_service.store_document(content, metadata)
     
     def query_documents(self, query: str, n_results: int = 3, 
                        workflow_type: str = "basic", force_internet_search: bool = False) -> Dict[str, Any]:
         """Query documents using specified RAG workflow."""
         
-        self.initialize_services() # Ensures chroma_service and internet_search_agent are attempted to be initialized
+        self.initialize_services() 
+        
+        if not self.chroma_service:
+            logger.error("RAGManager.query_documents: ChromaDB service is not available.")
+            # Return an error structure consistent with other parts of the method
+            rag_response_error = {
+                'text': "Error: Document database service not available.", 
+                'sources': [], 
+                'workflow': workflow_type, 
+                'results': [], 
+                'error': True,
+                'context_used': False
+            }
+            # Determine internet search necessity based on this error
+            need_internet_search = force_internet_search or True # Force if chroma failed
+
+            internet_search_response = None
+            if need_internet_search:
+                if self.internet_search_agent:
+                    logger.info(f"RAGManager.query_documents: ChromaDB unavailable, performing internet search for query: {query}")
+                    internet_search_response = self.internet_search_agent.search(query, num_results=n_results)
+                else:
+                    logger.warning("RAGManager.query_documents: Internet search agent not initialized. Skipping internet search.")
+                    internet_search_response = {"error": "Internet search agent not available.", "text": "", "sources": [], "results": []}
+            
+            return {
+                'rag_response': rag_response_error,
+                'internet_search_response': internet_search_response
+            }
         
         if workflow_type == "basic":
             rag_response = self._basic_rag_workflow(query, n_results)
@@ -139,7 +193,7 @@ class RAGManager:
             }
             
         except Exception as e:
-            logger.error(f"Error in basic RAG workflow: {str(e)}")
+            logger.error(f"Error in basic RAG workflow: {str(e)}", exc_info=True)
             return {
                 'text': f"Error processing query: {str(e)}",
                 'sources': [],
@@ -207,7 +261,7 @@ class RAGManager:
             }
             
         except Exception as e:
-            logger.error(f"Error in advanced RAG workflow: {str(e)}")
+            logger.error(f"Error in advanced RAG workflow: {str(e)}", exc_info=True)
             return {
                 'text': f"Error processing query: {str(e)}",
                 'sources': [],
@@ -274,8 +328,8 @@ class RAGManager:
             }
             
         except Exception as e:
-            logger.error(f"Error in recursive RAG workflow: {str(e)}")
-            return self._basic_rag_workflow(query, top_k)
+            logger.error(f"Error in recursive RAG workflow: {str(e)}", exc_info=True)
+            return self._basic_rag_workflow(query, top_k) # Fallback or error
     
     def _adaptive_rag_workflow(self, query: str, top_k: int = 3) -> Dict[str, Any]:
         """
@@ -309,8 +363,8 @@ class RAGManager:
             return initial_response
             
         except Exception as e:
-            logger.error(f"Error in adaptive RAG workflow: {str(e)}")
-            return self._basic_rag_workflow(query, top_k)
+            logger.error(f"Error in adaptive RAG workflow: {str(e)}", exc_info=True)
+            return self._basic_rag_workflow(query, top_k) # Fallback or error
     
     def _expand_query(self, query: str) -> str:
         """Expand query for better recall."""
@@ -326,7 +380,7 @@ class RAGManager:
             return expanded.strip()
             
         except Exception as e:
-            logger.error(f"Error expanding query: {str(e)}")
+            logger.error(f"Error expanding query: {str(e)}", exc_info=True)
             return query
     
     def _merge_search_results(self, semantic_results: Dict, keyword_results: Dict) -> List[Dict]:
@@ -407,7 +461,7 @@ class RAGManager:
             }
             
         except Exception as e:
-            logger.error(f"Error planning response: {str(e)}")
+            logger.error(f"Error planning response: {str(e)}", exc_info=True)
             return {'components': [{'id': 'main', 'search_query': query}]}
     
     def _generate_structured_response(self, query: str, plan: Dict, contexts: Dict) -> str:
@@ -427,7 +481,7 @@ class RAGManager:
             )
             
         except Exception as e:
-            logger.error(f"Error generating structured response: {str(e)}")
+            logger.error(f"Error generating structured response: {str(e)}", exc_info=True)
             return "Error generating response."
     
     def _analyze_query(self, query: str) -> Dict:
@@ -489,11 +543,19 @@ class RAGManager:
             return refined_response
             
         except Exception as e:
-            logger.error(f"Error refining response: {str(e)}")
+            logger.error(f"Error refining response: {str(e)}", exc_info=True)
             return initial_response
     
     def get_collection_stats(self) -> Dict[str, Any]:
         """Get collection statistics."""
+        if not self.chroma_service:
+            logger.info("RAGManager.get_collection_stats: chroma_service not initialized. Attempting to initialize.")
+            self.initialize_services()
+
+        if not self.chroma_service:
+            logger.error("RAGManager.get_collection_stats: ChromaDB service is not available after initialization attempt.")
+            raise RuntimeError("ChromaDB service not available for getting collection stats.")
+            
         return self.chroma_service.get_collection_stats()
 
 # Singleton instance

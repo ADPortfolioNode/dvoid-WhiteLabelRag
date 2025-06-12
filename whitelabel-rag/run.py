@@ -3,6 +3,11 @@
 WhiteLabelRAG Application Entry Point
 """
 
+# Apply eventlet monkey patching as the very first thing
+# to ensure all standard libraries are greened for asynchronous operations.
+import eventlet
+eventlet.monkey_patch()
+
 import os
 import sys
 from dotenv import load_dotenv

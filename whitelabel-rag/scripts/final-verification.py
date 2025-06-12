@@ -454,17 +454,30 @@ import subprocess
 def main():
     """Main verification function."""
     # project_root is defined globally at the top of the script
-    verifier = WhiteLabelRAGVerification(project_root_path=project_root)
+    # Ensure project_root is a Path object for the / operator
+    current_project_root = Path(project_root)
+    verifier = WhiteLabelRAGVerification(project_root_path=current_project_root)
     success = verifier.run_verification()
     if success:
-        print("\n✅ No errors found. Starting the app...")
+        print("\\n✅ No errors found. Proceeding with Docker deployment...")
         try:
-            # Start the app using the startapp.bat script
-            start_script_path = project_root / "startapp.bat"
-            subprocess.run([str(start_script_path)], check=True, shell=True)
-            print("🚀 App started successfully.")
+            # Proceed to build and run Docker container
+            print("\\n🐳 Starting Docker build and run process...")
+            # Assuming docker-compose.yml is at the project root (current_project_root)
+            # and that docker-compose is in the system PATH.
+            docker_compose_command = ["docker-compose", "up", "--build", "-d"]
+            # Run docker-compose from the project root directory
+            docker_process = subprocess.run(docker_compose_command, cwd=str(current_project_root), check=True, capture_output=True, text=True, shell=True)
+            print("🐳 Docker containers built and started successfully.")
+            if docker_process.stdout:
+                print(f"Docker output:\\n{docker_process.stdout}")
+
         except subprocess.CalledProcessError as e:
-            print(f"❌ Failed to start the app: {e}")
+            print(f"❌ Failed during post-verification steps: {e}")
+            if hasattr(e, 'stdout') and e.stdout:
+                print(f"Stdout:\\n{e.stdout}")
+            if hasattr(e, 'stderr') and e.stderr:
+                print(f"Stderr:\\n{e.stderr}")
     else:
         print("\n❌ Errors found. App will not be started.")
     sys.exit(0 if success else 1)

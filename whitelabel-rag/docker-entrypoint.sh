@@ -171,18 +171,25 @@ else
     KEEPALIVE=${KEEPALIVE:-2}
     BIND=${BIND:-0.0.0.0:5000}
     
-    exec gunicorn \
-        --bind "$BIND" \
-        --workers "$WORKERS" \
-        --timeout "$TIMEOUT" \
-        --keep-alive "$KEEPALIVE" \
-        --worker-class eventlet \
-        --worker-connections 1000 \
-        --max-requests 1000 \
-        --max-requests-jitter 100 \
-        --preload \
-        --access-logfile - \
-        --error-logfile - \
-        --log-level info \
-        "run:app"
+    if [ "$1" = 'gunicorn' ]; then
+        if [ "$SHOW_STATUS_MESSAGES" = "true" ]; then
+            echo "🦄 Starting Gunicorn..."
+            echo "🔧 Workers: ${WORKERS:-4}"
+            echo "⏱️ Timeout: ${TIMEOUT:-120}"
+            echo "🔗 Keep-Alive: ${KEEPALIVE:-2}"
+            echo "🌐 Listening on: 0.0.0.0:5000"
+        fi
+        # Ensure Flask app environment variables are set correctly for Gunicorn
+        export FLASK_APP="run:app" # Explicitly set the correct application module and variable
+        export FLASK_ENV=${FLASK_ENV:-production}
+
+        # Start Gunicorn with eventlet worker
+        exec gunicorn \
+            --workers "$WORKERS" \
+            --timeout "$TIMEOUT" \
+            --keep-alive "$KEEPALIVE" \
+            --bind "$BIND" \
+            --worker-class eventlet \
+            "$FLASK_APP"
+    fi
 fi
