@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#1976d2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>WhiteLabelRAG - Industry Standard Components</title>
+    
+    <!-- Google Fonts for better typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/color-palette.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-style-guide.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/industry-standard-navigation.css">
+    <link rel="stylesheet" href="/static/css/industry-standard-cards.css">
+</head>
+<body>
+    <!-- App Container with Side Navigation Layout -->
+    <div class="app-container">
+        <!-- Side Navigation -->
+        <div class="side-nav">
+            <div class="side-nav-header">
+                <a href="#" class="top-nav-brand">
+                    <div class="top-nav-logo">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <span>WhiteLabelRAG</span>
+                </a>
+                <button class="top-nav-action d-block d-lg-none side-nav-close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="side-nav-body">
+                <div class="side-nav-section">
+                    <h6 class="side-nav-section-title">Main</h6>
+                    <ul class="side-nav-menu">
+                        <li class="side-nav-item">
+                            <a href="#" class="side-nav-link active">
+                                <span class="side-nav-icon">
+                                    <i class="bi bi-house-door"></i>
+                                </span>
+                                <span class="side-nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="#" class="side-nav-link">
+                                <span class="side-nav-icon">
+                                    <i class="bi bi-chat-dots"></i>
+                                </span>
+                                <span class="side-nav-text">Chat</span>
+                                <span class="side-nav-badge side-nav-badge-primary">3</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="#" class="side-nav-link">
+                                <span class="side-nav-icon">
+                                    <i class="bi bi-file-earmark-text"></i>
+                                </span>
+                                <span class="side-nav-text">Documents</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="side-nav-section">
+                    <h6 class="side-nav-section-title">Settings</h6>
+                    <ul class="side-nav-menu">
+                        <li class="side-nav-item">
+                            <a href="#" class="side-nav-link">
+                                <span class="side-nav-icon">
+                                    <i class="bi bi-gear"></i>
+                                </span>
+                                <span class="side-nav-text">Preferences</span>
+                            </a>
+                        </li>
+                        <li class="side-nav-item">
+                            <a href="#" class="side-nav-link">
+                                <span class="side-nav-icon">
+                                    <i class="bi bi-shield-check"></i>
+                                </span>
+                                <span class="side-nav-text">Privacy</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="side-nav-footer">
+                WhiteLabelRAG v1.0 | © 2025
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <main class="app-content app-content-with-side">
+            <!-- Top Navigation Bar -->
+            <div class="top-nav top-nav-with-side">
+                <button class="top-nav-action side-nav-toggle d-block d-lg-none">
+                    <i class="bi bi-list"></i>
+                </button>
+                
+                <ul class="top-nav-menu d-none d-lg-flex">
+                    <li class="top-nav-item">
+                        <a href="#" class="top-nav-link active">
+                            <i class="top-nav-icon bi bi-house-door"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="top-nav-item">
+                        <a href="#" class="top-nav-link">
+                            <i class="top-nav-icon bi bi-file-earmark-text"></i>
+                            <span>Documents</span>
+                        </a>
+                    </li>
+                    <li class="top-nav-item">
+                        <a href="#" class="top-nav-link">
+                            <i class="top-nav-icon bi bi-bar-chart"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="top-nav-actions">
+                    <button class="top-nav-action">
+                        <i class="bi bi-search"></i>
+                    </button>
+                    <button class="top-nav-action">
+                        <i class="bi bi-bell"></i>
+                        <span class="top-nav-action-badge">2</span>
+                    </button>
+                    <button class="top-nav-action">
+                        <i class="bi bi-person-circle"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Page Content -->
+            <div class="container-fluid">
+                <!-- Breadcrumb Navigation -->
+                <div class="breadcrumb-nav">
+                    <ul class="breadcrumb-list">
+                        <li class="breadcrumb-item">
+                            <a href="#" class="breadcrumb-link">
+                                <i class="bi bi-house-door me-1"></i> Home
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="#" class="breadcrumb-link">Components</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="#" class="breadcrumb-link">Industry Standard UI</a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">Industry Standard Components</h1>
+                    <p class="page-subtitle">Modern UI patterns and components for WhiteLabelRAG</p>
+                </div>
+                
+                <!-- Context Navigation -->
+                <div class="context-nav">
+                    <ul class="context-nav-list">
+                        <li class="context-nav-item">
+                            <a href="#navigation" class="context-nav-link active">
+                                <i class="context-nav-icon bi bi-signpost-split"></i>
+                                Navigation
+                            </a>
+                        </li>
+                        <li class="context-nav-item">
+                            <a href="#cards" class="context-nav-link">
+                                <i class="context-nav-icon bi bi-card-text"></i>
+                                Cards
+                            </a>
+                        </li>
+                        <li class="context-nav-item">
+                            <a href="#data-display" class="context-nav-link">
+                                <i class="context-nav-icon bi bi-bar-chart"></i>
+                                Data Display
+                            </a>
+                        </li>
+                        <li class="context-nav-item">
+                            <a href="#tables" class="context-nav-link">
+                                <i class="context-nav-icon bi bi-table"></i>
+                                Tables
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Tab Navigation -->
+                <div class="tab-nav" id="componentTabs">
+                    <div class="tab-nav-item active" data-target="tabNavigationComponents">
+                        <i class="tab-nav-icon bi bi-signpost-split"></i>
+                        Navigation Components
+                    </div>
+                    <div class="tab-nav-item" data-target="tabCardComponents">
+                        <i class="tab-nav-icon bi bi-card-text"></i>
+                        Card Components
+                    </div>
+                    <div class="tab-nav-item" data-target="tabDataComponents">
+                        <i class="tab-nav-icon bi bi-graph-up"></i>
+                        Data Components
+                    </div>
+                </div>
+                
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Navigation Components Tab -->
+                    <div class="tab-pane active" id="tabNavigationComponents">
+                        <section class="mb-5">
+                            <h2 class="mb-4">Navigation Components</h2>
+                            
+                            <!-- Stepper Example -->
+                            <div class="standard-card mb-4">
+                                <div class="standard-card-header">
+                                    <h3 class="standard-card-title">Stepper Navigation</h3>
+                                </div>
+                                <div class="standard-card-body">
+                                    <div class="stepper">
+                                        <div class="stepper-item completed">
+                                            <div class="stepper-icon">1</div>
+                                            <div class="stepper-title">Upload</div>
+                                            <div class="stepper-subtitle">Select documents</div>
+                                        </div>
+                                        <div class="stepper-item active">
+                                            <div class="stepper-icon">2</div>
+                                            <div class="stepper-title">Process</div>
+                                            <div class="stepper-subtitle">Extract information</div>
+                                        </div>
+                                        <div class="stepper-item">
+                                            <div class="stepper-icon">3</div>
+                                            <div class="stepper-title">Complete</div>
+                                            <div class="stepper-subtitle">Finish setup</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <button class="btn btn-outline-primary">Back</button>
+                                        <button class="btn btn-primary">Continue</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Breadcrumbs Example -->
+                            <div class="standard-card">
+                                <div class="standard-card-header">
+                                    <h3 class="standard-card-title">Breadcrumb Navigation</h3>
+                                </div>
+                                <div class="standard-card-body">
+                                    <div class="breadcrumb-nav">
+                                        <ul class="breadcrumb-list">
+                                            <li class="breadcrumb-item">
+                                                <a href="#" class="breadcrumb-link">
+                                                    <i class="bi bi-house-door me-1"></i> Home
+                                                </a>
+                                            </li>
+                                            <li class="breadcrumb-item">
+                                                <a href="#" class="breadcrumb-link">Documents</a>
+                                            </li>
+                                            <li class="breadcrumb-item">
+                                                <a href="#" class="breadcrumb-link">Projects</a>
+                                            </li>
+                                            <li class="breadcrumb-item">
+                                                <a href="#" class="breadcrumb-link">Project Alpha</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    
+                    <!-- Card Components Tab -->
+                    <div class="tab-pane" id="tabCardComponents">
+                        <section class="mb-5">
+                            <h2 class="mb-4">Card Components</h2>
+                            
+                            <div class="data-grid">
+                                <!-- Basic Card -->
+                                <div class="standard-card">
+                                    <div class="standard-card-header">
+                                        <h3 class="standard-card-title">Basic Card</h3>
+                                    </div>
+                                    <div class="standard-card-body">
+                                        <p>This is a basic card component with header and body.</p>
+                                    </div>
+                                    <div class="standard-card-footer">
+                                        <button class="btn btn-sm btn-outline-secondary">Cancel</button>
+                                        <button class="btn btn-sm btn-primary">Action</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Accent Card -->
+                                <div class="standard-card standard-card-accent-top standard-card-accent-primary">
+                                    <div class="standard-card-header">
+                                        <h3 class="standard-card-title">Accent Card</h3>
+                                    </div>
+                                    <div class="standard-card-body">
+                                        <p>This card has a colored accent on the top border.</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Interactive Card -->
+                                <div class="standard-card standard-card-interactive">
+                                    <div class="standard-card-body">
+                                        <h3 class="standard-card-title mb-3">Interactive Card</h3>
+                                        <p>This entire card is clickable with hover effects.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    
+                    <!-- Data Components Tab -->
+                    <div class="tab-pane" id="tabDataComponents">
+                        <section class="mb-5">
+                            <h2 class="mb-4">Data Display Components</h2>
+                            
+                            <div class="data-grid">
+                                <!-- Stats Card -->
+                                <div class="stats-card">
+                                    <div class="d-flex">
+                                        <div>
+                                            <div class="stats-card-value">256</div>
+                                            <div class="stats-card-label">Documents Processed</div>
+                                            <div class="stats-card-trend stats-card-trend-up">
+                                                <i class="bi bi-arrow-up"></i> 12% increase
+                                            </div>
+                                        </div>
+                                        <div class="stats-card-icon">
+                                            <i class="bi bi-file-earmark-text"></i>
+                                        </div>
+                                    </div>
+                                    <div class="stats-card-progress">
+                                        <div class="stats-card-progress-bar" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Progress Card -->
+                                <div class="standard-card">
+                                    <div class="standard-card-header">
+                                        <h3 class="standard-card-title">Progress Indicators</h3>
+                                    </div>
+                                    <div class="standard-card-body">
+                                        <div class="progress-container">
+                                            <div class="progress-label">
+                                                <span class="progress-title">Documents</span>
+                                                <span class="progress-value">75%</span>
+                                            </div>
+                                            <div class="progress-bar-container">
+                                                <div class="progress-bar" style="width: 75%"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="progress-container">
+                                            <div class="progress-label">
+                                                <span class="progress-title">Storage</span>
+                                                <span class="progress-value">45%</span>
+                                            </div>
+                                            <div class="progress-bar-container">
+                                                <div class="progress-bar progress-bar-success" style="width: 45%"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="progress-container">
+                                            <div class="progress-label">
+                                                <span class="progress-title">Processing</span>
+                                                <span class="progress-value">90%</span>
+                                            </div>
+                                            <div class="progress-bar-container">
+                                                <div class="progress-bar progress-bar-warning" style="width: 90%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Timeline Card -->
+                                <div class="standard-card">
+                                    <div class="standard-card-header">
+                                        <h3 class="standard-card-title">Activity Timeline</h3>
+                                    </div>
+                                    <div class="standard-card-body">
+                                        <div class="timeline">
+                                            <div class="timeline-item">
+                                                <div class="timeline-date">Today, 10:30 AM</div>
+                                                <div class="timeline-title">Document uploaded</div>
+                                                <div class="timeline-body">New document added to the system.</div>
+                                            </div>
+                                            <div class="timeline-item">
+                                                <div class="timeline-date">Yesterday, 3:45 PM</div>
+                                                <div class="timeline-title">Processing completed</div>
+                                                <div class="timeline-body">Document processing finished successfully.</div>
+                                            </div>
+                                            <div class="timeline-item">
+                                                <div class="timeline-date">Jun 8, 2:15 PM</div>
+                                                <div class="timeline-title">System update</div>
+                                                <div class="timeline-body">System updated to the latest version.</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Data Table Example -->
+                            <div class="standard-card mt-4">
+                                <div class="standard-card-header">
+                                    <h3 class="standard-card-title">Data Table</h3>
+                                </div>
+                                <div class="standard-card-body p-0">
+                                    <div class="data-table-container">
+                                        <table class="data-table data-table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Document</th>
+                                                    <th>Size</th>
+                                                    <th>Type</th>
+                                                    <th>Date</th>
+                                                    <th>Status</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Annual Report 2025.pdf</td>
+                                                    <td>1.2 MB</td>
+                                                    <td>PDF Document</td>
+                                                    <td>Jun 10, 2025</td>
+                                                    <td>
+                                                        <span class="data-badge data-badge-success data-badge-pill">
+                                                            Processed
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary">View</button>
+                                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Project Proposal.docx</td>
+                                                    <td>845 KB</td>
+                                                    <td>Word Document</td>
+                                                    <td>Jun 9, 2025</td>
+                                                    <td>
+                                                        <span class="data-badge data-badge-warning data-badge-pill">
+                                                            Processing
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary">View</button>
+                                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Quarterly Results.xlsx</td>
+                                                    <td>512 KB</td>
+                                                    <td>Excel Spreadsheet</td>
+                                                    <td>Jun 8, 2025</td>
+                                                    <td>
+                                                        <span class="data-badge data-badge-danger data-badge-pill">
+                                                            Failed
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary">View</button>
+                                                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/static/js/industry-standard-navigation.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize navigation
+            if (typeof IndustryStandardNavigation !== 'undefined') {
+                const navigation = new IndustryStandardNavigation();
+            }
+            
+            // Handle side navigation toggle
+            const sideNavToggle = document.querySelector('.side-nav-toggle');
+            const sideNav = document.querySelector('.side-nav');
+            const sideNavBackdrop = document.querySelector('.side-nav-backdrop');
+            
+            if (sideNavToggle && sideNav) {
+                sideNavToggle.addEventListener('click', function() {
+                    sideNav.classList.add('active');
+                    if (sideNavBackdrop) {
+                        sideNavBackdrop.classList.add('active');
+                    }
+                });
+            }
+            
+            // Close side nav
+            const sideNavClose = document.querySelector('.side-nav-close');
+            if (sideNavClose && sideNav) {
+                sideNavClose.addEventListener('click', function() {
+                    sideNav.classList.remove('active');
+                    if (sideNavBackdrop) {
+                        sideNavBackdrop.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Tab navigation
+            const tabNavItems = document.querySelectorAll('.tab-nav-item');
+            tabNavItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const targetId = this.getAttribute('data-target');
+                    const targetPane = document.getElementById(targetId);
+                    
+                    // Remove active class from all tabs and panes
+                    tabNavItems.forEach(tab => tab.classList.remove('active'));
+                    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+                    
+                    // Add active class to clicked tab and its pane
+                    this.classList.add('active');
+                    if (targetPane) {
+                        targetPane.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

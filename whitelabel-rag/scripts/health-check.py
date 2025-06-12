@@ -10,6 +10,11 @@ import time
 import json
 from pathlib import Path
 
+# Add project root to Python path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 def check_server_health(url="http://localhost:5000", timeout=30):
     """Check if the server is running and healthy."""
     print(f"🏥 Checking server health at {url}...")

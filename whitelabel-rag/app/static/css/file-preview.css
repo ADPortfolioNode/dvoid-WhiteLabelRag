@@ -1,0 +1,147 @@
+/* 
+ * File Preview Component Styles
+ * Modal-based file previewer for WhiteLabelRAG
+ */
+
+.file-preview-modal .modal-dialog {
+    max-width: 800px;
+}
+
+.file-preview-modal .modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.file-preview-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem;
+    border-bottom: none;
+}
+
+.file-preview-header .modal-title {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+}
+
+.file-preview-header .modal-title i {
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+}
+
+.file-preview-body {
+    padding: 0;
+}
+
+.file-preview-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.file-preview-info {
+    padding: 1rem;
+    background-color: var(--color-gray-100);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.file-meta-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.file-meta-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0.5rem;
+    color: var(--secondary-color);
+}
+
+.file-meta-label {
+    font-weight: 500;
+    margin-right: 0.5rem;
+    color: var(--secondary-color);
+}
+
+.file-meta-value {
+    color: var(--dark-color);
+}
+
+.file-preview-container {
+    flex: 1;
+    min-height: 300px;
+    max-height: 500px;
+    overflow: auto;
+    padding: 1rem;
+    background-color: white;
+}
+
+/* File type specific preview styles */
+.preview-pdf {
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: 500px;
+    margin: 0 auto;
+    display: block;
+}
+
+.preview-text {
+    white-space: pre-wrap;
+    font-family: var(--font-family-mono);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    padding: 1rem;
+    background-color: var(--color-gray-100);
+    border-radius: 4px;
+    overflow: auto;
+}
+
+.preview-audio,
+.preview-video {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
+}
+
+.preview-unavailable {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: var(--secondary-color);
+    text-align: center;
+}
+
+.preview-unavailable i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.file-preview-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+}
+
+.file-action-btn {
+    display: flex;
+    align-items: center;
+}
+
+.file-action-btn i {
+    margin-right: 0.5rem;
+}

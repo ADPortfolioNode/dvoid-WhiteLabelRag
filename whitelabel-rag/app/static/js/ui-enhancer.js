@@ -141,7 +141,7 @@ class UIEnhancer {
                 setTimeout(() => {
                     progressBar.style.opacity = '0';
                     setTimeout(() => progressBar.remove(), 500);
-                }, 1000);
+                }, 10000);
             }
         };
         

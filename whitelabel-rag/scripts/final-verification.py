@@ -11,8 +11,14 @@ import time
 from pathlib import Path
 from datetime import datetime
 
+# Add project root to Python path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 class WhiteLabelRAGVerification:
-    def __init__(self):
+    def __init__(self, project_root_path):
+        self.project_root = Path(project_root_path)
         self.results = []
         self.errors = []
         self.warnings = []
@@ -106,7 +112,7 @@ class WhiteLabelRAGVerification:
         # Check directories
         missing_dirs = []
         for dir_path in required_dirs:
-            if not Path(dir_path).exists():
+            if not (self.project_root / dir_path).exists():
                 missing_dirs.append(dir_path)
         
         if missing_dirs:
@@ -117,7 +123,7 @@ class WhiteLabelRAGVerification:
         # Check files
         missing_files = []
         for file_path in required_files:
-            if not Path(file_path).exists():
+            if not (self.project_root / file_path).exists():
                 missing_files.append(file_path)
         
         if missing_files:
@@ -128,9 +134,6 @@ class WhiteLabelRAGVerification:
     def check_python_imports(self):
         """Check if all Python modules can be imported."""
         print("\n🐍 Checking Python Imports...")
-        
-        # Add app to path
-        sys.path.insert(0, 'app')
         
         modules_to_test = [
             ('app.config', 'Configuration module'),
@@ -207,8 +210,9 @@ class WhiteLabelRAGVerification:
         print("\n⚙️ Checking Configuration Files...")
         
         # Check .env.example
-        if Path('.env.example').exists():
-            with open('.env.example', 'r') as f:
+        env_example_path = self.project_root / '.env.example'
+        if env_example_path.exists():
+            with open(env_example_path, 'r') as f:
                 env_content = f.read()
                 if 'GEMINI_API_KEY' in env_content:
                     self.log_result("Environment Template", True, ".env.example contains required variables")
@@ -218,8 +222,9 @@ class WhiteLabelRAGVerification:
             self.log_result("Environment Template", False, ".env.example file missing")
         
         # Check requirements.txt
-        if Path('requirements.txt').exists():
-            with open('requirements.txt', 'r') as f:
+        requirements_path = self.project_root / 'requirements.txt'
+        if requirements_path.exists():
+            with open(requirements_path, 'r') as f:
                 requirements = f.read()
                 essential_packages = ['flask', 'chromadb', 'google-generativeai']
                 missing = [pkg for pkg in essential_packages if pkg not in requirements]
@@ -233,7 +238,7 @@ class WhiteLabelRAGVerification:
         # Check Docker files
         docker_files = ['Dockerfile', 'docker-compose.yml']
         for file_name in docker_files:
-            if Path(file_name).exists():
+            if (self.project_root / file_name).exists():
                 self.log_result(f"Docker {file_name}", True, "Present")
             else:
                 self.log_result(f"Docker {file_name}", False, "Missing")
@@ -251,9 +256,10 @@ class WhiteLabelRAGVerification:
         }
         
         for doc_file, required_sections in doc_files.items():
-            if Path(doc_file).exists():
+            doc_file_path = self.project_root / doc_file
+            if doc_file_path.exists():
                 try:
-                    with open(doc_file, 'r', encoding='utf-8') as f:
+                    with open(doc_file_path, 'r', encoding='utf-8') as f:
                         content = f.read().lower()
                         missing_sections = [section for section in required_sections 
                                           if section not in content]
@@ -282,25 +288,26 @@ class WhiteLabelRAGVerification:
             'scripts/demo.py'
         ]
         
-        for script in scripts:
-            if Path(script).exists():
+        for script_rel_path in scripts:
+            script_abs_path = self.project_root / script_rel_path
+            if script_abs_path.exists():
                 # Check if script is executable (Unix-like systems)
-                if script.endswith('.sh') and os.name != 'nt':
-                    if os.access(script, os.X_OK):
-                        self.log_result(f"Script {script}", True, "Present and executable")
+                if script_rel_path.endswith('.sh') and os.name != 'nt':
+                    if os.access(str(script_abs_path), os.X_OK):
+                        self.log_result(f"Script {script_rel_path}", True, "Present and executable")
                     else:
-                        self.log_result(f"Script {script}", True, "Present but not executable", warning=True)
+                        self.log_result(f"Script {script_rel_path}", True, "Present but not executable", warning=True)
                 else:
-                    self.log_result(f"Script {script}", True, "Present")
+                    self.log_result(f"Script {script_rel_path}", True, "Present")
             else:
-                self.log_result(f"Script {script}", False, "Missing")
+                self.log_result(f"Script {script_rel_path}", False, "Missing")
     
     def check_sample_content(self):
         """Check sample content and test files."""
         print("\n📄 Checking Sample Content...")
         
         # Check sample documents
-        sample_dir = Path('sample_documents')
+        sample_dir = self.project_root / 'sample_documents'
         if sample_dir.exists():
             sample_files = list(sample_dir.glob('*'))
             if sample_files:
@@ -311,7 +318,7 @@ class WhiteLabelRAGVerification:
             self.log_result("Sample Documents", False, "sample_documents directory missing")
         
         # Check test files
-        test_dir = Path('tests')
+        test_dir = self.project_root / 'tests'
         if test_dir.exists():
             test_files = list(test_dir.glob('test_*.py'))
             if test_files:
@@ -325,13 +332,14 @@ class WhiteLabelRAGVerification:
         """Check environment configuration."""
         print("\n🌍 Checking Environment Setup...")
         
+        env_path = self.project_root / '.env'
         # Check for .env file
-        if Path('.env').exists():
+        if env_path.exists():
             self.log_result("Environment File", True, ".env file exists")
             
             # Check if GEMINI_API_KEY is set
             from dotenv import load_dotenv
-            load_dotenv()
+            load_dotenv(dotenv_path=env_path)
             
             api_key = os.environ.get('GEMINI_API_KEY')
             if api_key:
@@ -356,7 +364,6 @@ class WhiteLabelRAGVerification:
             if not original_key:
                 os.environ['GEMINI_API_KEY'] = 'test-key-for-verification'
             
-            sys.path.insert(0, 'app')
             from app import create_app
             
             app = create_app()
@@ -442,10 +449,24 @@ class WhiteLabelRAGVerification:
         # Generate final report
         return self.generate_report()
 
+import subprocess
+
 def main():
     """Main verification function."""
-    verifier = WhiteLabelRAGVerification()
+    # project_root is defined globally at the top of the script
+    verifier = WhiteLabelRAGVerification(project_root_path=project_root)
     success = verifier.run_verification()
+    if success:
+        print("\n✅ No errors found. Starting the app...")
+        try:
+            # Start the app using the startapp.bat script
+            start_script_path = project_root / "startapp.bat"
+            subprocess.run([str(start_script_path)], check=True, shell=True)
+            print("🚀 App started successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Failed to start the app: {e}")
+    else:
+        print("\n❌ Errors found. App will not be started.")
     sys.exit(0 if success else 1)
 
 if __name__ == '__main__':

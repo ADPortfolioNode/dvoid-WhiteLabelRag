@@ -1,0 +1,434 @@
+/* 
+ * Main Navigation Components
+ * Enhanced navigation menu and UI elements for WhiteLabelRAG
+ */
+
+/* Top Navigation Bar */
+.main-nav {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: var(--shadow-md);
+    z-index: 1030;
+}
+
+.main-nav .navbar-brand {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+}
+
+.main-nav .navbar-brand i {
+    margin-right: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.main-nav .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.main-nav .nav-link:hover, 
+.main-nav .nav-link:focus {
+    color: white;
+}
+
+.main-nav .nav-link.active {
+    color: white;
+    font-weight: 500;
+}
+
+.main-nav .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 1rem;
+    right: 1rem;
+    height: 3px;
+    background-color: white;
+    border-radius: 1.5px;
+}
+
+/* App Brand/Logo */
+.app-brand {
+    display: flex;
+    align-items: center;
+}
+
+.app-logo {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    color: var(--primary-color);
+    border-radius: 8px;
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.app-name {
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.app-name .version {
+    font-weight: 400;
+    font-size: 0.75rem;
+    opacity: 0.75;
+    margin-left: 0.25rem;
+}
+
+/* Page Header with Breadcrumbs */
+.page-header {
+    padding: 1rem 1.5rem;
+    background-color: white;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 1.5rem;
+}
+
+.page-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.page-breadcrumb {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.page-breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+.page-breadcrumb-item::after {
+    content: '/';
+    margin: 0 0.5rem;
+    color: var(--secondary-color);
+}
+
+.page-breadcrumb-item:last-child::after {
+    display: none;
+}
+
+.page-breadcrumb-item a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.page-breadcrumb-item a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.page-breadcrumb-item:last-child a {
+    color: var(--primary-color);
+    font-weight: 500;
+    cursor: default;
+    text-decoration: none;
+}
+
+/* Quick Actions Dropdown */
+.quick-actions-dropdown .dropdown-menu {
+    min-width: 280px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.quick-actions-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+}
+
+.quick-actions-body {
+    padding: 1rem;
+}
+
+.quick-action-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.quick-action-item:hover {
+    background-color: rgba(25, 118, 210, 0.05);
+    color: var(--primary-color);
+}
+
+.quick-action-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(25, 118, 210, 0.1);
+    color: var(--primary-color);
+    border-radius: 6px;
+    margin-right: 0.75rem;
+}
+
+.quick-action-content {
+    flex: 1;
+}
+
+.quick-action-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.quick-action-desc {
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+    margin: 0;
+}
+
+/* Account Menu */
+.account-menu-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.account-avatar {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 50%;
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-right: 0.5rem;
+}
+
+.account-info {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .account-info {
+        display: block;
+    }
+    
+    .account-name {
+        font-weight: 500;
+        font-size: 0.875rem;
+        margin: 0;
+        line-height: 1.2;
+    }
+    
+    .account-role {
+        font-size: 0.75rem;
+        opacity: 0.75;
+        margin: 0;
+    }
+}
+
+/* Animated Hamburger Menu */
+.hamburger-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hamburger-line {
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
+/* Connection Status Indicator */
+.connection-status {
+    display: flex;
+    align-items: center;
+}
+
+.connection-status i {
+    margin-right: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.connection-status .text-warning {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+/* Mobile Navigation Menu */
+.mobile-nav-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.mobile-nav-menu.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-nav-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 80%;
+    max-width: 320px;
+    height: 100%;
+    background-color: white;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-nav-menu.active .mobile-nav-container {
+    transform: translateX(0);
+}
+
+.mobile-nav-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mobile-nav-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mobile-nav-close:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.mobile-nav-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 0;
+}
+
+.mobile-nav-menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mobile-nav-menu-item {
+    margin-bottom: 0.25rem;
+}
+
+.mobile-nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--dark-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link.active {
+    background-color: rgba(25, 118, 210, 0.05);
+    color: var(--primary-color);
+}
+
+.mobile-nav-link i {
+    margin-right: 0.75rem;
+    font-size: 1.25rem;
+    color: var(--secondary-color);
+}
+
+.mobile-nav-link:hover i,
+.mobile-nav-link.active i {
+    color: var(--primary-color);
+}
+
+.mobile-nav-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+    text-align: center;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767.98px) {
+    .main-nav .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .page-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .quick-actions-dropdown .dropdown-menu {
+        position: fixed !important;
+        top: auto !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100%;
+        border-radius: 12px 12px 0 0;
+        margin: 0;
+        bottom: 0;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .quick-actions-dropdown .dropdown-menu.show {
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+    <meta name="theme-color" content="#1976d2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>WhiteLabelRAG - UI Components</title>
+    
+    <!-- Google Fonts for better typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/color-palette.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-style-guide.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/enhancements.css">
+    <link rel="stylesheet" href="/static/css/enhanced-navigation.css">
+    <link rel="stylesheet" href="/static/css/enhanced-file-explorer.css">
+    <link rel="stylesheet" href="/static/css/industry-standard-cards.css">
+</head>
+<body>
+    <!-- Main Navigation Bar -->
+    <nav class="app-navbar">
+        <div class="app-navbar-container">
+            <!-- Brand -->
+            <a href="#" class="app-navbar-brand">
+                <div class="app-navbar-logo">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <h1 class="app-navbar-title">WhiteLabelRAG <span class="app-navbar-version">v1.0</span></h1>
+            </a>
+            
+            <!-- Navigation Links (visible on md and up) -->
+            <ul class="app-navbar-nav d-none d-md-flex">
+                <li class="app-nav-item">
+                    <a href="#" class="app-nav-link active">
+                        <i class="app-nav-icon bi bi-chat-dots"></i>
+                        <span>Chat</span>
+                    </a>
+                </li>
+                <li class="app-nav-item">
+                    <a href="#" class="app-nav-link">
+                        <i class="app-nav-icon bi bi-files"></i>
+                        <span>Documents</span>
+                    </a>
+                </li>
+                <li class="app-nav-item">
+                    <a href="#" class="app-nav-link">
+                        <i class="app-nav-icon bi bi-bar-chart"></i>
+                        <span>Stats</span>
+                    </a>
+                </li>
+                <li class="app-nav-item">
+                    <a href="#" class="app-nav-link">
+                        <i class="app-nav-icon bi bi-question-circle"></i>
+                        <span>Help</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- Connection Status -->
+            <div class="connection-status d-flex align-items-center me-3">
+                <i class="bi bi-circle-fill text-success me-2"></i>
+                <span class="d-none d-sm-inline">Connected</span>
+            </div>
+            
+            <!-- Actions -->
+            <div class="app-navbar-actions">
+                <!-- Sidenav Toggle (visible on smaller screens) -->
+                <button class="btn btn-outline-light d-md-none app-sidenav-toggle">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Side Navigation -->
+    <div class="app-sidenav">
+        <div class="app-sidenav-header">
+            <div class="app-navbar-brand">
+                <div class="app-navbar-logo">
+                    <i class="bi bi-robot"></i>
+                </div>
+                <h1 class="app-navbar-title">WhiteLabelRAG</h1>
+            </div>
+            <button class="app-sidenav-close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="app-sidenav-body">
+            <div class="app-sidenav-section">
+                <h6 class="app-sidenav-section-title">Main</h6>
+                <ul class="app-sidenav-menu">
+                    <li class="app-sidenav-item">
+                        <a href="#" class="app-sidenav-link active">
+                            <i class="app-sidenav-icon bi bi-chat-dots"></i>
+                            <span>Chat</span>
+                        </a>
+                    </li>
+                    <li class="app-sidenav-item">
+                        <a href="#" class="app-sidenav-link">
+                            <i class="app-sidenav-icon bi bi-files"></i>
+                            <span>Documents</span>
+                            <span class="app-sidenav-badge">5</span>
+                        </a>
+                    </li>
+                    <li class="app-sidenav-item">
+                        <a href="#" class="app-sidenav-link">
+                            <i class="app-sidenav-icon bi bi-bar-chart"></i>
+                            <span>Statistics</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="app-sidenav-section">
+                <h6 class="app-sidenav-section-title">Tools</h6>
+                <ul class="app-sidenav-menu">
+                    <li class="app-sidenav-item">
+                        <a href="#" class="app-sidenav-link">
+                            <i class="app-sidenav-icon bi bi-upload"></i>
+                            <span>Upload Documents</span>
+                        </a>
+                    </li>
+                    <li class="app-sidenav-item">
+                        <a href="#" class="app-sidenav-link">
+                            <i class="app-sidenav-icon bi bi-search"></i>
+                            <span>Advanced Search</span>
+                        </a>
+                    </li>
+                    <li class="app-sidenav-item">
+                        <a href="#" class="app-sidenav-link">
+                            <i class="app-sidenav-icon bi bi-gear"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="app-sidenav-footer">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <small class="text-muted">Version 1.0</small>
+                </div>
+                <div>
+                    <a href="#" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-question-circle"></i>
+                        Help
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main content -->
+    <div class="container-fluid py-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2>UI Component Showcase</h2>
+                        <p class="text-muted">This page demonstrates the new navigation and UI components for WhiteLabelRAG.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Components Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0">Navigation Components</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Breadcrumb Navigation -->
+                        <h6 class="mb-3">Breadcrumb Navigation</h6>
+                        <div class="mb-4">
+                            <ul class="app-breadcrumb">
+                                <li class="app-breadcrumb-item">
+                                    <a href="#" class="app-breadcrumb-link">
+                                        <i class="app-breadcrumb-icon bi bi-house-door"></i>
+                                        <span>Home</span>
+                                    </a>
+                                </li>
+                                <li class="app-breadcrumb-item">
+                                    <a href="#" class="app-breadcrumb-link">
+                                        <span>Documents</span>
+                                    </a>
+                                </li>
+                                <li class="app-breadcrumb-item">
+                                    <a href="#" class="app-breadcrumb-link">
+                                        <span>Project Files</span>
+                                    </a>
+                                </li>
+                                <li class="app-breadcrumb-item">
+                                    <a href="#" class="app-breadcrumb-link active">
+                                        <span>Technical Documentation</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Tab Navigation -->
+                        <h6 class="mb-3">Tab Navigation</h6>
+                        <div class="mb-4">
+                            <div class="app-tabs">
+                                <div class="app-tab active" data-target="tab-content-1">
+                                    <i class="app-tab-icon bi bi-file-text"></i>
+                                    <span>Overview</span>
+                                </div>
+                                <div class="app-tab" data-target="tab-content-2">
+                                    <i class="app-tab-icon bi bi-chat-dots"></i>
+                                    <span>Chat History</span>
+                                    <span class="app-tab-badge">3</span>
+                                </div>
+                                <div class="app-tab" data-target="tab-content-3">
+                                    <i class="app-tab-icon bi bi-graph-up"></i>
+                                    <span>Analytics</span>
+                                </div>
+                                <div class="app-tab" data-target="tab-content-4">
+                                    <i class="app-tab-icon bi bi-gear"></i>
+                                    <span>Settings</span>
+                                </div>
+                            </div>
+                            
+                            <div class="app-tab-content">
+                                <div id="tab-content-1" class="app-tab-pane active">
+                                    <p>This is the overview tab content. It provides a summary of the system's functionality.</p>
+                                </div>
+                                <div id="tab-content-2" class="app-tab-pane">
+                                    <p>Chat history and recent conversations would be displayed here.</p>
+                                </div>
+                                <div id="tab-content-3" class="app-tab-pane">
+                                    <p>System analytics and usage statistics would be shown here.</p>
+                                </div>
+                                <div id="tab-content-4" class="app-tab-pane">
+                                    <p>System settings and configuration options would be available here.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Stepper Navigation -->
+                        <h6 class="mb-3">Stepper Navigation</h6>
+                        <div class="mb-4">
+                            <div class="app-stepper">
+                                <div class="app-stepper-progress" style="width: 66%;"></div>
+                                
+                                <div class="app-stepper-item completed">
+                                    <div class="app-stepper-indicator">
+                                        <i class="bi bi-check-lg"></i>
+                                    </div>
+                                    <div class="app-stepper-label">Upload File</div>
+                                </div>
+                                
+                                <div class="app-stepper-item completed">
+                                    <div class="app-stepper-indicator">
+                                        <i class="bi bi-check-lg"></i>
+                                    </div>
+                                    <div class="app-stepper-label">Process Document</div>
+                                </div>
+                                
+                                <div class="app-stepper-item active">
+                                    <div class="app-stepper-indicator">
+                                        <i class="bi bi-arrow-right"></i>
+                                    </div>
+                                    <div class="app-stepper-label">Generate Insights</div>
+                                </div>
+                                
+                                <div class="app-stepper-item">
+                                    <div class="app-stepper-indicator">
+                                        <i class="bi bi-check-lg"></i>
+                                    </div>
+                                    <div class="app-stepper-label">Review Results</div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-3">
+                                <button class="btn btn-outline-primary" id="prevStep">Previous Step</button>
+                                <button class="btn btn-primary" id="nextStep">Next Step</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- File Explorer Component Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0">File Explorer</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="file-explorer-container">
+                            <div class="file-explorer-header">
+                                <h6 class="file-explorer-title">
+                                    <i class="bi bi-folder2-open"></i>
+                                    <span>Document Library</span>
+                                </h6>
+                                
+                                <!-- Breadcrumb -->
+                                <div class="file-breadcrumb">
+                                    <div class="file-breadcrumb-item" data-path="/">
+                                        <i class="bi bi-house-door"></i>
+                                        <span>Home</span>
+                                    </div>
+                                    <div class="file-breadcrumb-item" data-path="/Documents/">
+                                        <span>Documents</span>
+                                    </div>
+                                    <div class="file-breadcrumb-item active" data-path="/Documents/Projects/">
+                                        <span>Projects</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Search and Sort -->
+                                <div class="file-search-sort">
+                                    <div class="file-search">
+                                        <i class="bi bi-search"></i>
+                                        <input type="text" class="form-control" placeholder="Search files...">
+                                    </div>
+                                    <div class="file-sort">
+                                        <select class="form-select">
+                                            <option value="name-asc">Name (A-Z)</option>
+                                            <option value="name-desc">Name (Z-A)</option>
+                                            <option value="date-desc">Date (Newest)</option>
+                                            <option value="date-asc">Date (Oldest)</option>
+                                            <option value="size-desc">Size (Largest)</option>
+                                            <option value="size-asc">Size (Smallest)</option>
+                                        </select>
+                                    </div>
+                                    <div class="file-view-toggle">
+                                        <button data-view="grid" class="active">
+                                            <i class="bi bi-grid"></i>
+                                        </button>
+                                        <button data-view="list">
+                                            <i class="bi bi-list-ul"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Upload Dropzone -->
+                                <div class="file-upload-dropzone">
+                                    <div class="file-upload-icon">
+                                        <i class="bi bi-cloud-upload"></i>
+                                    </div>
+                                    <div class="file-upload-text">Drag files here or click to upload</div>
+                                    <div class="file-upload-hint">Supports PDF, DOCX, TXT, CSV, images, audio, and video</div>
+                                </div>
+                            </div>
+                            
+                            <div class="file-explorer-content">
+                                <!-- Grid View -->
+                                <div class="file-grid">
+                                    <!-- Folder -->
+                                    <div class="file-grid-item file-type-folder" data-id="folder-1" data-path="/Documents/Projects/Research/">
+                                        <div class="file-grid-icon">
+                                            <i class="bi bi-folder"></i>
+                                        </div>
+                                        <div class="file-grid-name">Research</div>
+                                    </div>
+                                    
+                                    <!-- PDF File -->
+                                    <div class="file-grid-item file-type-pdf" data-id="file-1" data-path="/Documents/Projects/report.pdf">
+                                        <div class="file-grid-icon">
+                                            <i class="bi bi-file-pdf"></i>
+                                        </div>
+                                        <div class="file-grid-name">report.pdf</div>
+                                        <div class="file-grid-meta">2.3 MB</div>
+                                    </div>
+                                    
+                                    <!-- Document File -->
+                                    <div class="file-grid-item file-type-doc" data-id="file-2" data-path="/Documents/Projects/notes.docx">
+                                        <div class="file-grid-icon">
+                                            <i class="bi bi-file-text"></i>
+                                        </div>
+                                        <div class="file-grid-name">notes.docx</div>
+                                        <div class="file-grid-meta">512 KB</div>
+                                    </div>
+                                    
+                                    <!-- Image File -->
+                                    <div class="file-grid-item file-type-image" data-id="file-3" data-path="/Documents/Projects/diagram.jpg">
+                                        <div class="file-grid-icon">
+                                            <i class="bi bi-file-image"></i>
+                                        </div>
+                                        <div class="file-grid-name">diagram.jpg</div>
+                                        <div class="file-grid-meta">1.8 MB</div>
+                                    </div>
+                                    
+                                    <!-- Spreadsheet File -->
+                                    <div class="file-grid-item file-type-sheet" data-id="file-4" data-path="/Documents/Projects/data.csv">
+                                        <div class="file-grid-icon">
+                                            <i class="bi bi-file-spreadsheet"></i>
+                                        </div>
+                                        <div class="file-grid-name">data.csv</div>
+                                        <div class="file-grid-meta">364 KB</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- List View (hidden by default) -->
+                                <div class="file-list" style="display: none;">
+                                    <!-- Folder -->
+                                    <div class="file-list-item file-type-folder" data-id="folder-1" data-path="/Documents/Projects/Research/">
+                                        <div class="file-list-icon">
+                                            <i class="bi bi-folder"></i>
+                                        </div>
+                                        <div class="file-list-content">
+                                            <div class="file-list-name">Research</div>
+                                            <div class="file-list-meta">Folder</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- PDF File -->
+                                    <div class="file-list-item file-type-pdf" data-id="file-1" data-path="/Documents/Projects/report.pdf">
+                                        <div class="file-list-icon">
+                                            <i class="bi bi-file-pdf"></i>
+                                        </div>
+                                        <div class="file-list-content">
+                                            <div class="file-list-name">report.pdf</div>
+                                            <div class="file-list-meta">
+                                                <span>2.3 MB</span>
+                                                <span>Jun 7, 2023</span>
+                                                <span>PDF</span>
+                                            </div>
+                                        </div>
+                                        <div class="file-list-actions">
+                                            <button class="file-action-btn file-action-view">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="file-action-btn btn-danger file-action-delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Document File -->
+                                    <div class="file-list-item file-type-doc" data-id="file-2" data-path="/Documents/Projects/notes.docx">
+                                        <div class="file-list-icon">
+                                            <i class="bi bi-file-text"></i>
+                                        </div>
+                                        <div class="file-list-content">
+                                            <div class="file-list-name">notes.docx</div>
+                                            <div class="file-list-meta">
+                                                <span>512 KB</span>
+                                                <span>Jun 10, 2023</span>
+                                                <span>DOCX</span>
+                                            </div>
+                                        </div>
+                                        <div class="file-list-actions">
+                                            <button class="file-action-btn file-action-view">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="file-action-btn btn-danger file-action-delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/static/js/enhanced-navigation.js"></script>
+    <script src="/static/js/enhanced-file-explorer.js"></script>
+    
+    <script>
+        // Sample code to demonstrate stepper navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            const nextBtn = document.getElementById('nextStep');
+            const prevBtn = document.getElementById('prevStep');
+            
+            if (nextBtn && prevBtn && window.enhancedNav) {
+                nextBtn.addEventListener('click', () => {
+                    window.enhancedNav.nextStep();
+                });
+                
+                prevBtn.addEventListener('click', () => {
+                    window.enhancedNav.prevStep();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

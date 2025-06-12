@@ -2,28 +2,28 @@
 
 :root {
     /* Primary palette - Material Design inspired */
-    --primary-color: #1976d2;
-    --primary-light: #4791db;
-    --primary-dark: #115293;
-    --secondary-color: #546e7a;
-    --secondary-light: #819ca9;
-    --secondary-dark: #29434e;
+    --primary-color: #3399ff;
+    --primary-light: #66b3ff;
+    --primary-dark: #2673cc;
+    --secondary-color: #5a6b7a;
+    --secondary-light: #8a9ca9;
+    --secondary-dark: #2f3f4a;
     
     /* Status colors */
-    --success-color: #2e7d32;
-    --success-light: #4caf50;
-    --danger-color: #d32f2f;
-    --danger-light: #ef5350;
-    --warning-color: #f57c00;
-    --warning-light: #ffb74d;
-    --info-color: #0288d1;
-    --info-light: #4fc3f7;
+    --success-color: #4caf50;
+    --success-light: #81c784;
+    --danger-color: #ef5350;
+    --danger-light: #ff7961;
+    --warning-color: #ffb74d;
+    --warning-light: #ffd54f;
+    --info-color: #4fc3f7;
+    --info-light: #80d6ff;
     
     /* Background colors */
     --background-color: #fff;
     --light-color: #fff;
-    --dark-color: #333333;
-    --text-color: #333333;
+    --dark-color: #000000;
+    --text-color: #000000;
     --border-color: #000080;
     
     /* Standard Color Palette */
@@ -242,7 +242,7 @@ html, body {
 .status-text {
     font-size: 0.85rem;
     margin-bottom: 5px;
-}
+ 
     border-radius: 0.375rem;
     margin-bottom: 0.5rem;
     background: white;

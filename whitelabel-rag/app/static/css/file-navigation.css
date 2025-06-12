@@ -1,0 +1,229 @@
+/* 
+ * File Navigation System Styles
+ * Modern file explorer UI for WhiteLabelRAG
+ */
+
+/* File Explorer Layout */
+.file-explorer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--background-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.file-explorer-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--background-color);
+    z-index: 10;
+}
+
+.file-explorer-breadcrumbs {
+    margin-bottom: 0.5rem;
+}
+
+.file-explorer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.file-explorer-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+    margin-bottom: 0;
+    background-color: transparent;
+    padding: 0.5rem 0;
+}
+
+.breadcrumb-item {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    color: var(--secondary-color);
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.breadcrumb-item:not(.active):hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "/";
+    color: var(--secondary-color);
+}
+
+/* File and Folder Cards */
+.file-card,
+.folder-card {
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    background-color: var(--light-color);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+}
+
+.file-card:hover,
+.folder-card:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(25, 118, 210, 0.05);
+}
+
+.file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    margin-right: 0.75rem;
+    background-color: rgba(0, 0, 0, 0.05);
+    font-size: 1.25rem;
+}
+
+.folder-card .file-icon {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.file-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.file-name {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--dark-color);
+}
+
+.file-meta {
+    font-size: 0.75rem;
+    color: var(--secondary-color);
+}
+
+.file-actions {
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.file-card:hover .file-actions {
+    opacity: 1;
+}
+
+/* File Empty State */
+.file-empty-state {
+    color: var(--secondary-color);
+    border-radius: 8px;
+    border: 1px dashed var(--border-color);
+    margin: 1rem 0;
+}
+
+.file-empty-state i {
+    opacity: 0.5;
+}
+
+/* Filter and Sort Controls */
+.file-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.file-search {
+    position: relative;
+    flex: 1;
+}
+
+.file-search .bi-search {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--secondary-color);
+    pointer-events: none;
+}
+
+.file-search input {
+    padding-left: 2.25rem;
+    border-radius: 20px;
+}
+
+.file-sort {
+    min-width: 120px;
+}
+
+/* Elevation Utilities */
+.elevation-1 {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.elevation-hover:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Toast Notifications */
+.toast-container {
+    z-index: 1080;
+}
+
+/* File Stats */
+.file-stat-bar {
+    height: 3px;
+    background-color: var(--color-gray-200);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.file-stat-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 767.98px) {
+    .breadcrumb-item {
+        max-width: 100px;
+    }
+    
+    .file-explorer-actions {
+        flex-wrap: wrap;
+    }
+    
+    .file-search {
+        flex: 1 0 100%;
+        order: 1;
+        margin-top: 0.5rem;
+    }
+    
+    .file-sort {
+        min-width: 100px;
+    }
+    
+    .file-actions {
+        flex-wrap: wrap;
+    }
+}

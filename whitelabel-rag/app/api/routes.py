@@ -8,7 +8,8 @@ import logging
 from datetime import datetime
 from flask import request, jsonify, current_app
 from werkzeug.utils import secure_filename
-from . import api_bp
+from flask import Blueprint
+api_bp = Blueprint('api_routes', __name__)
 from app.services.concierge import get_concierge_instance
 from app.services.chroma_service import get_chroma_service_instance
 from app.services.rag_manager import get_rag_manager
@@ -20,6 +21,65 @@ from app.utils.file_utils import allowed_file
 
 
 logger = logging.getLogger(__name__)
+
+import difflib
+import ast
+import os
+
+def extract_docstrings_and_comments(file_path):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            source = f.read()
+        parsed = ast.parse(source)
+        docstrings = []
+        for node in ast.walk(parsed):
+            if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.Module)):
+                docstring = ast.get_docstring(node)
+                if docstring:
+                    docstrings.append(docstring)
+        # Extract comments (lines starting with #)
+        comments = []
+        for line in source.splitlines():
+            line_strip = line.strip()
+            if line_strip.startswith('#'):
+                comments.append(line_strip.lstrip('#').strip())
+        return "\n".join(docstrings + comments)
+    except Exception:
+        return ""
+
+def get_all_py_files(root_dir):
+    py_files = []
+    for dirpath, _, filenames in os.walk(root_dir):
+        for filename in filenames:
+            if filename.endswith('.py'):
+                py_files.append(os.path.join(dirpath, filename))
+    return py_files
+
+@api_bp.route('/metrics/accuracy_regression', methods=['GET'])
+def get_accuracy_regression():
+    """Calculate and return accuracy and regression percentages."""
+    try:
+        instructions_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'INSTRUCTIONS.md'))
+        with open(instructions_path, 'r', encoding='utf-8') as f:
+            instructions_text = f.read()[:1000]  # Use first 1000 chars as summary
+        
+        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'whitelabel-rag'))
+        py_files = get_all_py_files(root_dir)
+        texts = []
+        for file in py_files:
+            texts.append(extract_docstrings_and_comments(file))
+        codebase_text = "\n".join(texts)
+        
+        similarity = difflib.SequenceMatcher(None, instructions_text, codebase_text).ratio()
+        regression = 1 - similarity
+        
+        return jsonify({
+            'accuracy_percent': round(similarity * 100, 2),
+            'regression_percent': round(regression * 100, 2)
+        })
+    except Exception as e:
+        logger.error(f"Error calculating accuracy and regression: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 @api_bp.route('/decompose', methods=['POST'])
 def decompose_task():

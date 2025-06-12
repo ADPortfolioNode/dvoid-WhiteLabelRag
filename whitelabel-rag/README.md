@@ -13,6 +13,49 @@ A scalable Retrieval-Augmented Generation (RAG) application that provides a conv
 - 🎯 **Task Decomposition** - Break down complex tasks into manageable steps
 - 📊 **File Management** - Upload, process, and manage document collections
 
+## Quality Assurance and Regression Testing
+
+To ensure accuracy and regression compliance against the official implementation guide (`INSTRUCTIONS.md`), the project includes a comprehensive quality assurance process with the following scripts located in the `scripts/` directory:
+
+- **final-verification.py**: Performs static and structural quality checks of the project, including:
+  - Project directory and file structure completeness
+  - Python module import checks
+  - Dependency availability
+  - Configuration file correctness
+  - Documentation completeness
+  - Automation script presence and executability
+  - Sample content and test files presence
+  - Environment setup validation
+  - Flask app creation test
+
+- **full_verification.py**: Orchestrates the full quality assurance process by:
+  - Running `final-verification.py` with auto-correction attempts (e.g., creating `.env` from `.env.example`, installing dependencies)
+  - Running additional tests such as internet search tests and database verification
+  - Reporting overall quality assurance success or failure
+
+- **verify_database.py**: Performs runtime quality checks of the system by:
+  - Checking the health endpoint of the Flask app
+  - Testing file listing API endpoint
+  - Testing basic RAG query functionality
+  - Checking document statistics endpoint (if available)
+
+## How to Run Quality Assurance
+
+To run the full quality assurance process and check for accuracy and regression against the ground truth:
+
+```bash
+python scripts/full_verification.py
+```
+
+This will run all quality assurance steps and provide a detailed report. If issues are found, the script attempts some auto-corrections and advises on manual fixes.
+
+## Next Steps After Quality Assurance
+
+1. Ensure your environment variables (e.g., `GEMINI_API_KEY`) are set correctly.
+2. Start the application using the recommended scripts (`run.py`, Docker, or local development scripts).
+3. Refer to the `INSTRUCTIONS.md` file for detailed implementation guidance and configuration.
+
+
 ## What's New - June 2025 Update
 
 ### Internet Search Integration

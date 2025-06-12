@@ -23,10 +23,14 @@ class RAGManager:
     def __init__(self):
         if not hasattr(self, 'initialized'):
             self.initialized = True
-            self.chroma_service = get_chroma_service_instance()
+            self.chroma_service = None
             self.llm = LLMFactory.get_llm()
-            self.internet_search_agent = get_internet_search_agent_instance()
-    
+            self.internet_search_agent = None
+
+    def initialize_services(self):
+        self.chroma_service = get_chroma_service_instance()
+        self.internet_search_agent = get_internet_search_agent_instance()
+
     def store_document_chunk(self, content: str, metadata: Dict[str, Any]) -> str:
         """Store a document chunk in the vector database."""
         return self.chroma_service.store_document(content, metadata)
@@ -34,6 +38,8 @@ class RAGManager:
     def query_documents(self, query: str, n_results: int = 3, 
                        workflow_type: str = "basic", force_internet_search: bool = False) -> Dict[str, Any]:
         """Query documents using specified RAG workflow."""
+        
+        self.initialize_services() # Ensures chroma_service and internet_search_agent are attempted to be initialized
         
         if workflow_type == "basic":
             rag_response = self._basic_rag_workflow(query, n_results)
@@ -44,26 +50,29 @@ class RAGManager:
         elif workflow_type == "adaptive":
             rag_response = self._adaptive_rag_workflow(query, n_results)
         else:
-            rag_response = self._basic_rag_workflow(query, n_results)
+            rag_response = self._basic_rag_workflow(query, n_results) # Default to basic
         
         # Determine if internet search fallback is needed
-        need_internet_search = False  # Temporarily disable to isolate the issue
-        # need_internet_search = force_internet_search
+        need_internet_search = force_internet_search
         
-        # if not force_internet_search:
-        #     if rag_response.get('error'):
-        #         need_internet_search = True
-        #     elif not rag_response.get('context_used', False):
-        #         need_internet_search = True
-        #     elif rag_response.get('text', '').strip() in [
-        #         "I couldn't find any relevant documents to answer your question.",
-        #         "Error processing query: "
-        #     ]:
-        #         need_internet_search = True
+        if not force_internet_search: # Only evaluate if not already forced
+            if rag_response.get('error'):
+                need_internet_search = True
+            # Check if RAG response indicates no useful local results
+            elif not rag_response.get('context_used', False) and not rag_response.get('sources'):
+                need_internet_search = True
+            elif rag_response.get('text', '').strip().startswith("I couldn't find any relevant documents") or \
+                 rag_response.get('text', '').strip().startswith("Error processing query"):
+                need_internet_search = True
         
         internet_search_response = None
         if need_internet_search:
-            internet_search_response = self.internet_search_agent.search(query, num_results=n_results)
+            if self.internet_search_agent:
+                logger.info(f"Performing internet search for query: {query}")
+                internet_search_response = self.internet_search_agent.search(query, num_results=n_results)
+            else:
+                logger.warning("Internet search agent not initialized. Skipping internet search.")
+                internet_search_response = {"error": "Internet search agent not available.", "text": "", "sources": [], "results": []}
         
         return {
             'rag_response': rag_response,
@@ -73,7 +82,7 @@ class RAGManager:
     def _basic_rag_workflow(self, query: str, top_k: int = 3) -> Dict[str, Any]:
         """
         Single-Stage RAG (Basic)
-        Workflow: Query → Retrieve → Generate
+        Workflow: Query -> Retrieve -> Generate
         """
         try:
             logger.info(f"Executing basic RAG workflow for query: {query}")
@@ -312,9 +321,6 @@ class RAGManager:
             """
             
             expanded = LLMFactory.generate_response(
-                prompt=query,
-                system_prompt=system_prompt,
-                temperature=0.3
             )
             
             return expanded.strip()

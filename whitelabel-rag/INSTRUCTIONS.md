@@ -1071,7 +1071,7 @@ The document processing in WhiteLabelRAG follows this workflow:
    GEMINI_API_KEY=your_api_key
    FLASK_ENV=production
    CHROMA_DB_IMPL=duckdb+parquet
-   CHROMA_DB_PATH=./chromadb_data
+CHROMA_DB_PATH=./whitelabel-rag/chromadb_data
    ```
 
 3. **Run the application**:

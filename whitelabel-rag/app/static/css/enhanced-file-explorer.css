@@ -1,0 +1,429 @@
+/* 
+ * Enhanced File Explorer Component for WhiteLabelRAG
+ * Modern file browsing experience with accessibility improvements
+ */
+
+/* === FILE EXPLORER LAYOUT === */
+.file-explorer-container {
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.file-explorer-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.file-explorer-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.file-explorer-title i {
+  margin-right: 0.5rem;
+  color: var(--primary-color);
+}
+
+.file-explorer-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.file-explorer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.file-explorer-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--secondary-color);
+}
+
+.file-explorer-empty i {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  opacity: 0.4;
+}
+
+/* === FILE NAVIGATION COMPONENTS === */
+.file-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.file-breadcrumb::-webkit-scrollbar {
+  display: none;
+}
+
+.file-breadcrumb-item {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  color: var(--secondary-color);
+  cursor: pointer;
+  user-select: none;
+}
+
+.file-breadcrumb-item:not(:last-child)::after {
+  content: '/';
+  margin: 0 0.5rem;
+  color: var(--secondary-color);
+}
+
+.file-breadcrumb-item:hover {
+  color: var(--primary-color);
+}
+
+.file-breadcrumb-item.active {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.file-search-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.file-search {
+  flex: 1;
+  position: relative;
+}
+
+.file-search input {
+  padding-left: 2.25rem;
+  height: 38px;
+}
+
+.file-search i {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--secondary-color);
+}
+
+.file-sort select {
+  padding-right: 2.25rem;
+  min-width: 140px;
+  height: 38px;
+}
+
+/* === FILE AND FOLDER GRID/LIST === */
+.file-view-toggle {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.file-view-toggle button {
+  border: 1px solid var(--border-color);
+  background-color: white;
+  color: var(--secondary-color);
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-view-toggle button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.file-view-toggle button.active {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+/* Grid View */
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.file-grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: white;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+.file-grid-item:hover {
+  border-color: var(--primary-color);
+  background-color: rgba(25, 118, 210, 0.05);
+  transform: translateY(-2px);
+}
+
+.file-grid-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  color: var(--primary-color);
+  font-size: 1.5rem;
+}
+
+.file-grid-name {
+  font-weight: 500;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.file-grid-meta {
+  font-size: 0.75rem;
+  color: var(--secondary-color);
+  margin-top: 0.25rem;
+}
+
+/* List View */
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.file-list-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.file-list-item:hover {
+  border-color: var(--primary-color);
+  background-color: rgba(25, 118, 210, 0.05);
+}
+
+.file-list-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.file-list-content {
+  flex: 1;
+  min-width: 0; /* Ensures text truncation works */
+}
+
+.file-list-name {
+  font-weight: 500;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-list-meta {
+  font-size: 0.75rem;
+  color: var(--secondary-color);
+  display: flex;
+  gap: 1rem;
+}
+
+.file-list-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.file-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  background-color: white;
+  color: var(--secondary-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-action-btn:hover {
+  background-color: rgba(25, 118, 210, 0.1);
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.file-action-btn.btn-danger:hover {
+  background-color: rgba(211, 47, 47, 0.1);
+  color: var(--danger-color);
+  border-color: var(--danger-color);
+}
+
+/* File type indicators */
+.file-type-doc .file-grid-icon,
+.file-type-doc .file-list-icon {
+  color: #4285F4;
+}
+
+.file-type-sheet .file-grid-icon,
+.file-type-sheet .file-list-icon {
+  color: #0F9D58;
+}
+
+.file-type-pdf .file-grid-icon,
+.file-type-pdf .file-list-icon {
+  color: #DB4437;
+}
+
+.file-type-image .file-grid-icon,
+.file-type-image .file-list-icon {
+  color: #673AB7;
+}
+
+.file-type-audio .file-grid-icon,
+.file-type-audio .file-list-icon {
+  color: #FF9800;
+}
+
+.file-type-video .file-grid-icon,
+.file-type-video .file-list-icon {
+  color: #E91E63;
+}
+
+.file-type-folder .file-grid-icon,
+.file-type-folder .file-list-icon {
+  color: #FFC107;
+}
+
+.file-type-unknown .file-grid-icon,
+.file-type-unknown .file-list-icon {
+  color: #9E9E9E;
+}
+
+/* File upload dropzone */
+.file-upload-dropzone {
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 2rem 1rem;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+}
+
+.file-upload-dropzone:hover {
+  border-color: var(--primary-color);
+  background-color: rgba(25, 118, 210, 0.05);
+}
+
+.file-upload-dropzone.active {
+  border-color: var(--primary-color);
+  background-color: rgba(25, 118, 210, 0.1);
+}
+
+.file-upload-icon {
+  font-size: 2rem;
+  color: var(--secondary-color);
+  margin-bottom: 1rem;
+}
+
+.file-upload-text {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.file-upload-hint {
+  font-size: 0.875rem;
+  color: var(--secondary-color);
+}
+
+/* File selection states */
+.file-list-item.selected,
+.file-grid-item.selected {
+  border-color: var(--primary-color);
+  background-color: rgba(25, 118, 210, 0.1);
+  position: relative;
+}
+
+.file-list-item.selected::after,
+.file-grid-item.selected::after {
+  content: '\F26E';
+  font-family: 'bootstrap-icons';
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .file-search-sort {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .file-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  
+  .file-list-meta {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .file-list-actions {
+    flex-direction: column;
+  }
+}
