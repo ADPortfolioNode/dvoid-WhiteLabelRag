@@ -1,0 +1,11 @@
+{
+  "start": {
+    "cmd": "python run.py",
+    "cwd": "whitelabel-rag"
+  }
+}
+  "start": {
+    "cmd": "python run.py",
+    "cwd": "whitelabel-rag"
+  }
+}
