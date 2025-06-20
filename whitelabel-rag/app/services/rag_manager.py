@@ -6,6 +6,8 @@ import logging
 from typing import List, Dict, Any, Optional
 from app.services.chroma_service import get_chroma_service_instance
 from app.services.llm_factory import LLMFactory
+import importlib
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +26,29 @@ class RAGManager:
             self.initialized = True
             self.chroma_service = get_chroma_service_instance()
             self.llm = LLMFactory.get_llm()
+            # Dynamically load all services in app/services/
+            self.services = {}
+            services_dir = os.path.dirname(__file__)
+            for fname in os.listdir(services_dir):
+                if fname.endswith(".py") and fname not in ("__init__.py", "rag_manager.py"):
+                    mod_name = f"app.services.{fname[:-3]}"
+                    try:
+                        mod = importlib.import_module(mod_name)
+                        self.services[fname[:-3]] = mod
+                    except Exception:
+                        pass
+            # Google Search Service
+            try:
+                from app.services.google_search_service import GoogleSearchService
+                self.google_search = GoogleSearchService()
+            except Exception:
+                self.google_search = None
+            # SBA Service integration
+            try:
+                from app.services.sba_service import SBAService
+                self.sba_service = SBAService()
+            except Exception:
+                self.sba_service = None
     
     def store_document_chunk(self, content: str, metadata: Dict[str, Any]) -> str:
         """Store a document chunk in the vector database."""
@@ -452,6 +477,24 @@ class RAGManager:
     def adaptive_rag_workflow(self, query: str, top_k: int = 3) -> Dict[str, Any]:
         """Public wrapper for adaptive RAG workflow."""
         return self._adaptive_rag_workflow(query, top_k)
+
+    def internet_search(self, query, num_results=3):
+        """Perform an internet search using the Google Search Service."""
+        if self.google_search:
+            return self.google_search.search(query, num_results)
+        return [{"title": "Google Search not available", "link": "", "snippet": "Service not initialized"}]
+
+    def get_sba_resources(self, query=None):
+        """Get small business resources from SBA Service."""
+        if self.sba_service:
+            return self.sba_service.get_small_business_resources(query)
+        return {"error": "SBA service not available"}
+
+    def get_sba_grants(self, params=None):
+        """Get grants information from SBA Service."""
+        if self.sba_service:
+            return self.sba_service.get_grants(params)
+        return {"error": "SBA service not available"}
 
     @classmethod
     def _reset_instance(cls):

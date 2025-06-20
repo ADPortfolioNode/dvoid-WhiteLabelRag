@@ -8,7 +8,6 @@ from typing import Dict, Any, Optional
 from app.services.base_assistant import BaseAssistant
 from app.services.llm_factory import LLMFactory
 from app.services.conversation_store import get_conversation_store
-from app.services.rag_manager import get_rag_manager
 from app.config import Config
 
 logger = logging.getLogger(__name__)
@@ -22,7 +21,8 @@ class Concierge(BaseAssistant):
     def __init__(self):
         super().__init__("Concierge")
         self.conversation_store = get_conversation_store()
-        self.rag_manager = get_rag_manager()
+        from app.services.rag_manager import RAGManager
+        self.rag_manager = RAGManager()
         self.config = Config.ASSISTANT_CONFIGS['Concierge']
         
         # Available functions for direct execution
@@ -32,7 +32,7 @@ class Concierge(BaseAssistant):
             'help': self._get_help
         }
     
-    def handle_message(self, message: str, session_id: Optional[str] = None) -> Dict[str, Any]:
+    def handle_message(self, message: str):
         """
         Main entry point for handling user messages.
         Implements the hierarchical workflow architecture.
@@ -44,8 +44,7 @@ class Concierge(BaseAssistant):
                 return self.report_failure(validation_message)
             
             # Get or create session
-            if not session_id:
-                session_id = str(uuid.uuid4())
+            session_id = str(uuid.uuid4())
             
             # Update status
             self._update_status("running", 10, "Processing message...")

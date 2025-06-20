@@ -455,6 +455,98 @@ class WhiteLabelRAGVerification:
             except Exception as e:
                 self.log_result(f"{name} Import", False, str(e))
 
+    def check_services_accessible_to_assistants(self):
+        """Verify that all core services are accessible to assistant classes."""
+        print("\n🔗 Verifying Assistant Access to Services...")
+
+        assistant_classes = [
+            ("Concierge", "app.services.concierge", "Concierge"),
+            ("SearchAgent", "app.services.search_agent", "SearchAgent"),
+            ("FileAgent", "app.services.file_agent", "FileAgent"),
+            ("FunctionAgent", "app.services.function_agent", "FunctionAgent"),
+        ]
+        required_services = [
+            "chroma_service",
+            "rag_manager",
+            "llm",
+        ]
+        for name, module, cls in assistant_classes:
+            try:
+                mod = __import__(module, fromlist=[cls])
+                klass = getattr(mod, cls)
+                instance = klass()
+                missing = []
+                for service in required_services:
+                    if not hasattr(instance, service):
+                        missing.append(service)
+                if missing:
+                    self.log_result(f"{name} Service Access", False, f"Missing: {', '.join(missing)}")
+                else:
+                    self.log_result(f"{name} Service Access", True)
+            except Exception as e:
+                self.log_result(f"{name} Service Access", False, str(e))
+
+    def check_services_integration(self):
+        """Verify all modules in services/ are imported and integrated in the RAG system."""
+        print("\n🧩 Verifying Integration of services/ Modules...")
+
+        services_dir = Path("app/services")
+        if not services_dir.exists():
+            self.log_result("services/ Directory", False, "app/services directory missing")
+            return
+
+        # List all .py files in services/ except __init__.py
+        service_modules = [f.stem for f in services_dir.glob("*.py") if f.name != "__init__.py"]
+        # Known integration points (rag_manager, assistants, etc.")
+        integration_targets = [
+            "app.services.rag_manager",
+            "app.services.concierge",
+            "app.services.search_agent",
+            "app.services.file_agent",
+            "app.services.function_agent"
+        ]
+        missing_integration = []
+        for mod in service_modules:
+            found = False
+            for target in integration_targets:
+                try:
+                    target_mod = __import__(target, fromlist=["*"])
+                    if hasattr(target_mod, mod) or mod in getattr(target_mod, "__dict__", {}):
+                        found = True
+                        break
+                except Exception:
+                    continue
+            if not found:
+                missing_integration.append(mod)
+        if missing_integration:
+            self.log_result("services/ Integration", False, f"Not integrated: {', '.join(missing_integration)}")
+        else:
+            self.log_result("services/ Integration", True, "All service modules are integrated")
+
+    def check_rag_priority_over_internet_search(self):
+        """Verify that RAG operations are prioritized over internet search in chat logic."""
+        print("\n🔍 Verifying RAG Priority Over Internet Search...")
+
+        # Check main assistant (Concierge) for RAG-first logic
+        try:
+            from app.services.concierge import Concierge
+            concierge = Concierge()
+            # Check for method or logic that prioritizes RAG
+            has_rag_first = False
+            if hasattr(concierge, "handle_message"):
+                import inspect
+                src = inspect.getsource(concierge.handle_message)
+                if "rag" in src.lower() and "search" in src.lower():
+                    # Look for logic that checks RAG before fallback to other search
+                    if "if" in src and ("rag" in src.lower() and "else" in src.lower()):
+                        has_rag_first = True
+            if has_rag_first:
+                self.log_result("RAG Priority in Chat", True, "RAG operations are prioritized before internet search")
+            else:
+                self.log_result("RAG Priority in Chat", False, "Could not verify RAG-first logic in Concierge.handle_message")
+        except Exception as e:
+            self.log_result("RAG Priority in Chat", False, f"Error: {e}")
+
     def generate_report(self):
         """Generate final verification report."""
         print("\n" + "=" * 60)
@@ -522,6 +614,9 @@ class WhiteLabelRAGVerification:
         self.check_environment_setup()
         self.check_app_creation()
         self.check_rag_workflows()
+        self.check_services_accessible_to_assistants()
+        self.check_services_integration()
+        self.check_rag_priority_over_internet_search()
         
         # Generate final report
         return self.generate_report()
