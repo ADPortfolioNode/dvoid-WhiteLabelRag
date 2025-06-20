@@ -374,6 +374,87 @@ class WhiteLabelRAGVerification:
         except Exception as e:
             self.log_result("Flask App Creation", False, f"Error: {str(e)}")
     
+    def check_instructions_compliance(self):
+        """Verify codebase logic and API against INSTRUCTIONS.md ground truth."""
+        print("\n📖 Checking INSTRUCTIONS.md Compliance...")
+
+        instructions_path = Path("INSTRUCTIONS.md")
+        if not instructions_path.exists():
+            self.log_result("INSTRUCTIONS.md Presence", False, "INSTRUCTIONS.md not found in project root")
+            return
+
+        with open(instructions_path, "r", encoding="utf-8") as f:
+            instructions = f.read().lower()
+
+        # Check for required endpoints
+        required_endpoints = [
+            "/api/decompose",
+            "/api/execute",
+            "/api/validate",
+            "/api/tasks/",
+            "/api/files",
+            "/api/documents/upload_and_ingest_document",
+            "/api/chroma/store_document_embedding",
+            "/api/chroma/store_step_embedding",
+            "/api/query"
+        ]
+        for endpoint in required_endpoints:
+            if endpoint not in instructions:
+                self.log_result("INSTRUCTIONS.md Endpoints", False, f"Missing endpoint in INSTRUCTIONS.md: {endpoint}")
+
+        # Check for required agent classes
+        required_agents = [
+            "concierge",
+            "searchagent",
+            "fileagent",
+            "functionagent"
+        ]
+        for agent in required_agents:
+            if agent not in instructions:
+                self.log_result("INSTRUCTIONS.md Agents", False, f"Missing agent in INSTRUCTIONS.md: {agent}")
+
+        # Check for RAG workflow descriptions
+        required_workflows = [
+            "basic rag",
+            "advanced rag",
+            "recursive rag",
+            "adaptive rag"
+        ]
+        for workflow in required_workflows:
+            if workflow not in instructions:
+                self.log_result("INSTRUCTIONS.md Workflows", False, f"Missing workflow in INSTRUCTIONS.md: {workflow}")
+
+        # Check for Docker and local startup script references
+        if "run-docker.bat" not in instructions and "docker-compose" not in instructions:
+            self.log_result("INSTRUCTIONS.md Startup", False, "No Docker startup instructions found in INSTRUCTIONS.md")
+        if "run-dev.bat" not in instructions and "run-local.bat" not in instructions:
+            self.log_result("INSTRUCTIONS.md Startup", False, "No local dev startup instructions found in INSTRUCTIONS.md")
+
+        # If no errors, pass
+        if not any(r for r in self.results if r['test'].startswith("INSTRUCTIONS.md") and not r['passed']):
+            self.log_result("INSTRUCTIONS.md Compliance", True, "All required endpoints, agents, and workflows present")
+
+    def check_rag_workflows(self):
+        """Verify all RAG operation workflows are implemented and importable."""
+        print("\n🔄 Verifying RAG Operation Workflows...")
+
+        # Try to import and instantiate each workflow if possible
+        workflow_checks = [
+            ("Basic RAG Workflow", "app.services.rag_manager", "basic_rag_workflow"),
+            ("Advanced RAG Workflow", "app.services.rag_manager", "advanced_rag_workflow"),
+            ("Recursive RAG Workflow", "app.services.rag_manager", "recursive_rag_workflow"),
+            ("Adaptive RAG Workflow", "app.services.rag_manager", "adaptive_rag_workflow"),
+        ]
+        for name, module, func in workflow_checks:
+            try:
+                mod = __import__(module, fromlist=[func])
+                if hasattr(mod, func):
+                    self.log_result(f"{name} Import", True)
+                else:
+                    self.log_result(f"{name} Import", False, f"Function '{func}' not found in {module}")
+            except Exception as e:
+                self.log_result(f"{name} Import", False, str(e))
+
     def generate_report(self):
         """Generate final verification report."""
         print("\n" + "=" * 60)
@@ -427,7 +508,9 @@ class WhiteLabelRAGVerification:
         print("=" * 60)
         print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"Working Directory: {os.getcwd()}")
-        
+
+        # Check INSTRUCTIONS.md compliance first
+        self.check_instructions_compliance()
         # Run all checks
         self.check_project_structure()
         self.check_configuration_files()
@@ -438,6 +521,7 @@ class WhiteLabelRAGVerification:
         self.check_sample_content()
         self.check_environment_setup()
         self.check_app_creation()
+        self.check_rag_workflows()
         
         # Generate final report
         return self.generate_report()

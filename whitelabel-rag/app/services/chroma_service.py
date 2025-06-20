@@ -29,35 +29,32 @@ class ChromaService:
     def _setup_chroma(self):
         """Setup ChromaDB client and collections."""
         try:
-            # Get configuration
             chroma_path = os.environ.get('CHROMA_DB_PATH', './chromadb_data')
-            
-            # Ensure directory exists
             os.makedirs(chroma_path, exist_ok=True)
-            
-            # Initialize ChromaDB client with updated configuration
-            self.client = chromadb.PersistentClient(
-                path=chroma_path
-            )
-            
-            # Setup embedding function
+
+            chroma_server_host = os.environ.get('CHROMA_SERVER_HOST')
+            if chroma_server_host:
+                # HTTP client/server mode
+                self.client = chromadb.HttpClient(host=chroma_server_host)
+                logger.info(f"ChromaDB HTTP client mode: {chroma_server_host}")
+            else:
+                # Embedded mode
+                self.client = chromadb.PersistentClient(path=chroma_path)
+                logger.info(f"ChromaDB embedded mode: {chroma_path}")
+
             self._setup_embedding_function()
-            
-            # Get or create collections
+
             self.documents_collection = self.client.get_or_create_collection(
                 name="documents",
                 embedding_function=self.embedding_function,
                 metadata={"description": "Document chunks for RAG"}
             )
-            
             self.steps_collection = self.client.get_or_create_collection(
                 name="steps",
                 embedding_function=self.embedding_function,
                 metadata={"description": "Task step embeddings"}
             )
-            
             logger.info("ChromaDB initialized successfully")
-            
         except Exception as e:
             logger.error(f"Error setting up ChromaDB: {str(e)}")
             raise

@@ -3,6 +3,14 @@ cd %~dp0\..
 cd whitelabel-rag
 echo Starting critical-path testing for WhiteLabelRAG Docker build...
 
+echo.
+echo Step 0: Running INSTRUCTIONS.md compliance and logic verification...
+python scripts/final-verification.py
+if errorlevel 1 (
+    echo ERROR: Project verification failed. Please fix the errors above before continuing.
+    goto end
+)
+echo Project verification passed. Proceeding with Docker tests...
 
 echo.
 echo Step 1: Checking Docker container status...

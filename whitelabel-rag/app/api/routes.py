@@ -162,7 +162,7 @@ def upload_file():
             return jsonify({'error': 'No file selected'}), 400
         
         if not allowed_file(file.filename):
-            return jsonify({'error': 'File type not allowed'}), 400
+            return jsonify({'error': 'Unsupported file type', 'success': False}), 400
         
         filename = secure_filename(file.filename)
         upload_folder = current_app.config['UPLOAD_FOLDER']
@@ -193,7 +193,7 @@ def upload_and_ingest_document():
             return jsonify({'error': 'No file selected'}), 400
         
         if not allowed_file(file.filename):
-            return jsonify({'error': 'File type not allowed'}), 400
+            return jsonify({'error': 'Unsupported file type', 'success': False}), 400
         
         filename = secure_filename(file.filename)
         upload_folder = current_app.config['UPLOAD_FOLDER']
@@ -202,14 +202,19 @@ def upload_and_ingest_document():
         os.makedirs(upload_path, exist_ok=True)
         file_path = os.path.join(upload_path, filename)
         file.save(file_path)
-        
+
+        # Check for empty file
+        if os.path.getsize(file_path) == 0:
+            os.remove(file_path)
+            return jsonify({'error': 'File is empty', 'success': False}), 400
+
         # Process and ingest the document
         processor = DocumentProcessor()
         rag_manager = get_rag_manager()
-        
+
         # Extract text and create chunks
         chunks = processor.process_document(file_path)
-        
+
         # Store in vector database
         for i, chunk in enumerate(chunks):
             rag_manager.store_document_chunk(
@@ -222,11 +227,12 @@ def upload_and_ingest_document():
                     'timestamp': datetime.now().isoformat()
                 }
             )
-        
+
         return jsonify({
             'message': f'Document uploaded and ingested successfully. Created {len(chunks)} chunks.',
             'filename': filename,
-            'chunks_created': len(chunks)
+            'chunks_created': len(chunks),
+            'success': len(chunks) > 0
         })
         
     except Exception as e:
@@ -293,12 +299,18 @@ def query_documents():
         
         rag_manager = get_rag_manager()
         results = rag_manager.query_documents(query, n_results=top_k)
-        
+
         return jsonify({
             'success': True,
-            'results': results.get('results', [])
+            'results': results.get('results', []),
+            'rag_response': results.get('response', None)
         })
         
     except Exception as e:
         logger.error(f"Error in query_documents: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
+
+@api_bp.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for API."""
+    return jsonify({'status': 'ok', 'service': 'WhiteLabelRAG'}), 200
