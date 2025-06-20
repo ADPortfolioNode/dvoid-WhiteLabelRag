@@ -3,7 +3,7 @@ RAG Manager for orchestrating retrieval-augmented generation workflows
 """
 
 import logging
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from app.services.chroma_service import get_chroma_service_instance
 from app.services.llm_factory import LLMFactory
 import importlib
