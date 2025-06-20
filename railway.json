@@ -1,11 +1,11 @@
 {
+  "build": {
+    "env": {
+      "PYTHONUNBUFFERED": "1"
+    }
+  },
   "start": {
-    "cmd": "python run.py",
-    "cwd": "whitelabel-rag"
-  }
-}
-  "start": {
-    "cmd": "python run.py",
+    "cmd": "python ./whitelabel-rag/run.py",
     "cwd": "whitelabel-rag"
   }
 }
