@@ -13,11 +13,6 @@ if os.environ.get("SOCKETIO_ASYNC_MODE", "eventlet") == "eventlet":
 
 from dotenv import load_dotenv
 
-@app.after_request
-def add_header(response):
-    response.headers['X-Frame-Options'] = 'ALLOWALL'
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    return response
 # Load environment variables from .env file
 load_dotenv()
 
@@ -55,6 +50,12 @@ def create_application():
 
 # For Gunicorn
 app = create_application()
+
+@app.after_request
+def add_header(response):
+    response.headers['X-Frame-Options'] = 'ALLOWALL'
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
 if __name__ == '__main__':
     print("🚀 Starting WhiteLabelRAG...")
