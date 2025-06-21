@@ -4,6 +4,7 @@ Main routes for serving the frontend
 
 from flask import render_template, send_from_directory, request, redirect, url_for, jsonify, Blueprint
 import os
+from app.services.rag_manager import get_rag_manager
 
 main = Blueprint('main', __name__)
 
@@ -64,3 +65,48 @@ def assistant_chat(assistant_id):
     message = data.get("message", "")
     # For demo, echo back
     return jsonify({"reply": f"Echo from assistant {assistant_id}: {message}"})
+
+@main.route("/api/decompose", methods=["POST"])
+def decompose():
+    try:
+        data = request.get_json()
+        query = data.get('message', '')
+        rag = get_rag_manager()
+        result = rag.query_documents(query)
+        return jsonify({'response': result}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 200
+
+@main.route("/api/query", methods=["POST"])
+def query():
+    try:
+        data = request.get_json()
+        query = data.get('query', '')
+        top_k = int(data.get('top_k', 3))
+        rag = get_rag_manager()
+        result = rag.query_documents(query, n_results=top_k)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'results': [], 'error': str(e)}), 200
+
+@main.route("/health")
+def health():
+    rag = get_rag_manager()
+    assistants = [
+        {"name": "Concierge", "status": "online", "current_task": "Monitoring chat"},
+        {"name": "SearchAgent", "status": "online", "current_task": None},
+    ]
+    tasks = [
+        {"id": 1, "description": "Summarize uploaded file", "progress": "complete"},
+        {"id": 2, "description": "Answer user query", "progress": "in_progress"},
+    ]
+    return jsonify({
+        "status": "ok",
+        "assistants": assistants,
+        "tasks": tasks
+    }), 200
+
+# 404 error handler
+@main.app_errorhandler(404)
+def not_found(e):
+    return render_template("404.html", error=str(e)), 404

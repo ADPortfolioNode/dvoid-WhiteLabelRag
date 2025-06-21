@@ -5,8 +5,19 @@ WhiteLabelRAG Application Entry Point
 
 import os
 import sys
+
+# Fix: Eventlet monkey patching must happen before any other imports
+if os.environ.get("SOCKETIO_ASYNC_MODE", "eventlet") == "eventlet":
+    import eventlet
+    eventlet.monkey_patch()
+
 from dotenv import load_dotenv
 
+@app.after_request
+def add_header(response):
+    response.headers['X-Frame-Options'] = 'ALLOWALL'
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 # Load environment variables from .env file
 load_dotenv()
 
