@@ -10,16 +10,17 @@ from flask.testing import FlaskClient
 
 @pytest.fixture(autouse=True)
 def set_test_env_vars(monkeypatch):
-    # Force embedded mode for ChromaDB during tests to avoid HTTP client mode errors
-    monkeypatch.delenv('CHROMA_SERVER_HOST', raising=False)
-    monkeypatch.setenv('USE_CHROMA_HTTP_CLIENT', 'false')
+    # Force FastAPI HTTP client mode for ChromaDB during tests to avoid embedded mode errors
+    monkeypatch.setenv('CHROMA_SERVER_HOST', 'localhost')
+    monkeypatch.setenv('USE_CHROMA_HTTP_CLIENT', 'true')
+    monkeypatch.setenv('CHROMA_API_IMPL', 'chromadb.api.fastapi.FastAPI')
+    monkeypatch.setenv('CHROMA_SERVER_HTTP_PORT', '8000')
 
 @pytest.fixture
 def app():
     app = create_app()
-    app.config.update({
-        "TESTING": True,
-    })
+    # FastAPI app does not have 'config', so remove app.config.update
+    # Instead, set testing flag via environment variable or app.state if needed
     yield app
 
 import io
@@ -47,6 +48,8 @@ def mock_chroma_service(monkeypatch):
     monkeypatch.setattr('app.services.document_processor.DocumentProcessor._extract_text', lambda self, file_path: "Extracted text")
     monkeypatch.setattr('app.services.document_processor.DocumentProcessor._create_chunks', lambda self, text: ["chunk1", "chunk2"])
     monkeypatch.setattr('app.services.document_processor.DocumentProcessor.process_document', lambda self, file_path: {"success": True, "chunks": ["chunk1", "chunk2"]})
+    # Patch ChromaService._setup_chroma to no-op to avoid real ChromaDB calls
+    monkeypatch.setattr('app.services.chroma_service.ChromaService._setup_chroma', lambda self: None)
     return mock
 
 @pytest.fixture

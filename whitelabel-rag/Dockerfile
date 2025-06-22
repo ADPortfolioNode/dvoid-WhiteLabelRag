@@ -56,6 +56,6 @@ ENV PORT=10000
 # Expose the correct port for Render.com (Render sets $PORT)
 EXPOSE 10000
 
-# Set entrypoint and default command to use the PORT env variable
-ENTRYPOINT ["gunicorn"]
-CMD ["-b", "0.0.0.0:10000", "-k", "eventlet", "run:app"]
+# Remove ENTRYPOINT and CMD to avoid conflict with docker-compose command
+# ENTRYPOINT ["uvicorn"]
+# CMD ["run:app", "--host", "0.0.0.0", "--port", "10000"]

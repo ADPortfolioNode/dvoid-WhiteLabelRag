@@ -27,6 +27,7 @@ class ChromaService:
             {"content": "Climate change impacts are discussed in this document.", "metadata": {"source": "climate_report_2023.pdf"}},
             {"content": "IPCC analysis provides detailed climate data.", "metadata": {"source": "ipcc_analysis.txt"}},
         ]
+        self._setup_chroma()
 
     def query(self, query, top_k=3):
         # Simple keyword match for demo
@@ -49,10 +50,14 @@ class ChromaService:
             # Use embedded mode by default for local development and testing
             # Only use HTTP client mode if explicitly enabled and valid FastAPI server is running
             use_http_client = os.environ.get('USE_CHROMA_HTTP_CLIENT', 'false').lower() == 'true'
+            chroma_api_impl = os.environ.get('CHROMA_API_IMPL', '')
+
             if chroma_server_host and use_http_client:
-                # HTTP client/server mode
-                self.client = chromadb.HttpClient(host=chroma_server_host)
-                logger.info(f"ChromaDB HTTP client mode: {chroma_server_host}")
+                # If no valid chroma_api_impl is set, default to FastAPI implementation
+                if chroma_api_impl not in ['chromadb.api.fastapi.FastAPI', 'chromadb.api.async_fastapi.AsyncFastAPI']:
+                    chroma_api_impl = 'chromadb.api.fastapi.FastAPI'
+                self.client = chromadb.HttpClient(host=chroma_server_host, chroma_api_impl=chroma_api_impl)
+                logger.info(f"ChromaDB HTTP client mode: {chroma_server_host} with API impl: {chroma_api_impl}")
             else:
                 # Embedded mode
                 self.client = chromadb.PersistentClient(path=chroma_path)

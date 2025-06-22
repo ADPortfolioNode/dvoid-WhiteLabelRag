@@ -1,9 +1,10 @@
-# WHITE LABEL RAG - IMPLEMENTATION GUIDE
+# POCKETPRO:SBA EDITION - IMPLEMENTATION GUIDE
+Presented by StainlessDeoism.biz  
 Last updated: May 16, 2025
 
 ## PROJECT OVERVIEW
 
-White Label RAG is a scalable Retrieval-Augmented Generation (RAG) application that provides a conversational AI interface with document search capabilities, task decomposition, and guided execution.
+PocketPro:SBA Edition is a scalable Retrieval-Augmented Generation (RAG) application that provides a conversational AI interface with document search capabilities, task decomposition, and guided execution, tailored for SBA and small business resources.
 
 ### Technology Stack
 
@@ -12,8 +13,9 @@ White Label RAG is a scalable Retrieval-Augmented Generation (RAG) application t
 | Backend   | Python Flask (port 5000) | REST API server with CORS and modular design |
 | Vector DB | ChromaDB (port 8000) | Stores document and step embeddings for semantic search |
 | LLM Service | Gemini API (Google) | Powers the conversational AI and task processing |
-| Frontend  |creat-react-app (port 3000) b React.js + Bootstrap grid layout | Mobile-first, responsive and adaptive UI with real-time updates |
+| Frontend  |create-react-app (port 3000) b React.js + Bootstrap grid layout | Mobile-first, responsive and adaptive UI with real-time updates |
 | WebSockets | Flask-SocketIO | Real-time communication between client and server |
+| **Brand** | **PocketPro:SBA Edition by StainlessDeoism.biz** | **White-label RAG for SBA/small business** |
 
 ## ASSISTANT ARCHITECTURE AND WORKFLOWS
 
@@ -300,7 +302,7 @@ The WhiteLabelRAG system implements a hierarchical workflow pattern for handling
 #### SearchAgent Integration
 
 1. **Activation**
-   - Triggered by Concierge via POST to `/api/execute` with `"suggested_agent_type": "SearchAgent"`
+   - Triggered by Concierge via POST to `/api/execute` with `"suggested_agent_type": "SearchAgent"` 
    - Input: Search query, optional filters, and parameters
    - Output: Formatted search results with metadata and sources
 
@@ -312,7 +314,7 @@ The WhiteLabelRAG system implements a hierarchical workflow pattern for handling
 #### FileAgent Integration
 
 1. **Activation**
-   - Triggered by Concierge via POST to `/api/execute` with `"suggested_agent_type": "FileAgent"`
+   - Triggered by Concierge via POST to `/api/execute` with `"suggested_agent_type": "FileAgent"` 
    - Input: File operation details and parameters
    - Output: Operation results and status
 
@@ -324,7 +326,7 @@ The WhiteLabelRAG system implements a hierarchical workflow pattern for handling
 #### FunctionAgent Integration
 
 1. **Activation**
-   - Triggered by Concierge via POST to `/api/execute` with `"suggested_agent_type": "FunctionAgent"`
+   - Triggered by Concierge via POST to `/api/execute` with `"suggested_agent_type": "FunctionAgent"` 
    - Input: Function name, parameters, and constraints
    - Output: Function execution results
 
@@ -1228,13 +1230,13 @@ The system can be customized by modifying the following components:
 
 2. **Open your browser and go to:**  
    ```
-   http://localhost:5000
+   http://localhost:10000
    ```
 
    - If you are running on a remote server, replace `localhost` with your server's IP or domain.
    - If using the optional Nginx service, you can also use `http://localhost` (port 80).
 
-3. **You should see the WhiteLabelRAG web interface.**
+3. **You should see the PocketPro:SBA Edition web interface.**
 
 ### Development URL
 

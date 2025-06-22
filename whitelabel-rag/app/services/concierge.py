@@ -9,6 +9,7 @@ from app.services.base_assistant import BaseAssistant
 from app.services.rag_manager import RAGManager
 from app.services.llm_factory import LLMFactory
 from app.services.conversation_store import ConversationStore
+from app.services.sba_service import SBAService
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +24,18 @@ class Concierge(BaseAssistant):
         self.rag_manager = RAGManager()
         self.llm = LLMFactory.get_llm()
         self.conversation_store = ConversationStore()
+        self.sba_service = SBAService()
+        self.config = {
+            'task': 'general',
+            'system_prompt': 'You are a helpful assistant.',
+            'temperature': 0.2
+        }
+    
+    def _validate_input(self, message: str):
+        """Validate the input message."""
+        if not message or not isinstance(message, str) or message.strip() == "":
+            return False, "Invalid input: message must be a non-empty string."
+        return True, "Valid input."
     
     def handle_message(self, message: str, session_id=None):
         """

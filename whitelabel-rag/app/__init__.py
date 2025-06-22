@@ -4,24 +4,16 @@ WhiteLabelRAG Application Factory
 
 import os
 import logging
-from flask import Flask
-from flask_cors import CORS
-from flask_socketio import SocketIO
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from starlette.templating import Jinja2Templates
+from app.websocket_events import websocket_router
 
-# Initialize SocketIO
-socketio = SocketIO(
-    cors_allowed_origins="*",
-    async_mode='threading',
-    ping_timeout=60,
-    ping_interval=25,
-    logger=False,
-    engineio_logger=False
-)
-
-def create_app(config_name=None):
-    """Create and configure the Flask application."""
-    
-    app = Flask(__name__)
+def create_app():
+    """Create and configure the FastAPI application."""  
+      
+    app = FastAPI()
     
     # Load and validate configuration
     from app.config import Config
@@ -33,22 +25,22 @@ def create_app(config_name=None):
         raise
     
     # Configuration
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-    app.config['MAX_CONTENT_LENGTH'] = int(os.environ.get('MAX_CONTENT_LENGTH', 16 * 1024 * 1024))  # 16MB
-    app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER', 'uploads')
+    app.state.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+    app.state.max_content_length = int(os.environ.get('MAX_CONTENT_LENGTH', 16 * 1024 * 1024))  # 16MB
+    app.state.upload_folder = os.environ.get('UPLOAD_FOLDER', 'uploads')
     
     # Ensure upload directory exists
-    upload_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), app.config['UPLOAD_FOLDER'])
+    upload_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), app.state.upload_folder)
     os.makedirs(upload_path, exist_ok=True)
     
     # Enable CORS
-    CORS(app, resources={
-        r"/api/*": {"origins": "*"},
-        r"/socket.io/*": {"origins": "*"}
-    })
-    
-    # Initialize SocketIO with app
-    socketio.init_app(app)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     
     # Configure logging
     log_level = getattr(logging, os.environ.get('LOG_LEVEL', 'INFO').upper())
@@ -57,15 +49,19 @@ def create_app(config_name=None):
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
     
-    # Register blueprints
-    from app.api import api_bp
-    app.register_blueprint(api_bp, url_prefix='/api')
+    # Mount static files
+    static_dir = os.path.join(os.path.dirname(__file__), 'static')
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
     
-    from app.main import main_bp
-    app.register_blueprint(main_bp)
+    # Setup templates
+    templates_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates')
+    app.state.templates = Jinja2Templates(directory=templates_dir)
     
-    # Register WebSocket events
-    from app.websocket_events import register_websocket_events
-    register_websocket_events(socketio)
-    
+    # Register WebSocket router
+    app.include_router(websocket_router)
+
+    # Register API router
+    from app.api.routes import api_router
+    app.include_router(api_router, prefix="/api")
+
     return app

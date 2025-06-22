@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
-  whitelabel-rag:
+  pocketpro-sba:
     build: 
       context: .
       dockerfile: Dockerfile
-    container_name: whitelabel-rag-app
+    container_name: pocketpro-sba-app
     ports:
       - "10000:10000"
     environment:
@@ -38,14 +36,14 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    command: python run.py
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.whitelabel-rag.rule=Host(`localhost`) && PathPrefix(`/`)"
-      - "traefik.http.services.whitelabel-rag.loadbalancer.server.port=${PORT:-5000}"
+      - "traefik.http.routers.pocketpro-sba.rule=Host(`localhost`) && PathPrefix(`/`)"
+      - "traefik.http.services.pocketpro-sba.loadbalancer.server.port=${PORT:-5000}"
       - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*"
       - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE"
       - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=*"
-      - "traefik.http.routers.whitelabel-rag.middlewares=cors@docker"
 
   redis:
     image: redis:7-alpine
@@ -83,7 +81,7 @@ services:
       - whitelabel-rag-network
     restart: unless-stopped
     depends_on:
-      - whitelabel-rag
+      - pocketpro-sba
     profiles:
       - nginx
     logging:

@@ -1,9 +1,9 @@
 """
-API Blueprint for WhiteLabelRAG
+API Router for WhiteLabelRAG
 """
 
-from flask import Blueprint
+from fastapi import APIRouter
 
-api_bp = Blueprint('api', __name__)
+api_bp = APIRouter()
 
 from . import routes

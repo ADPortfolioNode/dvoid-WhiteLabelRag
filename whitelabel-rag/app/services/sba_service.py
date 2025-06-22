@@ -16,10 +16,10 @@ class SBAService:
             return {"error": str(e)}
 
     def get_small_business_resources(self, query=None):
-        """Example: Fetch small business resources, optionally filtered by query."""
+        """Fetch small business resources, optionally filtered by query."""
         params = {"q": query} if query else None
         return self.get_resource("resources", params=params)
 
     def get_grants(self, params=None):
-        """Example: Fetch grants information."""
+        """Fetch grants information."""
         return self.get_resource("grants", params=params)
