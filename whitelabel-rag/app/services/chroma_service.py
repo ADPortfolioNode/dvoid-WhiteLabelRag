@@ -22,10 +22,23 @@ class ChromaService:
         return cls._instance
     
     def __init__(self):
-        if not hasattr(self, 'initialized'):
-            self.initialized = True
-            self._setup_chroma()
-    
+        # Placeholder: connect to ChromaDB or initialize in-memory store
+        self.documents = [
+            {"content": "Climate change impacts are discussed in this document.", "metadata": {"source": "climate_report_2023.pdf"}},
+            {"content": "IPCC analysis provides detailed climate data.", "metadata": {"source": "ipcc_analysis.txt"}},
+        ]
+
+    def query(self, query, top_k=3):
+        # Simple keyword match for demo
+        results = []
+        for doc in self.documents:
+            if any(word in doc["content"].lower() for word in query.lower().split()):
+                results.append(doc)
+        return results[:top_k]
+
+    def get_collection_stats(self):
+        return {"documents_count": len(self.documents)}
+
     def _setup_chroma(self):
         """Setup ChromaDB client and collections."""
         try:
@@ -33,7 +46,10 @@ class ChromaService:
             os.makedirs(chroma_path, exist_ok=True)
 
             chroma_server_host = os.environ.get('CHROMA_SERVER_HOST')
-            if chroma_server_host:
+            # Use embedded mode by default for local development and testing
+            # Only use HTTP client mode if explicitly enabled and valid FastAPI server is running
+            use_http_client = os.environ.get('USE_CHROMA_HTTP_CLIENT', 'false').lower() == 'true'
+            if chroma_server_host and use_http_client:
                 # HTTP client/server mode
                 self.client = chromadb.HttpClient(host=chroma_server_host)
                 logger.info(f"ChromaDB HTTP client mode: {chroma_server_host}")

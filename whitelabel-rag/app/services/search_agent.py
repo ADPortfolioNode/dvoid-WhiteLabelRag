@@ -5,7 +5,7 @@ SearchAgent - Specialized for document retrieval and RAG operations
 import logging
 from typing import Dict, Any, List
 from app.services.base_assistant import BaseAssistant
-from app.services.rag_manager import get_rag_manager
+from app.services.rag_manager import RAGManager
 from app.services.llm_factory import LLMFactory
 from app.config import Config
 
@@ -19,7 +19,7 @@ class SearchAgent(BaseAssistant):
     
     def __init__(self):
         super().__init__("SearchAgent")
-        self.rag_manager = get_rag_manager()
+        self.rag_manager = RAGManager()
         self.llm = LLMFactory.get_llm()
         self.config = Config.ASSISTANT_CONFIGS['SearchAgent']
     

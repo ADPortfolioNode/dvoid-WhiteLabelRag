@@ -50,19 +50,12 @@ ENV PYTHONUNBUFFERED=1
 ENV WORKERS=4
 ENV TIMEOUT=120
 ENV KEEPALIVE=2
+# Ensure the app runs on the port Render expects (default 10000 if set, else 5000)
+ENV PORT=${PORT:-5000}
 
-# Expose port
-EXPOSE 5000
+# Expose the correct port for Render.com (Render sets $PORT)
+EXPOSE $PORT
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:5000/health || exit 1
-
-# Switch to non-root user
-USER appuser
-
-# Set entrypoint
-ENTRYPOINT ["docker-entrypoint.sh"]
-
-# Default command
-CMD ["gunicorn"]
+# Set entrypoint and default command to use the PORT env variable
+ENTRYPOINT ["gunicorn"]
+CMD ["-b", "0.0.0.0:${PORT}", "run:app"]

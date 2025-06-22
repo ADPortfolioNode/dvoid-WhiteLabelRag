@@ -106,6 +106,19 @@ def health():
         "tasks": tasks
     }), 200
 
+from flask import send_from_directory
+
+# Serve React build (if deployed inside Flask)
+@main.route('/', defaults={'path': ''})
+@main.route('/<path:path>')
+def serve_react(path):
+    import os
+    build_dir = os.path.join(os.path.dirname(__file__), '..', 'static', 'frontend')
+    if path != "" and os.path.exists(os.path.join(build_dir, path)):
+        return send_from_directory(build_dir, path)
+    else:
+        return send_from_directory(build_dir, 'index.html')
+
 # 404 error handler
 @main.app_errorhandler(404)
 def not_found(e):

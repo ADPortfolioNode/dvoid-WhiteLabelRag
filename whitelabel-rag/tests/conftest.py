@@ -1,40 +1,95 @@
+import os
 import sys
-import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 import pytest
-from app import create_app
-from unittest.mock import MagicMock
-import tempfile
-import os
 
-@pytest.fixture(scope="session")
+# Add the whitelabel-rag directory to sys.path for imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'whitelabel-rag')))
+
+from app import create_app
+from flask.testing import FlaskClient
+
+@pytest.fixture(autouse=True)
+def set_test_env_vars(monkeypatch):
+    # Force embedded mode for ChromaDB during tests to avoid HTTP client mode errors
+    monkeypatch.delenv('CHROMA_SERVER_HOST', raising=False)
+    monkeypatch.setenv('USE_CHROMA_HTTP_CLIENT', 'false')
+
+@pytest.fixture
 def app():
     app = create_app()
-    return app
+    app.config.update({
+        "TESTING": True,
+    })
+    yield app
 
-@pytest.fixture(scope="session")
-def client(app):
+import io
+import pytest
+from unittest.mock import MagicMock
+
+@pytest.fixture
+def mock_llm(monkeypatch):
+    mock = MagicMock()
+    mock.generate_text.return_value = '{"steps": [{"step_number": 1, "instruction": "Search for information about climate change", "suggested_agent_type": "SearchAgent"}]}'
+    monkeypatch.setattr('app.services.llm_factory.LLMFactory.get_llm', lambda: mock)
+    return mock
+
+@pytest.fixture
+def mock_chroma_service(monkeypatch):
+    mock = MagicMock()
+    mock.query_documents.return_value = {
+        'documents': [['Document content']],
+        'metadatas': [[{'source': 'test_source'}]],
+        'distances': [[0.1]]
+    }
+    monkeypatch.setattr('app.services.chroma_service.get_chroma_service_instance', lambda: mock)
+    monkeypatch.setattr('app.services.chroma_service.ChromaService', lambda: mock)
+    # Patch document processor methods to avoid real PDF parsing errors
+    monkeypatch.setattr('app.services.document_processor.DocumentProcessor._extract_text', lambda self, file_path: "Extracted text")
+    monkeypatch.setattr('app.services.document_processor.DocumentProcessor._create_chunks', lambda self, text: ["chunk1", "chunk2"])
+    monkeypatch.setattr('app.services.document_processor.DocumentProcessor.process_document', lambda self, file_path: {"success": True, "chunks": ["chunk1", "chunk2"]})
+    return mock
+
+@pytest.fixture
+def temp_pdf(tmp_path):
+    # Minimal valid PDF file content
+    pdf_content = (
+        b'%PDF-1.4\n'
+        b'1 0 obj\n'
+        b'<< /Type /Catalog /Pages 2 0 R >>\n'
+        b'endobj\n'
+        b'2 0 obj\n'
+        b'<< /Type /Pages /Kids [3 0 R] /Count 1 >>\n'
+        b'endobj\n'
+        b'3 0 obj\n'
+        b'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >>\n'
+        b'endobj\n'
+        b'4 0 obj\n'
+        b'<< /Length 44 >>\n'
+        b'stream\n'
+        b'BT\n'
+        b'/F1 24 Tf\n'
+        b'100 700 Td\n'
+        b'(Hello, PDF!) Tj\n'
+        b'ET\n'
+        b'endstream\n'
+        b'endobj\n'
+        b'xref\n'
+        b'0 5\n'
+        b'0000000000 65535 f \n'
+        b'0000000010 00000 n \n'
+        b'0000000060 00000 n \n'
+        b'0000000117 00000 n \n'
+        b'0000000211 00000 n \n'
+        b'trailer\n'
+        b'<< /Size 5 /Root 1 0 R >>\n'
+        b'startxref\n'
+        b'308\n'
+        b'%%EOF\n'
+    )
+    pdf_file = tmp_path / "test.pdf"
+    pdf_file.write_bytes(pdf_content)
+    return pdf_file
+
+@pytest.fixture
+def client(app) -> FlaskClient:
     return app.test_client()
-
-@pytest.fixture(scope="function")
-def mock_llm():
-    mock = MagicMock()
-    # You can add default return values or side effects if needed
-    return mock
-
-@pytest.fixture(scope="function")
-def temp_pdf():
-    # Create a temporary PDF file for testing
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
-    # Write a minimal valid PDF file
-    temp_file.write(b'%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >>\nendobj\n4 0 obj\n<< /Length 44 >>\nstream\nBT /F1 24 Tf 100 700 Td (Hello PDF) Tj ET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f \n0000000010 00000 n \n0000000060 00000 n \n0000000117 00000 n \n0000000212 00000 n \ntrailer\n<< /Root 1 0 R /Size 5 >>\nstartxref\n312\n%%EOF')
-    temp_file.close()
-    yield temp_file.name
-    os.unlink(temp_file.name)
-
-@pytest.fixture(scope="function")
-def mock_chroma_service():
-    mock = MagicMock()
-    # You can add default return values or side effects if needed
-    return mock

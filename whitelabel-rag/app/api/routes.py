@@ -30,7 +30,7 @@ def decompose_task():
         
         # Get Concierge instance and handle message
         concierge = get_concierge_instance()
-        response = concierge.handle_message(message, session_id)
+        response = concierge.handle_message(message)
         
         return jsonify({
             'response': response,
@@ -267,19 +267,20 @@ def store_step_embedding():
     """Store step embedding in ChromaDB."""
     try:
         data = request.get_json()
-        if not data or 'step_id' not in data:
-            return jsonify({'error': 'Step ID is required'}), 400
+        if not data or 'step_id' not in data or 'content' not in data:
+            return jsonify({'error': 'Step ID and content are required'}), 400
         
         step_id = data['step_id']
-        embedding = data.get('embedding', [])
+        content = data['content']
         metadata = data.get('metadata', {})
         
-        # Store step embedding logic here
-        # For now, return success
+        chroma_service = get_chroma_service_instance()
+        stored_id = chroma_service.store_step_embedding(step_id, content, metadata)
         
         return jsonify({
             'message': 'Step embedding stored successfully',
-            'status': 'success'
+            'status': 'success',
+            'id': stored_id
         })
         
     except Exception as e:
@@ -313,4 +314,4 @@ def query_documents():
 @api_bp.route('/health', methods=['GET'])
 def health_check():
     """Health check endpoint for API."""
-    return jsonify({'status': 'ok', 'service': 'WhiteLabelRAG'}), 200
+    return jsonify({'status': 'healthy', 'service': 'WhiteLabelRAG'}), 200

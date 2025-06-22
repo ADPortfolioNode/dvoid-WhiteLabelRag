@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: whitelabel-rag-app
     ports:
-      - "${PORT:-5000}:5000"
+      - "${PORT:-5000}:${PORT:-5000}"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY:?GEMINI_API_KEY environment variable is required}
       - FLASK_ENV=production
@@ -26,7 +26,7 @@ services:
       - whitelabel-rag-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-5000}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -38,6 +38,14 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whitelabel-rag.rule=Host(`localhost`) && PathPrefix(`/`)"
+      - "traefik.http.services.whitelabel-rag.loadbalancer.server.port=${PORT:-5000}"
+      - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=*"
+      - "traefik.http.routers.whitelabel-rag.middlewares=cors@docker"
 
   redis:
     image: redis:7-alpine

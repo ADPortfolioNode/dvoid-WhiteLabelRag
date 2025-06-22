@@ -6,9 +6,9 @@ import logging
 import uuid
 from typing import Dict, Any, Optional
 from app.services.base_assistant import BaseAssistant
+from app.services.rag_manager import RAGManager
 from app.services.llm_factory import LLMFactory
-from app.services.conversation_store import get_conversation_store
-from app.config import Config
+from app.services.conversation_store import ConversationStore
 
 logger = logging.getLogger(__name__)
 
@@ -20,19 +20,11 @@ class Concierge(BaseAssistant):
     
     def __init__(self):
         super().__init__("Concierge")
-        self.conversation_store = get_conversation_store()
-        from app.services.rag_manager import RAGManager
         self.rag_manager = RAGManager()
-        self.config = Config.ASSISTANT_CONFIGS['Concierge']
-        
-        # Available functions for direct execution
-        self.direct_functions = {
-            'get_time': self._get_current_time,
-            'get_stats': self._get_system_stats,
-            'help': self._get_help
-        }
+        self.llm = LLMFactory.get_llm()
+        self.conversation_store = ConversationStore()
     
-    def handle_message(self, message: str):
+    def handle_message(self, message: str, session_id=None):
         """
         Main entry point for handling user messages.
         Implements the hierarchical workflow architecture.

@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: whitelabel-rag
+    env: docker
+    plan: free
+    dockerfilePath: ./whitelabel-rag/Dockerfile
+    dockerContext: ./whitelabel-rag
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        sync: false
+      - key: CHROMA_DB_PATH
+        value: /app/chromadb_data
+      - key: UPLOAD_FOLDER
+        value: /app/uploads
+      - key: LOG_LEVEL
+        value: INFO
+      - key: WORKERS
+        value: 4
+      - key: TIMEOUT
+        value: 120
+      - key: KEEPALIVE
+        value: 2
+      - key: PORT
+        value: 10000
+    autoDeploy: true
+    healthCheckPath: /health
+    ports:
+      - 10000

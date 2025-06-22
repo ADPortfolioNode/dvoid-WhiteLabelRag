@@ -6,6 +6,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 import json
+import uuid
 
 logger = logging.getLogger(__name__)
 
@@ -21,16 +22,18 @@ class Conversation:
         self.last_activity = datetime.now()
         self.max_messages = 20  # Keep last 20 messages
     
-    def add_message(self, role: str, content: str, sources: List[str] = None):
+    def add_message(self, role: str, content: str, sources: List[str] = None, meta: Dict[str, Any] = None):
         """Add a message to the conversation."""
-        message = {
+        msg = {
             "role": role,
             "content": content,
-            "timestamp": datetime.now().isoformat(),
-            "sources": sources or []
+            "timestamp": datetime.utcnow().isoformat() + "Z"
         }
-        
-        self.messages.append(message)
+        if sources:
+            msg["sources"] = sources
+        if meta:
+            msg["meta"] = meta
+        self.messages.append(msg)
         self.last_activity = datetime.now()
         
         # Keep only the last max_messages
@@ -84,6 +87,10 @@ class ConversationStore:
     def __init__(self):
         self.conversations: Dict[str, Conversation] = {}
         self.cleanup_interval_hours = 24
+    
+    def get_current_session_id(self):
+        # For demo, generate a new session each time
+        return str(uuid.uuid4())
     
     def get_conversation(self, session_id: str) -> Conversation:
         """Get or create a conversation for the session."""

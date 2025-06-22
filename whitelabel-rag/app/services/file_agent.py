@@ -7,9 +7,6 @@ import logging
 from typing import Dict, Any, List
 from datetime import datetime
 from app.services.base_assistant import BaseAssistant
-from app.services.document_processor import DocumentProcessor
-from app.services.rag_manager import get_rag_manager
-from app.config import Config
 
 logger = logging.getLogger(__name__)
 
@@ -21,17 +18,8 @@ class FileAgent(BaseAssistant):
     
     def __init__(self):
         super().__init__("FileAgent")
-        self.config = Config.ASSISTANT_CONFIGS['FileAgent']
-        self.uploads_path = os.path.abspath(os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 
-            Config.UPLOAD_FOLDER
-        ))
-        self.document_processor = DocumentProcessor(
-            chunk_size=Config.CHUNK_SIZE,
-            chunk_overlap=Config.CHUNK_OVERLAP
-        )
-        self.rag_manager = get_rag_manager()
-        
+        self.uploads_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'uploads'))
+
         # Ensure uploads directory exists
         os.makedirs(self.uploads_path, exist_ok=True)
     

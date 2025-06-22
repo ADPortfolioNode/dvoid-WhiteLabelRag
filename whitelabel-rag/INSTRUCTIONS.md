@@ -1217,3 +1217,62 @@ The system can be customized by modifying the following components:
 - Document Loader: For custom document types
 - Retriever: For different search algorithms
 - Generator: For custom response generation logic
+
+### Viewing the App in Your Browser
+
+1. **Start the Docker app**  
+   From your project directory, run:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Open your browser and go to:**  
+   ```
+   http://localhost:5000
+   ```
+
+   - If you are running on a remote server, replace `localhost` with your server's IP or domain.
+   - If using the optional Nginx service, you can also use `http://localhost` (port 80).
+
+3. **You should see the WhiteLabelRAG web interface.**
+
+### Development URL
+
+- If you are running locally, open your browser and go to:
+  ```
+  http://localhost:10000
+  ```
+  or
+  ```
+  http://127.0.0.1:10000
+  ```
+
+- If you are on the same network, you can use your LAN IP:
+  ```
+  http://192.168.1.188:10000
+  ```
+
+- If deployed on a remote server, replace `localhost` with your server's public IP or domain.
+
+### Render.com Deployment Notes
+
+- Render.com sets the `PORT` environment variable (default is 10000).
+- The Dockerfile and docker-compose.yml are configured to use this variable.
+- The app will be available at `https://<your-app-name>.onrender.com` after deployment.
+- Make sure all required environment variables (e.g., `GEMINI_API_KEY`, `SECRET_KEY`) are set in the Render dashboard.
+
+### Docker URL
+
+- If you are running the app via Docker Compose on your local machine, open your browser and go to:
+  ```
+  http://localhost:5000
+  ```
+
+- If you set a different port (e.g., with `-p 10000:10000`), use:
+  ```
+  http://localhost:10000
+  ```
+
+- If running on a remote server, replace `localhost` with your server's IP or domain.
+
+- For Render.com or other cloud platforms, use the provided deployment URL (e.g., `https://<your-app-name>.onrender.com`).

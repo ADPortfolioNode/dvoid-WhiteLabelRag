@@ -226,4 +226,10 @@ class LLMFactory:
             logger.error(f"Error classifying intent: {str(e)}")
             return "simple_query"  # Default fallback
 
-from datetime import datetime
+class GeminiLLM:
+    def generate_response(self, query, context=None, sources=None):
+        # Placeholder: Replace with actual Gemini API call
+        # Use context and sources if provided
+        if context:
+            return f"[GeminiLLM] Q: {query}\nContext: {context}\nSources: {sources}"
+        return f"[GeminiLLM] Q: {query}"
