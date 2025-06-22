@@ -51,11 +51,11 @@ ENV WORKERS=4
 ENV TIMEOUT=120
 ENV KEEPALIVE=2
 # Ensure the app runs on the port Render expects (default 10000 if set, else 5000)
-ENV PORT=${PORT:-5000}
+ENV PORT=10000
 
 # Expose the correct port for Render.com (Render sets $PORT)
-EXPOSE $PORT
+EXPOSE 10000
 
 # Set entrypoint and default command to use the PORT env variable
 ENTRYPOINT ["gunicorn"]
-CMD ["-b", "0.0.0.0:${PORT}", "run:app"]
+CMD ["-b", "0.0.0.0:10000", "-k", "eventlet", "run:app"]
