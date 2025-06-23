@@ -50,12 +50,17 @@ ENV PYTHONUNBUFFERED=1
 ENV WORKERS=4
 ENV TIMEOUT=120
 ENV KEEPALIVE=2
-# Ensure the app runs on the port Render expects (default 10000 if set, else 5000)
-ENV PORT=10000
+# Ensure the app runs on the port Render expects (uses $PORT)
+ENV PORT=${PORT:-10000}
 
-# Expose the correct port for Render.com (Render sets $PORT)
-EXPOSE 10000
+# Expose the port - this is dynamic in Render
+EXPOSE ${PORT:-10000}
 
-# Remove ENTRYPOINT and CMD to avoid conflict with docker-compose command
-# ENTRYPOINT ["uvicorn"]
-# CMD ["run:app", "--host", "0.0.0.0", "--port", "10000"]
+# Switch to non-root user
+USER appuser
+
+# Define the entry point
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+# Command to run
+CMD ["python", "run.py"]

@@ -1,4 +1,4 @@
-"""
+r"""
 WhiteLabelRAG Application Factory
 """
 
@@ -63,5 +63,15 @@ def create_app():
     # Register API router
     from app.api.routes import api_router
     app.include_router(api_router, prefix="/api")
+
+    from fastapi import APIRouter
+
+    root_router = APIRouter()
+
+    @root_router.get("/")
+    async def root():
+        return {"message": "Welcome to WhiteLabelRAG API. Please use the frontend UI to interact."}
+
+    app.include_router(root_router)
 
     return app

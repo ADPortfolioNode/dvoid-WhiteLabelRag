@@ -12,7 +12,10 @@ class Config:
     
     # Flask Configuration
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
-    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', 16 * 1024 * 1024))  # 16MB
+    max_content_length_str = os.environ.get('MAX_CONTENT_LENGTH', str(16 * 1024 * 1024))
+    # Remove comments and whitespace
+    max_content_length_clean = max_content_length_str.split('#')[0].strip()
+    MAX_CONTENT_LENGTH = int(max_content_length_clean)
     
     # File Upload Configuration
     UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')

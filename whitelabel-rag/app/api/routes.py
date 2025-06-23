@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, UploadFile, File, HTTPException, status
 from fastapi.responses import JSONResponse
 import os
+import sys
 import uuid
 import logging
 from datetime import datetime
@@ -271,3 +272,8 @@ async def query_documents(request: Request):
 @api_router.get('/health')
 async def health_check():
     return JSONResponse({'status': 'healthy', 'service': 'WhiteLabelRAG'}, status_code=status.HTTP_200_OK)
+
+@api_router.get('/')
+async def root():
+    # Serve a simple welcome message or redirect to frontend UI
+    return JSONResponse({'message': 'Welcome to WhiteLabelRAG API. Please use the frontend UI to interact.'})

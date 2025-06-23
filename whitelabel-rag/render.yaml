@@ -1,0 +1,33 @@
+services:
+  # Main web service
+  - type: web
+    name: pocketpro-sba
+    env: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: standard
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PORT
+        value: 10000
+      - key: FLASK_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+    disk:
+      name: uploads
+      mountPath: /app/uploads
+      sizeGB: 10
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # Redis service
+  - type: redis
+    name: pocketpro-redis
+    ipAllowList: # only allow internal connections
+      - source: 0.0.0.0/0
+        description: everywhere
+    plan: starter

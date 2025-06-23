@@ -5,7 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: pocketpro-sba-app
     ports:
-      - "10000:10000"
+      # Use PORT env var from Render.com, default to 10000 if not set
+      - "${PORT:-10000}:${PORT:-10000}"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY:?GEMINI_API_KEY environment variable is required}
       - FLASK_ENV=production
@@ -16,6 +17,8 @@ services:
       - WORKERS=${WORKERS:-4}
       - TIMEOUT=${TIMEOUT:-120}
       - KEEPALIVE=${KEEPALIVE:-2}
+      # This env var is needed for Flask to know which port to bind to
+      - PORT=${PORT:-10000}
     volumes:
       - uploads_data:/app/uploads
       - chromadb_data:/app/chromadb_data
@@ -24,11 +27,12 @@ services:
       - whitelabel-rag-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-5000}/health"]
+      # Use dynamic PORT in healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-10000}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 60s
     depends_on:
       - redis
     logging:
@@ -40,11 +44,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.pocketpro-sba.rule=Host(`localhost`) && PathPrefix(`/`)"
-      - "traefik.http.services.pocketpro-sba.loadbalancer.server.port=${PORT:-5000}"
+      - "traefik.http.services.pocketpro-sba.loadbalancer.server.port=${PORT:-10000}"
       - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*"
       - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE"
       - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=*"
 
+  # Redis service - Render.com will provide a durable volume for this
   redis:
     image: redis:7-alpine
     container_name: whitelabel-rag-redis
@@ -67,28 +72,29 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # Optional: Nginx reverse proxy
-  nginx:
-    image: nginx:alpine
-    container_name: whitelabel-rag-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-    networks:
-      - whitelabel-rag-network
-    restart: unless-stopped
-    depends_on:
-      - pocketpro-sba
-    profiles:
-      - nginx
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+  # Nginx is commented out for Render.com as they provide their own routing
+  # Uncomment for local deployment with Nginx
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: whitelabel-rag-nginx
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./nginx/ssl:/etc/nginx/ssl:ro
+  #   networks:
+  #     - whitelabel-rag-network
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - pocketpro-sba
+  #   profiles:
+  #     - nginx
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
 
 networks:
   whitelabel-rag-network:

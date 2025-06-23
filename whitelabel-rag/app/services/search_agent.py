@@ -51,8 +51,7 @@ class SearchAgent(BaseAssistant):
             
             results = self.rag_manager.query_documents(
                 query=message,
-                n_results=n_results,
-                workflow_type=workflow_type
+                n_results=n_results
             )
             
             # Format and enhance results

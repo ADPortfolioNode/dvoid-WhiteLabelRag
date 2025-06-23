@@ -20,6 +20,11 @@ class BaseAssistant:
         self.details = details
         # Optionally emit WebSocket event here
 
+    def _validate_input(self, message: str):
+        if not message or not isinstance(message, str) or message.strip() == "":
+            return False, "Invalid input: message must be a non-empty string."
+        return True, "Valid input."
+
     def report_success(self, text, additional_data=None):
         self._update_status("completed", 100, "Task completed successfully")
         result = {
