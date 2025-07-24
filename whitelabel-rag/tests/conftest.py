@@ -1,12 +1,34 @@
 import os
 import sys
 import pytest
+import shutil
+from pathlib import Path
 
 # Add the whitelabel-rag directory to sys.path for imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'whitelabel-rag')))
 
 from app import create_app
 from flask.testing import FlaskClient
+
+@pytest.fixture(scope="session", autouse=True)
+def test_environment():
+    """Setup test environment"""
+    # Create test data directory
+    test_data_dir = Path('./test_chromadb_data')
+    test_data_dir.mkdir(exist_ok=True)
+    
+    # Set test environment variables
+    os.environ.update({
+        'TESTING': 'true',
+        'CHROMA_DB_PATH': str(test_data_dir),
+        'USE_CHROMA_HTTP_CLIENT': 'false',
+    })
+    
+    yield
+    
+    # Cleanup
+    if test_data_dir.exists():
+        shutil.rmtree(test_data_dir)
 
 @pytest.fixture(autouse=True)
 def set_test_env_vars(monkeypatch):

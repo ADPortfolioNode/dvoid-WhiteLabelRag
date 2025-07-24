@@ -7,6 +7,7 @@ from typing import List, Dict, Any
 from app.services.chroma_service import get_chroma_service_instance
 import os
 import importlib
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -55,26 +56,52 @@ class RAGManager:
         """Store a document chunk in the vector database."""
         return self.chroma_service.store_document(content, metadata)
     
-    def query_documents(self, query, n_results=3):
-        # Basic RAG: Query → Retrieve → Generate
-        results = self.chroma_service.query(query, top_k=n_results)
-        return {"results": results}
+    def query_documents(self, query, n_results=3, workflow=None):
+        # Dispatch to appropriate workflow based on workflow parameter
+        if workflow is None or workflow == "basic":
+            # Basic RAG: Query → Retrieve → Generate
+            results = self.chroma_service.query(query, top_k=n_results)
+            return {"results": results}
+        elif workflow == "advanced":
+            return self.advanced_rag_workflow(query)
+        elif workflow == "recursive":
+            return self.recursive_rag_workflow(query)
+        elif workflow == "adaptive":
+            return self.adaptive_rag_workflow(query)
+        else:
+            raise ValueError(f"Unknown workflow type: {workflow}")
 
-    # Advanced, Recursive, and Adaptive RAG workflows can be added here as methods
     def advanced_rag_workflow(self, query):
-        # Example: expand query, multi-strategy retrieval, rerank, etc.
-        # ...implement as per INSTRUCTIONS.md...
-        pass
+        # Example implementation of advanced RAG workflow
+        # Query expansion, multi-strategy retrieval, reranking, generation, post-processing
+        expanded_query = query + " expanded"
+        semantic_results = self.chroma_service.query(expanded_query, top_k=5)
+        # For demo, just return semantic_results as results
+        return {"results": semantic_results}
 
     def recursive_rag_workflow(self, query):
-        # Example: initial retrieval, plan, targeted retrieval, etc.
-        # ...implement as per INSTRUCTIONS.md...
-        pass
+        # Example implementation of recursive RAG workflow
+        # Initial retrieval, response planning, targeted retrieval, generation
+        initial_docs = self.chroma_service.query(query, top_k=3)
+        # For demo, simulate multiple queries for subcomponents
+        component_results = []
+        for i in range(2):
+            sub_query = f"{query} part {i+1}"
+            component_docs = self.chroma_service.query(sub_query, top_k=2)
+            component_results.extend(component_docs)
+        return {"results": component_results}
 
     def adaptive_rag_workflow(self, query):
-        # Example: analyze query, select workflow, evaluate/refine
-        # ...implement as per INSTRUCTIONS.md...
-        pass
+        # Example implementation of adaptive RAG workflow
+        # Analyze query, select workflow, execute, evaluate, refine
+        if "complex" in query:
+            selected_workflow = "advanced"
+            response = self.advanced_rag_workflow(query)
+        else:
+            selected_workflow = "basic"
+            response = self.query_documents(query, workflow="basic")
+        response["selected_workflow"] = selected_workflow
+        return response
 
     def get_collection_stats(self):
         return self.chroma_service.get_collection_stats()

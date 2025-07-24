@@ -13,9 +13,9 @@ from app.utils.file_utils import allowed_file
 
 logger = logging.getLogger(__name__)
 
-api_router = APIRouter()
+api_bp = APIRouter()
 
-@api_router.post('/decompose')
+@api_bp.post('/decompose')
 async def decompose_task(request: Request):
     try:
         data = await request.json()
@@ -36,7 +36,7 @@ async def decompose_task(request: Request):
         logger.error(f"Error in decompose_task: {str(e)}")
         raise HTTPException(status_code=500, detail='Internal server error')
 
-@api_router.post('/execute')
+@api_bp.post('/execute')
 async def execute_task(request: Request):
     try:
         data = await request.json()
@@ -72,7 +72,7 @@ async def execute_task(request: Request):
         logger.error(f"Error in execute_task: {str(e)}")
         raise HTTPException(status_code=500, detail='Internal server error')
 
-@api_router.post('/validate')
+@api_bp.post('/validate')
 async def validate_result(request: Request):
     try:
         data = await request.json()
@@ -94,7 +94,7 @@ async def validate_result(request: Request):
         logger.error(f"Error in validate_result: {str(e)}")
         raise HTTPException(status_code=500, detail='Internal server error')
 
-@api_router.get('/tasks/{task_id}/results')
+@api_bp.get('/tasks/{task_id}/results')
 async def get_task_results(task_id: str):
     try:
         return JSONResponse({
@@ -106,7 +106,7 @@ async def get_task_results(task_id: str):
         logger.error(f"Error in get_task_results: {str(e)}")
         raise HTTPException(status_code=500, detail='Internal server error')
 
-@api_router.get('/files')
+@api_bp.get('/files')
 async def list_files():
     try:
         upload_folder = 'uploads'
@@ -132,7 +132,7 @@ async def list_files():
         logger.error(f"Error in list_files: {str(e)}")
         raise HTTPException(status_code=500, detail='Internal server error')
 
-@api_router.post('/files')
+@api_bp.post('/files')
 async def upload_file(file: UploadFile = File(...)):
     try:
         if not allowed_file(file.filename):
@@ -156,7 +156,7 @@ async def upload_file(file: UploadFile = File(...)):
         logger.error(f"Error in upload_file: {str(e)}")
         raise HTTPException(status_code=500, detail='Internal server error')
 
-@api_router.post('/documents/upload_and_ingest_document')
+@api_bp.post('/documents/upload_and_ingest_document')
 async def upload_and_ingest_document(file: UploadFile = File(...)):
     try:
         if not allowed_file(file.filename):
@@ -203,7 +203,7 @@ async def upload_and_ingest_document(file: UploadFile = File(...)):
         logger.error(f"Error in upload_and_ingest_document: {str(e)}")
         raise HTTPException(status_code=500, detail='Internal server error')
 
-@api_router.post('/chroma/store_document_embedding')
+@api_bp.post('/chroma/store_document_embedding')
 async def store_document_embedding(request: Request):
     try:
         data = await request.json()
@@ -224,7 +224,7 @@ async def store_document_embedding(request: Request):
         logger.error(f"Error in store_document_embedding: {str(e)}")
         raise HTTPException(status_code=500, detail='Internal server error')
 
-@api_router.post('/chroma/store_step_embedding')
+@api_bp.post('/chroma/store_step_embedding')
 async def store_step_embedding(request: Request):
     try:
         data = await request.json()
@@ -247,7 +247,7 @@ async def store_step_embedding(request: Request):
         logger.error(f"Error in store_step_embedding: {str(e)}")
         raise HTTPException(status_code=500, detail='Internal server error')
 
-@api_router.post('/query')
+@api_bp.post('/query')
 async def query_documents(request: Request):
     try:
         data = await request.json()
@@ -269,11 +269,11 @@ async def query_documents(request: Request):
         logger.error(f"Error in query_documents: {str(e)}")
         raise HTTPException(status_code=500, detail='Internal server error')
 
-@api_router.get('/health')
+@api_bp.get('/health')
 async def health_check():
     return JSONResponse({'status': 'healthy', 'service': 'WhiteLabelRAG'}, status_code=status.HTTP_200_OK)
 
-@api_router.get('/')
+@api_bp.get('/')
 async def root():
     # Serve a simple welcome message or redirect to frontend UI
     return JSONResponse({'message': 'Welcome to WhiteLabelRAG API. Please use the frontend UI to interact.'})

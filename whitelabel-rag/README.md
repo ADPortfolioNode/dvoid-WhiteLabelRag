@@ -98,8 +98,8 @@ Make sure to set the required environment variables such as `GEMINI_API_KEY` bef
    # Build the image
    docker build -t whitelabel-rag .
    
-   # Run the container
-   docker run -p 10000:10000 -e GEMINI_API_KEY=your_api_key whitelabel-rag
+   # Run the container with dynamic port binding and gunicorn
+   docker run -d -p 10000:10000 -e GEMINI_API_KEY=your_api_key -e PORT=10000 whitelabel-rag
    ```
 
 

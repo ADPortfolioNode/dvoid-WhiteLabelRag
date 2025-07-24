@@ -18,9 +18,12 @@ services:
       - key: LOG_LEVEL
         value: INFO
     disk:
-      name: uploads
-      mountPath: /app/uploads
-      sizeGB: 10
+      - name: uploads
+        mountPath: /app/uploads
+        sizeGB: 10
+      - name: chromadb_data
+        mountPath: /app/chromadb_data
+        sizeGB: 10
     healthCheckPath: /health
     autoDeploy: true
 

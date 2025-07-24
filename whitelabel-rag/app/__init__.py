@@ -7,8 +7,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+from app.api.routes import api_bp as api_router
+
 def create_app():
     from fastapi.staticfiles import StaticFiles
+    from app.frontend_router import router as frontend_router
     import os
 
     app = FastAPI(title="WhiteLabelRAG API", version="1.0.0")
@@ -22,10 +25,11 @@ def create_app():
         allow_headers=["*"],
     )
 
-    # Mount React frontend static files
-    build_dir = os.path.join(os.path.dirname(__file__), 'static', 'frontend')
+    # Mount static files
     app.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), 'static')), name="static")
-    app.mount("/frontend", StaticFiles(directory=build_dir, html=True), name="frontend")
+
+    # Include old frontend routes
+    app.include_router(frontend_router)
 
     @app.get("/health")
     async def health():
@@ -52,12 +56,7 @@ def create_app():
             logger.error(f"Health check error: {str(e)}")
             return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
-    from app.api.routes import api_router
     app.include_router(api_router, prefix="/api")
-
-    @app.get("/")
-    async def root():
-        return RedirectResponse(url="/frontend/")
 
     logger.info("FastAPI app initialized successfully")
     return app

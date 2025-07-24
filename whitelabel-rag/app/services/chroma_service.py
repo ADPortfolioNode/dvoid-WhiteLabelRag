@@ -22,6 +22,10 @@ class ChromaService:
         return cls._instance
     
     def __init__(self):
+        self.persist_directory = os.environ.get('CHROMA_DB_PATH', 'chromadb_data')
+        # Ensure required directories exist
+        for d in ['uploads', self.persist_directory, 'logs']:
+            os.makedirs(d, exist_ok=True)
         # Placeholder: connect to ChromaDB or initialize in-memory store
         self.documents = [
             {"content": "Climate change impacts are discussed in this document.", "metadata": {"source": "climate_report_2023.pdf"}},
@@ -46,40 +50,65 @@ class ChromaService:
             chroma_path = os.environ.get('CHROMA_DB_PATH', './chromadb_data')
             os.makedirs(chroma_path, exist_ok=True)
 
+            # Test environment detection
+            is_test_env = 'PYTEST_CURRENT_TEST' in os.environ
             chroma_server_host = os.environ.get('CHROMA_SERVER_HOST')
-            # Use embedded mode by default for local development and testing
-            # Only use HTTP client mode if explicitly enabled and valid FastAPI server is running
             use_http_client = os.environ.get('USE_CHROMA_HTTP_CLIENT', 'false').lower() == 'true'
-            chroma_api_impl = os.environ.get('CHROMA_API_IMPL', '')
 
-            if chroma_server_host and use_http_client:
-                # If no valid chroma_api_impl is set, default to FastAPI implementation
-                if chroma_api_impl not in ['chromadb.api.fastapi.FastAPI', 'chromadb.api.async_fastapi.AsyncFastAPI']:
-                    chroma_api_impl = 'chromadb.api.fastapi.FastAPI'
-                self.client = chromadb.HttpClient(host=chroma_server_host, chroma_api_impl=chroma_api_impl)
-                logger.info(f"ChromaDB HTTP client mode: {chroma_server_host} with API impl: {chroma_api_impl}")
+            if is_test_env:
+                logger.info("Test environment detected - using embedded mode")
+                self.client = chromadb.PersistentClient(path=chroma_path)
+            elif chroma_server_host and use_http_client:
+                try:
+                    port = int(os.environ.get('CHROMA_SERVER_HTTP_PORT', '8000'))
+                    self.client = chromadb.HttpClient(
+                        host=chroma_server_host,
+                        port=port
+                    )
+                    # Test connection
+                    self.client.heartbeat()
+                    logger.info(f"ChromaDB HTTP client mode: {chroma_server_host}:{port}")
+                except Exception as e:
+                    logger.warning(f"HTTP client connection failed: {e}")
+                    logger.info("Falling back to embedded mode")
+                    self.client = chromadb.PersistentClient(path=chroma_path)
             else:
-                # Embedded mode
                 self.client = chromadb.PersistentClient(path=chroma_path)
                 logger.info(f"ChromaDB embedded mode: {chroma_path}")
 
             self._setup_embedding_function()
+            self._initialize_collections()
 
-            self.documents_collection = self.client.get_or_create_collection(
-                name="documents",
-                embedding_function=self.embedding_function,
-                metadata={"description": "Document chunks for RAG"}
-            )
-            self.steps_collection = self.client.get_or_create_collection(
-                name="steps",
-                embedding_function=self.embedding_function,
-                metadata={"description": "Task step embeddings"}
-            )
-            logger.info("ChromaDB initialized successfully")
+            # Ensure default tenant and collections exist
+            try:
+                tenants = self.client.list_tenants()
+                if 'default_tenant' not in tenants:
+                    self.client.create_tenant('default_tenant')
+                    logger.info("Created default_tenant in ChromaDB")
+            except Exception as e:
+                logger.warning(f"Could not verify or create default_tenant: {e}")
+
+            try:
+                self.client.get_or_create_collection(
+                    name="documents",
+                    embedding_function=self.embedding_function,
+                    metadata={"description": "Document chunks for RAG"},
+                    tenant_id='default_tenant'
+                )
+                self.client.get_or_create_collection(
+                    name="steps",
+                    embedding_function=self.embedding_function,
+                    metadata={"description": "Task step embeddings"},
+                    tenant_id='default_tenant'
+                )
+                logger.info("Ensured collections exist in default_tenant")
+            except Exception as e:
+                logger.warning(f"Could not verify or create collections in default_tenant: {e}")
+            
         except Exception as e:
             logger.error(f"Error setting up ChromaDB: {str(e)}")
             raise
-    
+
     def _setup_embedding_function(self):
         """Setup embedding function for ChromaDB."""
         try:
@@ -106,6 +135,26 @@ class ChromaService:
             # Fallback to default
             self.embedding_function = embedding_functions.DefaultEmbeddingFunction()
     
+    def _initialize_collections(self):
+        """Initialize ChromaDB collections"""
+        try:
+            self.documents_collection = self.client.get_or_create_collection(
+                name="documents",
+                embedding_function=self.embedding_function,
+                metadata={"description": "Document chunks for RAG"}
+            )
+            
+            self.steps_collection = self.client.get_or_create_collection(
+                name="steps",
+                embedding_function=self.embedding_function,
+                metadata={"description": "Task step embeddings"}
+            )
+            
+            logger.info("ChromaDB collections initialized successfully")
+        except Exception as e:
+            logger.error(f"Error initializing collections: {str(e)}")
+            raise
+
     def store_document(self, content: str, metadata: Dict[str, Any]) -> str:
         """Store a document chunk in the vector database."""
         try:
