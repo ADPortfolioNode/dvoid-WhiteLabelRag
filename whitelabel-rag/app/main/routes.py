@@ -1,7 +1,6 @@
-from flask import Blueprint, jsonify, render_template
+from flask import jsonify, render_template
 
-
-main_bp = Blueprint('main', __name__)
+from app.main import main_bp  # use the package blueprint; a second Blueprint here left every route unregistered (all 404)
 
 @main_bp.route('/health', methods=['GET'])
 def health():

@@ -359,9 +359,7 @@ service-account-key.json
 local_config.py
 local_settings.py
 
-# Test Files
-test_*.py
-*_test.py
+# Test fixtures/data (test files themselves must be tracked — the QA script expects tests/test_api.py and tests/test_services.py to exist)
 tests/fixtures/
 tests/data/
 

@@ -71,7 +71,8 @@ def run_server():
             port=port,
             debug=False,  # Disable debug to avoid reloader issues
             use_reloader=False,
-            log_output=False
+            log_output=False,
+            allow_unsafe_werkzeug=True  # local dev only; Werkzeug 3.x refuses to serve with debug=False otherwise
         )
         
     except Exception as e:

@@ -35,13 +35,10 @@ class ChromaService:
             # Ensure directory exists
             os.makedirs(chroma_path, exist_ok=True)
             
-            # Initialize ChromaDB client with proper configuration
-            self.client = chromadb.Client(
-                settings=chromadb.config.Settings(
-                    chroma_db_impl="duckdb+parquet",
-                    persist_directory=chroma_path,
-                )
-            )
+            # Initialize ChromaDB client (PersistentClient is the chromadb 1.x
+            # API; the old duckdb+parquet Settings construction was removed
+            # and raises on chromadb >= 1.0)
+            self.client = chromadb.PersistentClient(path=chroma_path)
             logger.info(f"ChromaDB Client initialized at {chroma_path}")
             
             # Setup embedding function

@@ -15,6 +15,7 @@ pandas>=2.0.0
 requests>=2.31.0
 werkzeug>=2.3.0
 gunicorn>=21.0.0
+eventlet>=0.33.0  # required by run.py (hard import) and the eventlet worker; was only installed in the Dockerfile, so local runs failed
 redis>=5.0.0
 pytest>=7.4.0
 pytest-flask>=1.2.0

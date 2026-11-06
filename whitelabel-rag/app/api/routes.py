@@ -8,8 +8,7 @@ import logging
 from datetime import datetime
 from flask import request, jsonify, current_app
 from werkzeug.utils import secure_filename
-from flask import Blueprint
-api_bp = Blueprint('api_routes', __name__)
+from app.api import api_bp  # use the package blueprint; a second Blueprint here left every route unregistered (all 404)
 from app.services.concierge import get_concierge_instance
 from app.services.chroma_service import get_chroma_service_instance
 from app.services.rag_manager import get_rag_manager
