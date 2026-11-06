@@ -9,7 +9,6 @@
     <link href="/static/css/main-navigation.css" rel="stylesheet" />
     <script src="/static/js/bootstrap.bundle.min.js"></script>
     <script src="/static/js/main-navigation.js" defer></script>
-    <script src="/static/js/app.js" defer></script>
 </head>
 <body>
     <header class="app-header">
@@ -60,10 +59,22 @@
     <main class="container-fluid main-content">
         <section id="chatSection" class="content-section">
             <div class="chat-container">
-                <div id="chatMessages" class="chat-messages"></div>
-                <form id="chatForm" autocomplete="off">
-                    <textarea id="chatInput" class="form-control" rows="2" placeholder="Ask me anything about your documents..."></textarea>
-                    <button type="submit" class="btn btn-primary mt-2">Send</button>
+                <div id="chatMessages" class="chat-messages">
+                    <div id="welcomeMessage" class="welcome-message">
+                        <h2>Ask your documents anything</h2>
+                        <p>Upload a document, then ask questions about it. Answers come from your files first, with sources shown.</p>
+                        <div class="quick-actions">
+                            <button type="button" class="btn btn-outline-primary quick-action" data-q="What can you do?">What can you do?</button>
+                            <button type="button" class="btn btn-outline-primary quick-action" data-q="List my files">List my files</button>
+                            <button type="button" class="btn btn-outline-primary quick-action" data-q="Show system stats">Show system stats</button>
+                        </div>
+                    </div>
+                </div>
+                <form id="chatForm" class="chat-input" autocomplete="off">
+                    <div class="input-group">
+                        <textarea id="chatInput" class="form-control" rows="2" placeholder="Ask me anything about your documents..."></textarea>
+                        <button type="submit" class="btn btn-primary" aria-label="Send">Send</button>
+                    </div>
                 </form>
             </div>
         </section>
@@ -74,8 +85,9 @@
             <div id="documentsList" class="documents-list"></div>
             <form id="uploadForm" enctype="multipart/form-data" class="mt-3">
                 <input type="file" id="fileInput" name="file" />
-                <button type="submit" class="btn btn-primary mt-2">Upload Document</button>
+                <button type="submit" class="btn btn-primary mt-2">Upload &amp; Index Document</button>
             </form>
+            <div id="uploadStatus" class="upload-status" role="status"></div>
         </section>
 
         <section id="statsSection" class="content-section d-none">
@@ -97,7 +109,7 @@
     </main>
 
     <footer class="app-footer text-center py-3">
-        WhiteLabelRAG © 2025 - Powered by Azure AI
+        WhiteLabelRAG © 2025 - Powered by Google Gemini
     </footer>
 
     <script>
@@ -178,7 +190,9 @@
             const btnClearChat = document.getElementById('btnClearChat');
             btnClearChat.addEventListener('click', () => {
                 const chatMessages = document.getElementById('chatMessages');
-                chatMessages.innerHTML = '';
+                chatMessages.querySelectorAll('.message').forEach(m => m.remove());
+                const welcome = document.getElementById('welcomeMessage');
+                if (welcome) welcome.style.display = '';
             });
 
             // Documents list button
@@ -208,18 +222,96 @@
                 }
                 const formData = new FormData();
                 formData.append('file', fileInput.files[0]);
-                fetch('/api/files', {
+                const status = document.getElementById('uploadStatus');
+                status.textContent = 'Uploading and indexing…';
+                status.className = 'upload-status processing';
+                fetch('/api/documents/upload_and_ingest_document', {
                     method: 'POST',
                     body: formData
                 })
                 .then(res => res.json())
                 .then(data => {
-                    alert(data.message || 'File uploaded successfully.');
+                    if (data.error) {
+                        status.textContent = 'Upload failed: ' + data.error;
+                        status.className = 'upload-status error';
+                    } else {
+                        status.textContent = data.message || 'File uploaded and indexed.';
+                        status.className = 'upload-status success';
+                    }
                     fileInput.value = '';
                 })
                 .catch(err => {
-                    alert('Error uploading file.');
+                    status.textContent = 'Error uploading file.';
+                    status.className = 'upload-status error';
                 });
+            });
+        });
+    </script>
+    <script>
+        // Chat: ask questions via the REST query API and render bubbles.
+        // (app.js is not loaded on this page: it needs Socket.IO and element
+        // IDs this template does not have, so it never initialized.)
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatMessages = document.getElementById('chatMessages');
+            const chatForm = document.getElementById('chatForm');
+            const chatInput = document.getElementById('chatInput');
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text == null ? '' : String(text);
+                return div.innerHTML;
+            }
+
+            function addMessage(text, who, sources) {
+                const welcome = document.getElementById('welcomeMessage');
+                if (welcome) welcome.style.display = 'none';
+                const wrap = document.createElement('div');
+                wrap.className = 'message message-' + who;
+                let html = '<div class="message-content">' + escapeHtml(text) + '</div>';
+                if (sources && sources.length) {
+                    const names = sources.map(s => typeof s === 'string' ? s : (s.source || s.filename || s.id || JSON.stringify(s)));
+                    html += '<div class="message-sources">Sources: ' + names.map(escapeHtml).join(', ') + '</div>';
+                }
+                wrap.innerHTML = html;
+                chatMessages.appendChild(wrap);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                return wrap;
+            }
+
+            async function sendQuestion(text) {
+                text = (text || '').trim();
+                if (!text) return;
+                addMessage(text, 'user');
+                const thinking = addMessage('Thinking…', 'assistant');
+                try {
+                    const res = await fetch('/api/query', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ query: text })
+                    });
+                    const data = await res.json();
+                    const rag = data.rag_response || {};
+                    thinking.remove();
+                    if (rag.error) {
+                        addMessage('Sorry — ' + (rag.text || 'the request failed. Try again.'), 'assistant');
+                    } else {
+                        addMessage(rag.text || 'No answer returned.', 'assistant', rag.sources || []);
+                    }
+                } catch (err) {
+                    thinking.remove();
+                    addMessage('Sorry — the request failed. Is the server running?', 'assistant');
+                }
+            }
+
+            chatForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const text = chatInput.value;
+                chatInput.value = '';
+                sendQuestion(text);
+            });
+
+            document.querySelectorAll('.quick-action').forEach(btn => {
+                btn.addEventListener('click', () => sendQuestion(btn.getAttribute('data-q')));
             });
         });
     </script>
