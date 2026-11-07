@@ -9,114 +9,151 @@
     <link href="/static/css/main-navigation.css" rel="stylesheet" />
 </head>
 <body>
-    <header class="app-header">
-        <nav class="navbar navbar-expand-lg navbar-dark wlr-navbar">
-            <div class="container-fluid">
-                <a class="navbar-brand wlr-brand" href="#">
-                    <svg class="wlr-logo" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="rgba(255,255,255,0.18)"/><path d="M9 12h14M9 16.5h9M9 21h6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
-                    WhiteLabelRAG <span class="badge rounded-pill wlr-version-badge">v1.0</span>
-                </a>
-                <button class="navbar-toggler hamburger-menu d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-label="Open navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 main-nav-menu">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#" data-rag="chat">Chat</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="ragDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                RAG Workflows
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="ragDropdown">
-                                <li><a class="dropdown-item rag-workflow-link" href="#" data-workflow="basic">Basic RAG</a></li>
-                                <li><a class="dropdown-item rag-workflow-link" href="#" data-workflow="advanced">Advanced RAG</a></li>
-                                <li><a class="dropdown-item rag-workflow-link" href="#" data-workflow="recursive">Recursive RAG</a></li>
-                                <li><a class="dropdown-item rag-workflow-link" href="#" data-workflow="adaptive">Adaptive RAG</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="navDocuments">Documents</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="navStats">System Stats</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" id="navHelp">Help</a>
-                        </li>
-                    </ul>
-                    <button class="btn btn-outline-light btn-sm" id="btnClearChat">Clear Chat</button>
-                </div>
-            </div>
-        </nav>
-        <nav aria-label="breadcrumb" class="breadcrumb-nav d-none d-sm-block">
-            <ol class="breadcrumb page-breadcrumb">
-                <li class="breadcrumb-item"><a href="#" data-rag="home"><i class="bi bi-house-door"></i> Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Chat</li>
-            </ol>
+    <!-- Shared gradient for the brand mark (defined once, used by both logos). -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="wlrLogoGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7c3aed"/><stop offset="1" stop-color="#0ea5a4"/></linearGradient></defs></svg>
+
+    <!-- Slim app bar: phones and tablets only (below lg). Hamburger opens the drawer. -->
+    <header class="app-bar d-lg-none">
+        <nav class="app-bar-nav" id="navbarNav" aria-label="Primary">
+            <button class="app-bar-menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileNav" aria-controls="mobileNav" aria-label="Open navigation">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+            </button>
+            <a class="navbar-brand wlr-brand" href="#">
+                <svg class="wlr-logo" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="url(#wlrLogoGrad)"/><path d="M9 12h14M9 16.5h9M9 21h6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+                WhiteLabelRAG <span class="badge rounded-pill wlr-version-badge">v1.0</span>
+            </a>
         </nav>
     </header>
 
-    <!-- Mobile navigation drawer (phones and tablets, below lg) -->
-    <div class="offcanvas offcanvas-start wlr-offcanvas" tabindex="-1" id="mobileNav" aria-labelledby="mobileNavLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="mobileNavLabel">WhiteLabelRAG <span class="badge rounded-pill wlr-version-badge">v1.0</span></h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <ul class="navbar-nav main-nav-menu">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#" data-rag="chat" data-bs-dismiss="offcanvas">Chat</a>
-                </li>
-                <li class="nav-item">
-                    <span class="nav-link wlr-nav-heading">RAG Workflows</span>
-                    <ul class="navbar-nav ps-3">
-                        <li class="nav-item"><a class="nav-link rag-workflow-link" href="#" data-workflow="basic" data-bs-dismiss="offcanvas">Basic RAG</a></li>
-                        <li class="nav-item"><a class="nav-link rag-workflow-link" href="#" data-workflow="advanced" data-bs-dismiss="offcanvas">Advanced RAG</a></li>
-                        <li class="nav-item"><a class="nav-link rag-workflow-link" href="#" data-workflow="recursive" data-bs-dismiss="offcanvas">Recursive RAG</a></li>
-                        <li class="nav-item"><a class="nav-link rag-workflow-link" href="#" data-workflow="adaptive" data-bs-dismiss="offcanvas">Adaptive RAG</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-rag="documents" data-bs-dismiss="offcanvas">Documents</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-rag="stats" data-bs-dismiss="offcanvas">System Stats</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" data-rag="help" data-bs-dismiss="offcanvas">Help</a>
-                </li>
-            </ul>
-            <button type="button" class="btn btn-outline-danger w-100 mt-3" data-clear-chat data-bs-dismiss="offcanvas">Clear Chat</button>
-        </div>
-    </div>
+    <!-- Icon rail: tablets only (md to lg). Same destinations, icons only. -->
+    <nav class="icon-rail d-none d-md-flex d-lg-none" aria-label="Sections">
+        <ul class="navbar-nav main-nav-menu icon-rail-list">
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-rag="chat" title="Chat" aria-label="Chat">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5z"/></svg>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-rag="documents" title="Documents" aria-label="Documents">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-rag="stats" title="System Stats" aria-label="System Stats">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20v-7M10 20V6M15 20v-10M20 20H4"/></svg>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-rag="help" title="Help" aria-label="Help">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.4 2.3c-.8.3-1 .9-1 1.8"/><circle cx="12" cy="16.8" r="0.4" fill="currentColor"/></svg>
+                </a>
+            </li>
+        </ul>
+        <button type="button" class="icon-rail-clear" data-clear-chat title="Clear chat" aria-label="Clear chat">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h14M10 7V5h4v2M8 7l1 13h6l1-13"/></svg>
+        </button>
+    </nav>
 
-    <main class="container main-content">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6">
-                <section id="chatSection" class="content-section">
-                    <div class="chat-container">
-                        <div id="chatMessages" class="chat-messages">
-                            <div id="welcomeMessage" class="welcome-message">
-                                <h2>Ask your documents anything</h2>
-                                <p>Upload a document, then ask questions about it. Answers come from your files first, with sources shown.</p>
-                                <div class="quick-actions">
-                                    <button type="button" class="btn btn-outline-primary quick-action" data-q="What can you do?">What can you do?</button>
-                                    <button type="button" class="btn btn-outline-primary quick-action" data-q="List my files">List my files</button>
-                                    <button type="button" class="btn btn-outline-primary quick-action" data-q="Show system stats">Show system stats</button>
-                                </div>
+    <div class="app-layout">
+        <!-- Sidebar: overlay drawer below lg, persistent sidebar at lg+. -->
+        <div class="offcanvas offcanvas-lg offcanvas-start wlr-sidebar" tabindex="-1" id="mobileNav" aria-labelledby="mobileNavLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="mobileNavLabel">
+                    <svg class="wlr-logo" viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="url(#wlrLogoGrad)"/><path d="M9 12h14M9 16.5h9M9 21h6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+                    WhiteLabelRAG <span class="badge rounded-pill wlr-version-badge">v1.0</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body wlr-sidebar-body">
+                <ul class="navbar-nav main-nav-menu">
+                    <li class="nav-item">
+                        <a class="nav-link wlr-new-chat" href="#" data-rag="chat" data-clear-chat data-bs-dismiss="offcanvas">+ New chat</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-rag="chat" data-bs-dismiss="offcanvas">Chat</a>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link wlr-nav-heading">RAG Workflows</span>
+                        <ul class="navbar-nav ps-3">
+                            <li class="nav-item"><a class="nav-link rag-workflow-link" href="#" data-workflow="basic" data-bs-dismiss="offcanvas">Basic RAG</a></li>
+                            <li class="nav-item"><a class="nav-link rag-workflow-link" href="#" data-workflow="advanced" data-bs-dismiss="offcanvas">Advanced RAG</a></li>
+                            <li class="nav-item"><a class="nav-link rag-workflow-link" href="#" data-workflow="recursive" data-bs-dismiss="offcanvas">Recursive RAG</a></li>
+                            <li class="nav-item"><a class="nav-link rag-workflow-link" href="#" data-workflow="adaptive" data-bs-dismiss="offcanvas">Adaptive RAG</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="navDocuments" data-rag="documents" data-bs-dismiss="offcanvas">Documents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="navStats" data-rag="stats" data-bs-dismiss="offcanvas">System Stats</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="navHelp" data-rag="help" data-bs-dismiss="offcanvas">Help</a>
+                    </li>
+                </ul>
+                <button type="button" class="btn btn-outline-danger w-100 mt-3" id="btnClearChat">Clear Chat</button>
+            </div>
+        </div>
+
+        <!-- Main shell: stepped centered column; right context rail at xl+. -->
+        <div class="app-shell">
+            <div class="workflow-bar d-none d-md-flex">
+                <span class="workflow-label">Workflow: <strong id="workflowCurrentLabel">Basic RAG</strong></span>
+                <div class="dropdown workflow-switcher-wrap d-none d-xl-block">
+                    <a class="btn btn-sm dropdown-toggle workflow-switcher" href="#" id="ragDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">RAG Workflows</a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="ragDropdown">
+                        <li><a class="dropdown-item rag-workflow-link" href="#" data-workflow="basic">Basic RAG</a></li>
+                        <li><a class="dropdown-item rag-workflow-link" href="#" data-workflow="advanced">Advanced RAG</a></li>
+                        <li><a class="dropdown-item rag-workflow-link" href="#" data-workflow="recursive">Recursive RAG</a></li>
+                        <li><a class="dropdown-item rag-workflow-link" href="#" data-workflow="adaptive">Adaptive RAG</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <section id="chatSection" class="content-section">
+                <div class="chat-container">
+                    <div id="chatMessages" class="chat-messages">
+                        <div id="welcomeMessage" class="welcome-message">
+                            <h2>Ask your documents anything</h2>
+                            <p>Upload a document, then ask questions about it. Answers come from your files first, with sources shown.</p>
+                            <div class="quick-actions">
+                                <button type="button" class="btn btn-outline-primary quick-action" data-q="What can you do?">What can you do?</button>
+                                <button type="button" class="btn btn-outline-primary quick-action" data-q="List my files">List my files</button>
+                                <button type="button" class="btn btn-outline-primary quick-action" data-q="Show system stats">Show system stats</button>
                             </div>
                         </div>
-                        <form id="chatForm" class="chat-input" autocomplete="off">
-                            <div class="input-group">
-                                <textarea id="chatInput" class="form-control" rows="2" placeholder="Ask me anything about your documents..."></textarea>
-                                <button type="submit" class="btn btn-primary" aria-label="Send">Send</button>
-                            </div>
-                        </form>
                     </div>
-                </section>
+                    <form id="chatForm" class="chat-input" autocomplete="off">
+                        <div class="composer-tools d-none d-md-flex">
+                            <button type="button" class="composer-tool" id="btnAttach" title="Attach a document">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12.5l6.5-6.5a2.8 2.8 0 0 1 4 4L11 17.5a4.5 4.5 0 0 1-6.4-6.4l7-7"/></svg>
+                                Attach
+                            </button>
+                            <span class="composer-workflow-chip">Workflow: <strong id="composerWorkflowLabel">Basic RAG</strong></span>
+                        </div>
+                        <div class="input-group">
+                            <textarea id="chatInput" class="form-control" rows="2" placeholder="Ask me anything about your documents..."></textarea>
+                            <button type="submit" class="btn btn-primary" aria-label="Send">Send</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
 
-                <section id="documentsSection" class="content-section d-none">
+            <section id="helpSection" class="content-section d-none">
+                <h2>Help</h2>
+                <p>Welcome to WhiteLabelRAG! Use the navigation menu to explore different RAG workflows and features.</p>
+            </section>
+
+            <section id="ragWorkflowSection" class="content-section d-none">
+                <h2 id="ragWorkflowTitle">RAG Workflow</h2>
+                <div id="ragWorkflowContent">
+                    <!-- Dynamic content for selected RAG workflow -->
+                </div>
+            </section>
+
+            <!-- Context rail: full-screen swaps below xl; persistent files + stats rail at xl+. -->
+            <div class="context-rail">
+                <section id="documentsSection" class="content-section rail-panel d-none">
                     <h2>Documents</h2>
                     <button id="btnListFiles" class="btn btn-secondary mb-3 w-100 w-sm-auto">List Files</button>
                     <ul id="documentsList" class="documents-list list-group"></ul>
@@ -129,25 +166,13 @@
                     <div id="uploadStatus" class="upload-status" role="status"></div>
                 </section>
 
-                <section id="statsSection" class="content-section d-none">
+                <section id="statsSection" class="content-section rail-panel d-none">
                     <h2>System Stats</h2>
                     <pre id="statsOutput" class="wlr-stats-output"></pre>
                 </section>
-
-                <section id="helpSection" class="content-section d-none">
-                    <h2>Help</h2>
-                    <p>Welcome to WhiteLabelRAG! Use the navigation menu to explore different RAG workflows and features.</p>
-                </section>
-
-                <section id="ragWorkflowSection" class="content-section d-none">
-                    <h2 id="ragWorkflowTitle">RAG Workflow</h2>
-                    <div id="ragWorkflowContent">
-                        <!-- Dynamic content for selected RAG workflow -->
-                    </div>
-                </section>
             </div>
         </div>
-    </main>
+    </div>
 
     <footer class="app-footer text-center py-3">
         WhiteLabelRAG © 2025 - Powered by Google Gemini
@@ -165,6 +190,9 @@
                 ragWorkflow: document.getElementById('ragWorkflowSection')
             };
             const breadcrumb = document.querySelector('.page-breadcrumb');
+            // At xl+ Documents/Stats live in the persistent right rail,
+            // so nav taps highlight the rail and keep the chat visible.
+            const railBp = window.matchMedia('(min-width: 1200px)');
 
             function showSection(name) {
                 Object.values(sections).forEach(sec => sec.classList.add('d-none'));
@@ -175,6 +203,7 @@
             }
 
             function updateBreadcrumb(name) {
+                if (!breadcrumb) return;
                 let items = [{ label: 'Home', url: '#' }];
                 switch (name) {
                     case 'chat':
@@ -209,26 +238,60 @@
                 breadcrumb.innerHTML = html;
             }
 
+            function flashRail(sectionId) {
+                const el = document.getElementById(sectionId);
+                if (!el) return;
+                el.classList.add('rail-flash');
+                setTimeout(() => el.classList.remove('rail-flash'), 900);
+            }
+
+            function setWorkflowLabel(workflow) {
+                const label = workflow.charAt(0).toUpperCase() + workflow.slice(1) + ' RAG';
+                const bar = document.getElementById('workflowCurrentLabel');
+                if (bar) bar.textContent = label;
+                const chip = document.getElementById('composerWorkflowLabel');
+                if (chip) chip.textContent = label;
+            }
+
             navLinks.forEach(link => {
                 link.addEventListener('click', e => {
                     e.preventDefault();
                     const workflow = link.getAttribute('data-workflow');
                     const rag = link.getAttribute('data-rag');
                     if (workflow) {
+                        setWorkflowLabel(workflow);
                         showSection('ragWorkflow');
                         document.getElementById('ragWorkflowTitle').textContent = `RAG Workflow: ${workflow.charAt(0).toUpperCase() + workflow.slice(1)}`;
                         // TODO: Load workflow UI dynamically
                         document.getElementById('ragWorkflowContent').textContent = `UI for ${workflow} RAG workflow coming soon.`;
                     } else if (rag) {
-                        showSection(rag);
+                        if ((rag === 'documents' || rag === 'stats') && railBp.matches) {
+                            flashRail(rag === 'documents' ? 'documentsSection' : 'statsSection');
+                        } else {
+                            showSection(rag);
+                        }
                     }
                 });
             });
 
+            // Attach: jump to the upload form (in the rail at xl+, its own screen below).
+            const btnAttach = document.getElementById('btnAttach');
+            if (btnAttach) {
+                btnAttach.addEventListener('click', () => {
+                    const fileInput = document.getElementById('fileInput');
+                    if (railBp.matches) {
+                        flashRail('documentsSection');
+                    } else {
+                        showSection('documents');
+                    }
+                    if (fileInput) fileInput.focus();
+                });
+            }
+
             // Show chat by default
             showSection('chat');
 
-            // Clear chat button (navbar + mobile drawer both trigger it)
+            // Clear chat button (sidebar triggers it)
             const btnClearChat = document.getElementById('btnClearChat');
             btnClearChat.addEventListener('click', () => {
                 const chatMessages = document.getElementById('chatMessages');
