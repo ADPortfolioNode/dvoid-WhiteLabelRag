@@ -402,6 +402,8 @@ datasets/
 *.png
 *.gif
 *.bmp
+# ...except the app's own logo image, which is a tracked asset.
+!app/static/img/wlr-logo.png
 *.tiff
 *.svg
 *.ico

@@ -699,7 +699,7 @@ html, body {
     font-weight: 700;
     letter-spacing: 0.01em;
 }
-.wlr-logo { flex-shrink: 0; }
+.wlr-logo { flex-shrink: 0; border-radius: 50%; object-fit: cover; }
 .wlr-version-badge {
     background: rgba(255, 255, 255, 0.22);
     font-weight: 600;
