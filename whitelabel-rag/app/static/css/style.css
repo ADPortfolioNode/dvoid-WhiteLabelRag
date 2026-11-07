@@ -699,7 +699,7 @@ html, body {
     font-weight: 700;
     letter-spacing: 0.01em;
 }
-.wlr-logo { flex-shrink: 0; }
+.wlr-logo { flex-shrink: 0; border-radius: 50%; object-fit: cover; }
 .wlr-version-badge {
     background: rgba(255, 255, 255, 0.22);
     font-weight: 600;
@@ -886,4 +886,459 @@ body {
 a:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible {
     outline: 2px solid #0d6efd;
     outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Modern sleek layout (2026-11-06, PR: dev/wlr-modern-layout)
+   Reviewed against ChatGPT / Claude / Gemini / Perplexity / Copilot /
+   Le Chat / Meta AI (brief: ~/workspace/wlr-design-brief.md).
+   Visual system: warm paper canvas, ink text, hairlines, ONE accent
+   (deep teal). The sidebar morphs per breakpoint (none -> drawer ->
+   64px icon rail -> 264px sidebar -> 288px wide sidebar) and the chat
+   column steps through a centered measure (100% -> 540 -> 720 -> 768
+   -> 800 -> 860px); at xl+ a persistent right rail shows files and
+   stats beside the chat. Every breakpoint changes at least two of
+   {sidebar mode, column width, element visibility, nav pattern,
+   composer treatment}, so each breakpoint reads as a different layout.
+   NOTE: stats joins the rail at xl (not xxl as the brief sketched) —
+   sharing one rail wrapper keeps the layout robust; xxl still pops
+   via the wider column, wider rail/sidebar, capped shell and the
+   floating composer.
+   ========================================================================== */
+
+:root {
+    --bs-primary: #016a71;
+    --bs-primary-rgb: 1, 106, 113;
+    --bs-link-color: #016a71;
+    --bs-link-hover-color: #014f55;
+    --primary-color: #016a71;
+    --primary-dark: #014f55;
+    --border-color: #e7e1d6;
+    --wlr-paper: #faf8f5;
+    --wlr-paper-deep: #f3efe8;
+    --wlr-ink: #1f1e1c;
+    --wlr-muted: #6f6a61;
+    --wlr-hairline: #e7e1d6;
+    --wlr-accent: #016a71;
+    --wlr-accent-soft: rgba(1, 106, 113, 0.1);
+    --wlr-gradient: linear-gradient(135deg, #7c3aed, #0ea5a4);
+}
+
+/* --- Page shell (base = phones) --- */
+body {
+    background-color: var(--wlr-paper);
+    color: var(--wlr-ink);
+}
+.app-footer {
+    background: var(--wlr-paper);
+    border-top: 1px solid var(--wlr-hairline);
+    color: var(--wlr-muted);
+}
+a:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible {
+    outline-color: var(--wlr-accent);
+}
+
+/* --- Slim app bar (phones + tablets, below lg) --- */
+.app-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background: var(--wlr-paper);
+    border-bottom: 1px solid var(--wlr-hairline);
+}
+.app-bar-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: 56px;
+    padding: 0 0.75rem;
+}
+.app-bar-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--wlr-ink);
+}
+.app-bar-menu:hover { background: var(--wlr-paper-deep); }
+.wlr-brand {
+    color: var(--wlr-ink);
+    font-size: 1.05rem;
+}
+.wlr-brand:hover { color: var(--wlr-ink); }
+.wlr-version-badge {
+    background: var(--wlr-accent-soft);
+    color: var(--wlr-accent);
+}
+
+/* --- Sidebar / drawer (offcanvas-lg: drawer below lg, static sidebar lg+) --- */
+.wlr-sidebar {
+    --bs-offcanvas-width: 85vw;
+    background-color: var(--wlr-paper-deep);
+    color: var(--wlr-ink);
+}
+.wlr-sidebar .offcanvas-header {
+    border-bottom: 1px solid var(--wlr-hairline);
+    padding: 1rem;
+}
+.wlr-sidebar .offcanvas-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+.wlr-sidebar-body {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    overflow-y: auto;
+}
+.wlr-sidebar .main-nav-menu .nav-link {
+    color: var(--wlr-ink);
+    border-radius: 8px;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.95rem;
+}
+.wlr-sidebar .main-nav-menu .nav-link:hover { background: rgba(31, 30, 28, 0.06); }
+.wlr-sidebar .main-nav-menu .nav-link.active {
+    background: var(--wlr-accent-soft);
+    color: var(--wlr-accent);
+    font-weight: 600;
+}
+.wlr-new-chat {
+    display: block;
+    text-align: center;
+    background: var(--wlr-accent) !important;
+    color: #fff !important;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 0.625rem 0.75rem;
+    margin-bottom: 0.75rem;
+}
+.wlr-new-chat:hover { background: var(--primary-dark) !important; }
+.wlr-nav-heading {
+    color: var(--wlr-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+.wlr-sidebar #btnClearChat { margin-top: auto; }
+
+/* --- Icon rail (tablets, md to lg) --- */
+.icon-rail {
+    position: fixed;
+    left: 0;
+    top: 56px;
+    bottom: 0;
+    width: 64px;
+    z-index: 1010;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 0.75rem;
+    background: var(--wlr-paper-deep);
+    border-right: 1px solid var(--wlr-hairline);
+}
+.icon-rail-list { gap: 0.25rem; }
+.icon-rail .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    color: var(--wlr-muted);
+    padding: 0;
+}
+.icon-rail .nav-link:hover { background: rgba(31, 30, 28, 0.06); color: var(--wlr-ink); }
+.icon-rail .nav-link.active { background: var(--wlr-accent-soft); color: var(--wlr-accent); }
+.icon-rail-clear {
+    margin-top: auto;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--wlr-muted);
+}
+.icon-rail-clear:hover { background: rgba(31, 30, 28, 0.06); color: var(--wlr-ink); }
+
+/* --- Centered shell + stepped column (base = phones) --- */
+.app-layout { display: block; }
+.app-shell {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+.workflow-bar {
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.625rem 0.25rem;
+    border-bottom: 1px solid var(--wlr-hairline);
+    margin-bottom: 0.5rem;
+}
+.workflow-label { color: var(--wlr-muted); font-size: 0.875rem; }
+.workflow-label strong { color: var(--wlr-ink); font-weight: 600; }
+.workflow-switcher {
+    border-color: var(--wlr-hairline);
+    color: var(--wlr-ink);
+    background: #fff;
+    font-weight: 600;
+}
+.workflow-switcher:hover { border-color: var(--wlr-accent); color: var(--wlr-accent); }
+
+/* Chat on paper: no card, no border — the composer is the card. */
+.chat-container {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0.75rem 0.25rem;
+    min-height: calc(100dvh - 220px);
+}
+.welcome-message {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    margin: 2.5rem auto 1rem;
+    padding: 0.5rem 0.25rem;
+}
+.welcome-message h2 { font-size: 1.6rem; }
+.welcome-message p { color: var(--wlr-muted); }
+.quick-actions { display: grid; gap: 0.5rem; }
+.quick-actions .btn {
+    min-height: 48px;
+    border-radius: 999px;
+    border-color: var(--wlr-hairline);
+    background: #fff;
+    color: var(--wlr-ink);
+    font-size: 0.9rem;
+    text-align: center;
+}
+.quick-actions .btn:hover { border-color: var(--wlr-accent); color: var(--wlr-accent); background: #fff; }
+.message { max-width: 92%; }
+.message-user .message-content {
+    background: var(--wlr-accent);
+    color: #fff;
+    border-radius: 1rem;
+    border-bottom-right-radius: 0.25rem;
+    box-shadow: none;
+}
+.message-assistant .message-content {
+    background: #fff;
+    border: 1px solid var(--wlr-hairline);
+    color: var(--wlr-ink);
+    border-radius: 1rem;
+    border-bottom-left-radius: 0.25rem;
+    box-shadow: none;
+}
+
+/* Floating composer card. */
+.chat-input {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border: 1px solid var(--wlr-hairline);
+    border-radius: 24px;
+    box-shadow: 0 4px 16px rgba(31, 30, 28, 0.08);
+    padding: 0.5rem;
+    margin-top: 0.75rem;
+}
+.chat-input .input-group { gap: 0.5rem; flex-wrap: nowrap; }
+.chat-input textarea {
+    border: 0;
+    border-radius: 16px;
+    padding: 0.75rem 1rem;
+    min-height: 48px;
+    background: transparent;
+}
+.chat-input textarea:focus {
+    border-color: transparent;
+    box-shadow: none;
+}
+.chat-input .btn {
+    min-height: 48px;
+    min-width: 48px;
+    border-radius: 999px;
+    font-weight: 600;
+    background: var(--wlr-accent);
+    border-color: var(--wlr-accent);
+}
+.chat-input .btn:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+.composer-tools {
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.125rem 0.25rem 0.5rem;
+}
+.composer-tool {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1px solid var(--wlr-hairline);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--wlr-muted);
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.75rem;
+}
+.composer-tool:hover { border-color: var(--wlr-accent); color: var(--wlr-accent); }
+.composer-workflow-chip {
+    font-size: 0.8125rem;
+    color: var(--wlr-muted);
+    background: var(--wlr-accent-soft);
+    border-radius: 999px;
+    padding: 0.375rem 0.75rem;
+}
+.composer-workflow-chip strong { color: var(--wlr-accent); font-weight: 600; }
+
+/* Rail panels double as full-screen cards below xl. */
+.rail-panel {
+    background: #fff;
+    border: 1px solid var(--wlr-hairline);
+    border-radius: 16px;
+    padding: 1rem;
+}
+.rail-panel h2 { font-size: 1.15rem; }
+.wlr-stats-output { border-color: var(--wlr-hairline); }
+.documents-list .list-group-item { border-color: var(--wlr-hairline); }
+
+/* Rail highlight pulse (nav taps at xl+). */
+@keyframes railFlash {
+    0% { box-shadow: 0 0 0 0 rgba(1, 106, 113, 0.45); }
+    100% { box-shadow: 0 0 0 14px rgba(1, 106, 113, 0); }
+}
+.rail-flash { animation: railFlash 0.9s ease; }
+
+/* --- sm: >= 576px — the column gets a frame --- */
+@media (min-width: 576px) {
+    .app-shell { max-width: 540px; padding: 0; }
+    .wlr-sidebar { --bs-offcanvas-width: 320px; }
+    .welcome-message h2 { font-size: 1.8rem; }
+    .quick-actions {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 0.25rem;
+    }
+    .quick-actions .btn { flex: 0 0 auto; width: auto; }
+    .message { max-width: 88%; }
+    .chat-container { padding: 1rem 0.25rem; }
+}
+
+/* --- md: >= 768px — the icon rail arrives; the hamburger dies --- */
+@media (min-width: 768px) {
+    .app-layout { padding-left: 64px; }
+    .app-shell { max-width: 720px; }
+    .welcome-message h2 { font-size: 2rem; }
+    .welcome-message { padding: 1rem 0.25rem; }
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        overflow-x: visible;
+    }
+    .quick-actions .btn { width: 100%; }
+    .message { max-width: 85%; }
+    .chat-container { min-height: calc(100dvh - 230px); }
+    .chat-input textarea { min-height: 52px; }
+}
+
+/* --- lg: >= 992px — the full sidebar arrives; the top app bar goes away --- */
+@media (min-width: 992px) {
+    .app-layout { display: flex; align-items: stretch; padding-left: 0; }
+    .wlr-sidebar {
+        flex: 0 0 264px;
+        width: 264px;
+        background-color: var(--wlr-paper-deep) !important;
+        border-right: 1px solid var(--wlr-hairline);
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        height: 100dvh;
+    }
+    .wlr-sidebar .offcanvas-header { display: flex; }
+    .wlr-sidebar .btn-close { display: none; }
+    .wlr-sidebar-body { padding: 1rem; }
+    .app-shell { flex: 1 1 auto; min-width: 0; max-width: 768px; }
+    .welcome-message h2 { font-size: 2.1rem; }
+    .message { max-width: 82%; }
+    .chat-container { border-radius: 0; }
+}
+
+/* --- xl: >= 1200px — the right context rail appears --- */
+@media (min-width: 1200px) {
+    .app-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 800px) 288px;
+        grid-template-rows: auto 1fr;
+        justify-content: center;
+        gap: 0 24px;
+        max-width: none;
+        padding: 0 24px;
+    }
+    .workflow-bar { grid-column: 1; grid-row: 1; }
+    #chatSection, #helpSection, #ragWorkflowSection { grid-column: 1; grid-row: 2; }
+    .context-rail {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        align-self: start;
+        position: sticky;
+        top: 16px;
+    }
+    /* Rail panels stay visible beside the chat at xl+ (the nav flashes
+       them instead of swapping screens). */
+    .context-rail #documentsSection.d-none,
+    .context-rail #statsSection.d-none { display: block !important; }
+    .welcome-message { max-width: 640px; }
+    .welcome-message h2 { font-size: 2.2rem; }
+    .message { max-width: 80%; }
+    .chat-container { padding: 1.25rem 0.25rem; }
+    .chat-input {
+        border-radius: 28px;
+        border: 1px solid transparent;
+        background: linear-gradient(#fff, #fff) padding-box,
+            linear-gradient(135deg, rgba(124, 58, 237, 0.35), rgba(14, 165, 164, 0.35)) border-box;
+        box-shadow: 0 8px 24px rgba(31, 30, 28, 0.10);
+    }
+}
+
+/* --- xxl: >= 1400px — the pro desk --- */
+@media (min-width: 1400px) {
+    .app-shell {
+        max-width: 1600px;
+        grid-template-columns: minmax(0, 860px) 320px;
+        gap: 0 32px;
+    }
+    .wlr-sidebar { flex-basis: 288px; width: 288px; }
+    .wlr-sidebar .main-nav-menu .nav-link { font-size: 0.95rem; }
+    .welcome-message { max-width: 680px; }
+    .welcome-message h2 { font-size: 2.4rem; }
+    .message { max-width: 78%; }
+    .chat-container { padding: 1.5rem 0.25rem; }
+    .chat-input {
+        padding: 0.75rem;
+        box-shadow: 0 12px 32px rgba(31, 30, 28, 0.12);
+    }
+    .chat-input textarea { min-height: 56px; }
+    .quick-actions .btn {
+        text-align: left;
+        padding: 0.875rem 1rem;
+        border-radius: 16px;
+        min-height: 56px;
+        white-space: normal;
+    }
+    .quick-actions .btn:hover { box-shadow: 0 4px 16px rgba(31, 30, 28, 0.08); }
 }
