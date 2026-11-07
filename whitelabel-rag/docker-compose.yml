@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   whitelabel-rag:
     build: 
@@ -33,30 +31,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    depends_on:
-      - redis
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  redis:
-    image: redis:7-alpine
-    container_name: whitelabel-rag-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - whitelabel-rag-network
-    restart: unless-stopped
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
     logging:
       driver: "json-file"
       options:
@@ -94,4 +68,3 @@ volumes:
   uploads_data:
   chromadb_data:
   logs_data:
-  redis_data:
