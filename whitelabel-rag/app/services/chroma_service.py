@@ -12,19 +12,21 @@ from typing import List, Dict, Any, Optional
 logger = logging.getLogger(__name__)
 
 class ChromaService:
-    """Service for managing ChromaDB operations."""
-    
-    _instance = None
-    
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super(ChromaService, cls).__new__(cls)
-        return cls._instance
-    
+    """Service for managing ChromaDB operations.
+
+    NOTE: there is deliberately no class-level singleton here.
+    get_chroma_service_instance() (below) caches only fully-initialized
+    instances. Previously __new__ cached the instance and __init__ set
+    `initialized = True` BEFORE setup ran, so a failed first init left a
+    half-built instance behind: later calls returned it without retrying
+    setup, and the document database stayed unavailable for the rest of
+    the process even after the transient cause cleared. Now a failed
+    construction raises before anything is cached, so the next call
+    retries setup from scratch.
+    """
+
     def __init__(self):
-        if not hasattr(self, 'initialized'):
-            self.initialized = True
-            self._setup_chroma()
+        self._setup_chroma()
     
     def _setup_chroma(self):
         """Setup ChromaDB client and collections."""

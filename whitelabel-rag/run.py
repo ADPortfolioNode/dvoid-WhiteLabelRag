@@ -86,7 +86,12 @@ if __name__ == '__main__':
             port=port,
             debug=debug,
             use_reloader=False,
-            log_output=True
+            log_output=True,
+            # Werkzeug 3.x refuses to serve when stdin is not a TTY unless
+            # this is set (same guard already fixed in run_stable.py).
+            # Without it, `python run.py` fails to start at all when launched
+            # backgrounded or from a non-terminal (e.g. an IDE run config).
+            allow_unsafe_werkzeug=True
         )
         
     except KeyboardInterrupt:
