@@ -31,8 +31,13 @@ RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir gunicorn eventlet
 
 # Copy entrypoint script
+# Strip any Windows CRLF line endings at build time: a CRLF shebang
+# (#!/bin/bash\r) makes the container fail at start with
+# "no such file or directory". .gitattributes forces LF on checkout,
+# but this keeps the build working even from an already-CRLF checkout.
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Copy application code
 COPY . .
@@ -61,8 +66,8 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=40s --retries=3 \
 # Switch to non-root user
 USER appuser
 
-# Set entrypoint
-ENTRYPOINT ["docker-entrypoint.sh"]
+# Set entrypoint (absolute path, no PATH lookup)
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 # Default command
 CMD ["gunicorn"]
