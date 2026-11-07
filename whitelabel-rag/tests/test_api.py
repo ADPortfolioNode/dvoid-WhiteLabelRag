@@ -64,3 +64,29 @@ def test_ingest_endpoint_exists(app):
     resp = client.post("/api/documents/upload_and_ingest_document", data={})
     assert resp.status_code == 400  # no file provided — but the route exists
     assert "error" in resp.get_json()
+
+
+def test_home_is_responsive_bootstrap(app):
+    """Mobile-first responsive shell: offcanvas drawer below lg, content
+    column narrowing across the five named breakpoints (sm/md/lg/xl/xxl),
+    and the Bootstrap bundle actually served (it 404'd before vendoring)."""
+    client = app.test_client()
+    resp = client.get("/")
+    assert resp.status_code == 200
+    assert b"offcanvas" in resp.data
+    assert b"data-bs-toggle=\"offcanvas\"" in resp.data
+    assert b"col-md-10" in resp.data
+    assert b"col-lg-8" in resp.data
+    assert b"col-xl-7" in resp.data
+    assert b"col-xxl-6" in resp.data
+    assert b"viewport-fit=cover" in resp.data
+
+
+def test_bootstrap_assets_serve(app):
+    client = app.test_client()
+    css = client.get("/static/css/bootstrap.min.css")
+    assert css.status_code == 200
+    assert b"Bootstrap" in css.data
+    js = client.get("/static/js/bootstrap.bundle.min.js")
+    assert js.status_code == 200
+    assert b"Bootstrap" in js.data
