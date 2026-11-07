@@ -3,10 +3,13 @@
 WhiteLabelRAG Application Entry Point
 """
 
-# Apply eventlet monkey patching as the very first thing
-# to ensure all standard libraries are greened for asynchronous operations.
-import eventlet
-eventlet.monkey_patch()
+# NOTE: no eventlet monkey patch here. The app's SocketIO runs in
+# threading mode (see app/__init__.py) and production serves it with
+# gunicorn's threaded worker. eventlet.monkey_patch() rewires the
+# standard library for greenlets and deadlocks real threads, so it
+# must not run in this process. (gunicorn 26 also removed the
+# eventlet worker entirely, so --worker-class eventlet no longer
+# exists; see docker-entrypoint.sh.)
 
 import os
 import sys
