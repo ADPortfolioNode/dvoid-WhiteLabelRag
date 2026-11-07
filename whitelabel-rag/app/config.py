@@ -26,6 +26,15 @@ class Config:
     CHROMA_API_IMPL = os.environ.get('CHROMA_API_IMPL', 'chromadb.api.fastapi.FastAPI')
     
     # LLM Configuration
+    # Fallback chain (PocketPro standard chain: Gemini -> Groq -> Ollama
+    # -> retrieved text). Only GEMINI_API_KEY is required at startup; a
+    # rung with no key is skipped. Ollama is used only when
+    # OLLAMA_ENABLED is set.
+    GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
+    GROQ_MODEL = os.environ.get('GROQ_MODEL', 'openai/gpt-oss-20b')
+    OLLAMA_ENABLED = os.environ.get('OLLAMA_ENABLED', '')
+    OLLAMA_HOST = os.environ.get('OLLAMA_HOST', 'http://localhost:11434')
+    OLLAMA_MODEL = os.environ.get('OLLAMA_MODEL', 'llama3.1')
     GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 
     # Internet Search API Configuration

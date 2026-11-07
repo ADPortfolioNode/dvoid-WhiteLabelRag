@@ -9,6 +9,7 @@ from datetime import datetime
 from flask import request, jsonify, current_app
 from werkzeug.utils import secure_filename
 from app.api import api_bp  # use the package blueprint; a second Blueprint here left every route unregistered (all 404)
+from app.services.chain_llm import ChainLLM
 from app.services.concierge import get_concierge_instance
 from app.services.chroma_service import get_chroma_service_instance
 from app.services.rag_manager import get_rag_manager
@@ -78,6 +79,16 @@ def get_accuracy_regression():
         })
     except Exception as e:
         logger.error(f"Error calculating accuracy and regression: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@api_bp.route('/llm/status', methods=['GET'])
+def get_llm_status():
+    """Multi-provider LLM chain status: which rung answered last, and
+    which providers are configured. Mirrors the PocketPro chain status."""
+    try:
+        return jsonify(ChainLLM.status())
+    except Exception as e:
+        logger.error(f"Error getting LLM status: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
 @api_bp.route('/decompose', methods=['POST'])
