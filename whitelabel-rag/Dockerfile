@@ -28,7 +28,7 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir gunicorn eventlet
+    && pip install --no-cache-dir gunicorn
 
 # Copy entrypoint script
 # Strip any Windows CRLF line endings at build time: a CRLF shebang
@@ -53,6 +53,7 @@ ENV FLASK_APP=run.py
 ENV FLASK_ENV=production
 ENV PYTHONUNBUFFERED=1
 ENV WORKERS=4
+ENV THREADS=4
 ENV TIMEOUT=120
 ENV KEEPALIVE=2
 

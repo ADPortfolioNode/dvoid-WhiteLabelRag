@@ -167,6 +167,7 @@ else
     
     # Default values
     WORKERS=${WORKERS:-4}
+    THREADS=${THREADS:-4}
     TIMEOUT=${TIMEOUT:-120}
     KEEPALIVE=${KEEPALIVE:-2}
     BIND=${BIND:-0.0.0.0:5000}
@@ -175,6 +176,7 @@ else
         if [ "$SHOW_STATUS_MESSAGES" = "true" ]; then
             echo "🦄 Starting Gunicorn..."
             echo "🔧 Workers: ${WORKERS:-4}"
+            echo "🧵 Threads per worker: ${THREADS:-4}"
             echo "⏱️ Timeout: ${TIMEOUT:-120}"
             echo "🔗 Keep-Alive: ${KEEPALIVE:-2}"
             echo "🌐 Listening on: 0.0.0.0:5000"
@@ -183,13 +185,17 @@ else
         export FLASK_APP="run:app" # Explicitly set the correct application module and variable
         export FLASK_ENV=${FLASK_ENV:-production}
 
-        # Start Gunicorn with eventlet worker
+        # Start Gunicorn with the threaded worker. SocketIO runs in
+        # threading mode, so gthread is the matching worker. Do NOT use
+        # --worker-class eventlet: gunicorn 26 removed that worker, and
+        # eventlet's monkey patch deadlocks real threads.
         exec gunicorn \
             --workers "$WORKERS" \
+            --threads "$THREADS" \
             --timeout "$TIMEOUT" \
             --keep-alive "$KEEPALIVE" \
             --bind "$BIND" \
-            --worker-class eventlet \
+            --worker-class gthread \
             "$FLASK_APP"
     fi
 fi

@@ -477,8 +477,8 @@ pip install gunicorn
 # gunicorn.conf.py
 bind = "0.0.0.0:5000"
 workers = 4
-worker_class = "eventlet"
-worker_connections = 1000
+worker_class = "gthread"
+threads = 4
 timeout = 30
 keepalive = 2
 max_requests = 1000

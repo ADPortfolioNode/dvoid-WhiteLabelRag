@@ -16,6 +16,7 @@ services:
       - UPLOAD_FOLDER=/app/uploads
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - WORKERS=${WORKERS:-4}
+      - THREADS=${THREADS:-4}
       - TIMEOUT=${TIMEOUT:-120}
       - KEEPALIVE=${KEEPALIVE:-2}
     volumes:

@@ -15,7 +15,10 @@ pandas>=2.0.0
 requests>=2.31.0
 werkzeug>=2.3.0
 gunicorn>=21.0.0
-eventlet>=0.33.0  # required by run.py (hard import) and the eventlet worker; was only installed in the Dockerfile, so local runs failed
+# eventlet was removed: gunicorn 26 dropped the eventlet worker, and
+# eventlet.monkey_patch() deadlocks the threaded worker. The app's
+# SocketIO runs in threading mode and is served by gthread, so
+# nothing in the app needs eventlet any more.
 redis>=5.0.0
 pytest>=7.4.0
 pytest-flask>=1.2.0
