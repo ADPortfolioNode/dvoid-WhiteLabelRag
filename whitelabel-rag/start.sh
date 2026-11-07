@@ -5,9 +5,11 @@ set -euo pipefail
 # Same pattern as the other projects: one command, persistent data
 # (named volumes are never wiped by this script), silo-safe ports.
 #
-# Usage: ./start.sh [--build] [--no-build] [--test] [--down]
+# Usage: ./start.sh [--build] [--rebuild] [--no-build] [--test] [--down]
 #   (default)  start the stack (cached build; builds if the image is missing)
 #   --build    forced --no-cache rebuild, then start
+#   --rebuild  cached rebuild (reuses the pip/apt layers; use after a
+#              Dockerfile change), then start
 #   --no-build start without building (same as the default, explicit)
 #   --test     monitored startup: wait for /health and report PASS/FAIL
 #   --down     stop the stack (data is kept in the named volumes)
@@ -157,25 +159,28 @@ print_success() {
 
 # --- Flags ---
 BUILD=false
+REBUILD=false
 DOWN=false
 TEST_REQUESTED=false
 
 while [ "${#}" -gt 0 ]; do
     case "$1" in
         --build) BUILD=true; shift ;;
+        --rebuild) REBUILD=true; shift ;;
         --no-build) BUILD=false; shift ;;
         --down) DOWN=true; shift ;;
         --test) TEST_REQUESTED=true; shift ;;
         -h|--help)
-            echo "Usage: $0 [--build] [--no-build] [--test] [--down]"
+            echo "Usage: $0 [--build] [--rebuild] [--no-build] [--test] [--down]"
             echo "  (default)  start the stack"
             echo "  --build    forced --no-cache rebuild, then start"
+            echo "  --rebuild  cached rebuild, then start"
             echo "  --no-build start without building (default)"
             echo "  --test     monitored startup: wait for /health, report PASS/FAIL"
             echo "  --down     stop the stack (data is kept)"
             exit 0
             ;;
-        *) echo "Unknown arg: $1" >&2; echo "Usage: $0 [--build] [--no-build] [--test] [--down]" >&2; exit 2 ;;
+        *) echo "Unknown arg: $1" >&2; echo "Usage: $0 [--build] [--rebuild] [--no-build] [--test] [--down]" >&2; exit 2 ;;
     esac
 done
 
@@ -211,6 +216,12 @@ resolve_compose_host_ports || {
 if [ "${BUILD}" = true ]; then
     echo "Building image with --no-cache..."
     if ! compose_cmd build --no-cache; then
+        echo "ERROR: Build failed." >&2
+        exit 1
+    fi
+elif [ "${REBUILD}" = true ]; then
+    echo "Rebuilding image (cached layers are reused)..."
+    if ! compose_cmd build; then
         echo "ERROR: Build failed." >&2
         exit 1
     fi

@@ -1,0 +1,23 @@
+# Keep the Docker build context small: the first build shipped a 1.63 GB
+# context (venv, local Chroma data, uploads, .git) and took ~3 hours.
+# The image builds its own dependencies from requirements.txt, and the
+# app's data lives in named volumes (mounted by docker-compose.yml), so
+# none of these belong in the image. With this file the context is a few
+# MB and a cached rebuild takes minutes.
+.git
+.gitignore
+.dockerignore
+venv
+.venv
+__pycache__
+*.pyc
+*.pyo
+chromadb_data
+uploads
+logs
+.env
+.pytest_cache
+tests
+*.log
+.vscode
+.idea

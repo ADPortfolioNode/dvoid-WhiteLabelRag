@@ -1,0 +1,6 @@
+# Force Unix line endings for shell scripts on every checkout.
+# Windows (Git for Windows, core.autocrlf=true) converts LF to CRLF on
+# checkout, which breaks scripts the Docker build executes: a CRLF
+# shebang (#!/bin/bash\r) makes the kernel fail with "no such file or
+# directory" at container start. This rule keeps .sh files LF everywhere.
+*.sh text eol=lf
