@@ -139,35 +139,55 @@ class LLMFactory:
         return instance._model_assignments.copy()
     
     @classmethod
-    def generate_response(cls, prompt: str, system_prompt: Optional[str] = None, 
-                         temperature: float = 0.2, max_tokens: int = 1024, 
+    def generate_response(cls, prompt: str, system_prompt: Optional[str] = None,
+                         temperature: float = 0.2, max_tokens: int = 1024,
                          task: str = 'general') -> str:
-        """Generate response using the appropriate LLM for the task."""
+        """Generate a response via the multi-provider fallback chain.
+
+        Tries Gemini, then Groq, then Ollama. When every LLM rung fails
+        or is unconfigured, falls back to the retrieved text carried in
+        the prompt instead of returning an error string.
+        ChainLLM.last_provider records which rung answered; see
+        /api/llm/status.
+        """
+        from app.services.chain_llm import ChainLLM
+
         try:
-            llm = cls.get_llm(task)
-            
-            # Combine system prompt and user prompt if system prompt is provided
-            if system_prompt:
-                full_prompt = f"System: {system_prompt}\n\nUser: {prompt}"
-            else:
-                full_prompt = prompt
-            
-            # Configure generation parameters
-            generation_config = genai.types.GenerationConfig(
-                temperature=temperature,
-                max_output_tokens=max_tokens,
-            )
-            
-            response = llm.generate_content(
-                full_prompt,
-                generation_config=generation_config
-            )
-            
-            return response.text
-            
-        except Exception as e:
+            text, _provider = ChainLLM.generate(
+                prompt, system_prompt, temperature, max_tokens, task)
+        except Exception as e:  # noqa: BLE001 - the chain must never raise
             logger.error(f"Error generating response: {str(e)}")
-            return f"Error generating response: {str(e)}"
+            text = None
+        if text:
+            return text
+        return cls._retrieved_text_fallback(prompt)
+
+    @classmethod
+    def _retrieved_text_fallback(cls, prompt: str) -> str:
+        """Last chain rung: the retrieved documents themselves.
+
+        rag_manager builds prompts as "Context:\\n{context}\\n\\nQuestion:
+        {query}", so the context can be recovered from the prompt. When
+        no context is present, say plainly that no provider answered.
+        """
+        context = ""
+        marker = "Context:\n"
+        if marker in prompt:
+            rest = prompt.split(marker, 1)[1]
+            if "\n\nQuestion:" in rest:
+                context = rest.split("\n\nQuestion:", 1)[0].strip()
+            else:
+                context = rest.strip()
+        if context:
+            return (
+                "[No LLM provider was available, so here are the retrieved "
+                "documents instead:]\n\n" + context
+            )
+        return (
+            "No LLM provider was available to answer this question. "
+            "Check /api/llm/status and make sure at least one provider "
+            "key is set (GEMINI_API_KEY, GROQ_API_KEY, or the others)."
+        )
     
     @classmethod
     def generate_structured_response(cls, prompt: str, context: str = "", 
@@ -184,14 +204,17 @@ class LLMFactory:
             
             # Generate response
             response_text = cls.generate_response(full_prompt, system_prompt, task=task)
-            
+
+            from app.services.chain_llm import ChainLLM
+
             return {
                 'text': response_text,
                 'sources': sources or [],
                 'context_used': bool(context),
+                'provider': ChainLLM.last_provider,
                 'timestamp': str(datetime.now())
             }
-            
+
         except Exception as e:
             logger.error(f"Error generating structured response: {str(e)}")
             from datetime import datetime
@@ -199,6 +222,7 @@ class LLMFactory:
                 'text': f"Error generating response: {str(e)}",
                 'sources': [],
                 'context_used': False,
+                'provider': None,
                 'error': True,
                 'timestamp': str(datetime.now())
             }
