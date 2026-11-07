@@ -677,3 +677,213 @@ html, body {
         opacity: 0.6;
     }
 }
+
+/* ==========================================================================
+   Responsive mobile-first redesign (2026-11-06, PR: dev/wlr-responsive-ui)
+   Base styles target phones first; each breakpoint below only ADDS or
+   widens. Breakpoints follow Bootstrap 5: sm 576, md 768, lg 992,
+   xl 1200, xxl 1400. The content column narrows per breakpoint via the
+   col-12 / col-md-10 / col-lg-8 / col-xl-7 / col-xxl-6 classes in
+   index.html; this section scales type, spacing and chat sizing.
+   ========================================================================== */
+
+/* --- Sleek header + drawer --- */
+.wlr-navbar {
+    background: linear-gradient(135deg, #0b5ed7 0%, #6610f2 100%);
+    box-shadow: 0 0.25rem 0.75rem rgba(13, 110, 253, 0.25);
+}
+.wlr-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+.wlr-logo { flex-shrink: 0; }
+.wlr-version-badge {
+    background: rgba(255, 255, 255, 0.22);
+    font-weight: 600;
+}
+.wlr-offcanvas {
+    background: linear-gradient(180deg, #0b5ed7 0%, #4c0fd6 100%);
+    color: #fff;
+}
+.wlr-offcanvas .nav-link { color: rgba(255, 255, 255, 0.85); }
+.wlr-offcanvas .nav-link:hover,
+.wlr-offcanvas .nav-link.active { color: #fff; }
+.wlr-nav-heading {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+}
+
+/* --- Page shell (mobile-first base = phones) --- */
+body {
+    background-color: #f6f8fb;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+.main-content {
+    flex: 1 0 auto;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.breadcrumb-nav {
+    background: #fff;
+    border-bottom: 1px solid var(--color-gray-200);
+    padding: 0.5rem 1rem;
+}
+.breadcrumb-nav .breadcrumb { margin-bottom: 0; }
+.app-footer {
+    color: var(--color-gray-600);
+    font-size: 0.8125rem;
+    background: #fff;
+    border-top: 1px solid var(--color-gray-200);
+}
+
+/* --- Chat (base = phones) --- */
+.content-section h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 210px);
+    min-height: calc(100dvh - 210px);
+    background: #fff;
+    border: 1px solid var(--color-gray-200);
+    border-radius: 1rem;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.06);
+    padding: 0.75rem;
+}
+.chat-messages {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 0.25rem;
+}
+.welcome-message {
+    margin: 1rem auto;
+    padding: 1.25rem 1rem;
+    max-width: 100%;
+}
+.welcome-message h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+.welcome-message p {
+    color: var(--color-gray-600);
+    font-size: 0.95rem;
+}
+.quick-actions {
+    display: grid;
+    gap: 0.5rem;
+}
+.quick-actions .btn {
+    min-height: 44px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+}
+.message { max-width: 92%; }
+.chat-input {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    padding: 0.75rem 0.25rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--color-gray-200);
+}
+.chat-input textarea {
+    font-size: 16px; /* prevents iOS zoom on focus */
+    min-height: 48px;
+}
+.chat-input .btn {
+    min-height: 48px;
+    min-width: 48px;
+    border-radius: 999px;
+    font-weight: 600;
+}
+.documents-list { margin-bottom: 0; }
+.documents-list .list-group-item {
+    word-break: break-word;
+    font-size: 0.9rem;
+}
+.wlr-stats-output {
+    background: #fff;
+    border: 1px solid var(--color-gray-200);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.85rem;
+}
+.content-section .btn,
+.offcanvas .btn,
+.navbar .btn {
+    min-height: 44px;
+}
+.navbar .btn-sm { min-height: 38px; }
+
+/* Touch devices: roomier tap targets */
+@media (pointer: coarse) {
+    .navbar-nav .nav-link { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+}
+
+/* --- sm: >= 576px (large phones, portrait tablets) --- */
+@media (min-width: 576px) {
+    .welcome-message { padding: 1.75rem 1.5rem; }
+    .welcome-message h2 { font-size: 1.6rem; }
+    .quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .quick-actions .btn { width: auto; }
+    .message { max-width: 88%; }
+    .chat-container { padding: 1rem; }
+    .content-section h2 { font-size: 1.5rem; }
+}
+
+/* --- md: >= 768px (tablets) --- */
+@media (min-width: 768px) {
+    .main-content { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+    .welcome-message { padding: 2rem; }
+    .welcome-message h2 { font-size: 1.75rem; }
+    .message { max-width: 85%; }
+    .chat-container { min-height: calc(100vh - 230px); min-height: calc(100dvh - 230px); }
+    .chat-input textarea { min-height: 52px; }
+}
+
+/* --- lg: >= 992px (small laptops, desktop nav appears) --- */
+@media (min-width: 992px) {
+    .message { max-width: 82%; }
+    .chat-container { border-radius: 1.25rem; }
+    .welcome-message h2 { font-size: 1.85rem; }
+    .main-content { padding-top: 2rem; }
+}
+
+/* --- xl: >= 1200px (desktops) --- */
+@media (min-width: 1200px) {
+    .welcome-message { max-width: 640px; padding: 2.25rem; }
+    .welcome-message h2 { font-size: 2rem; }
+    .message { max-width: 80%; }
+    .chat-container { padding: 1.25rem; }
+}
+
+/* --- xxl: >= 1400px (large desktops) --- */
+@media (min-width: 1400px) {
+    .welcome-message { max-width: 680px; }
+    .message { max-width: 78%; }
+    .chat-container { padding: 1.5rem; }
+    .content-section h2 { font-size: 1.75rem; }
+}
+
+/* Focus visibility (keyboard users) */
+a:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+}
