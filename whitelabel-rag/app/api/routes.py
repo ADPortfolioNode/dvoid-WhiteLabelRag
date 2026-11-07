@@ -16,7 +16,7 @@ from app.services.document_processor import DocumentProcessor
 from app.services.internet_search_agent import get_internet_search_agent_instance
 from app.services.multimedia_agent import get_multimedia_agent_instance
 from app.services.file_manager import get_file_manager_instance
-from app.utils.file_utils import allowed_file
+from app.utils.file_utils import validate_file_upload
 
 
 logger = logging.getLogger(__name__)
@@ -224,8 +224,9 @@ def upload_file():
         if file.filename == '':
             return jsonify({'error': 'No file selected'}), 400
         
-        if not allowed_file(file.filename):
-            return jsonify({'error': 'File type not allowed'}), 400
+        valid, message = validate_file_upload(file)
+        if not valid:
+            return jsonify({'error': message}), 400
         
         filename = secure_filename(file.filename)
         upload_folder = current_app.config['UPLOAD_FOLDER']
@@ -322,8 +323,9 @@ def upload_and_ingest_document():
         if file.filename == '':
             return jsonify({'error': 'No file selected'}), 400
         
-        if not allowed_file(file.filename):
-            return jsonify({'error': 'File type not allowed'}), 400
+        valid, message = validate_file_upload(file)
+        if not valid:
+            return jsonify({'error': message}), 400
         
         filename = secure_filename(file.filename)
         upload_folder = current_app.config['UPLOAD_FOLDER']

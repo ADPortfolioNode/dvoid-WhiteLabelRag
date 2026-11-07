@@ -16,7 +16,9 @@ class Config:
     
     # File Upload Configuration
     UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')
-    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'docx', 'md', 'csv', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'mp3', 'wav', 'mp4', 'avi', 'mov'}
+    # Document types are the app/utils/file_utils.py ALLOWED_EXTENSIONS
+    # set, plus the multimedia types handled by the multimedia agent.
+    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'docx', 'md', 'csv', 'html', 'htm', 'pptx', 'xlsx', 'epub', 'rtf', 'odt', 'json', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'mp3', 'wav', 'mp4', 'avi', 'mov'}
     
     # ChromaDB Configuration
     CHROMA_DB_PATH = os.environ.get('CHROMA_DB_PATH', './chromadb_data')
