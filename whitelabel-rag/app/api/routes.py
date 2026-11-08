@@ -91,6 +91,41 @@ def get_llm_status():
         logger.error(f"Error getting LLM status: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
+
+@api_bp.route('/stats', methods=['GET'])
+def get_stats():
+    """System stats for the Stats view: uploaded files + indexed chunks.
+
+    Chroma failures degrade to zeros with chroma_available false, never
+    a 500 — the view shows "document store unavailable" instead of dying.
+    """
+    try:
+        upload_folder = current_app.config['UPLOAD_FOLDER']
+        upload_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), upload_folder)
+        file_count = 0
+        if os.path.exists(upload_path):
+            file_count = sum(
+                1 for name in os.listdir(upload_path)
+                if os.path.isfile(os.path.join(upload_path, name))
+            )
+        stats = {'documents_count': 0, 'steps_count': 0, 'total_items': 0}
+        chroma_available = False
+        try:
+            stats = get_rag_manager().get_collection_stats()
+            chroma_available = True
+        except Exception as exc:
+            logger.warning(f"Stats: collection stats unavailable: {exc}")
+        return jsonify({
+            'files': file_count,
+            'documents_count': stats.get('documents_count', 0),
+            'steps_count': stats.get('steps_count', 0),
+            'total_items': stats.get('total_items', 0),
+            'chroma_available': chroma_available,
+        })
+    except Exception as e:
+        logger.error(f"Error getting stats: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
+
 @api_bp.route('/decompose', methods=['POST'])
 def decompose_task():
     """Decompose user message into steps or handle conversation."""
@@ -434,11 +469,18 @@ def query_documents():
         query = data['query']
         top_k = data.get('top_k', 3)
         use_internet_search = data.get('use_internet_search', True)  # Default to True for fallback
-        
+        # The workflow the UI selected (Basic/Advanced/Recursive/Adaptive).
+        # Unknown values fall back to basic — the manager does the same,
+        # but the route pins it so the response always names a real workflow.
+        workflow_type = str(data.get('workflow_type') or 'basic').lower()
+        if workflow_type not in ('basic', 'advanced', 'recursive', 'adaptive'):
+            workflow_type = 'basic'
+
         rag_manager = get_rag_manager()
         combined_response = rag_manager.query_documents(
-            query, 
+            query,
             n_results=top_k,
+            workflow_type=workflow_type,
             force_internet_search=use_internet_search
         )
         

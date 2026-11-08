@@ -139,45 +139,113 @@
 
             <section id="helpSection" class="content-section d-none">
                 <h2>Help</h2>
-                <p>Welcome to WhiteLabelRAG! Use the navigation menu to explore different RAG workflows and features.</p>
+                <p class="wlr-lede">Three steps: upload a document, ask a question, check the sources. Answers come from your files first.</p>
+                <h3>How to use it</h3>
+                <ol class="wlr-steps">
+                    <li><strong>Upload</strong> a document from the Documents panel — PDF, Word, text, spreadsheets and more. It is indexed automatically.</li>
+                    <li><strong>Ask</strong> in Chat. Pick a RAG workflow first if you want a different retrieval style — Basic is the default.</li>
+                    <li><strong>Check the sources</strong> listed under each answer. If the answer is not in your documents, the app says so.</li>
+                </ol>
+                <h3>RAG workflows</h3>
+                <ul class="wlr-help-list">
+                    <li><a href="#" class="rag-workflow-link" data-workflow="basic">Basic RAG</a> — one retrieval, straight answer. Best for most questions.</li>
+                    <li><a href="#" class="rag-workflow-link" data-workflow="advanced">Advanced RAG</a> — expands the question, searches two ways, reranks, adds citations.</li>
+                    <li><a href="#" class="rag-workflow-link" data-workflow="recursive">Recursive RAG</a> — plans the answer, then retrieves per part. Best for multi-part questions.</li>
+                    <li><a href="#" class="rag-workflow-link" data-workflow="adaptive">Adaptive RAG</a> — reads the question and picks the strategy itself.</li>
+                </ul>
+                <h3>Files you can upload</h3>
+                <p>PDF, Word (.docx), text, Markdown, CSV, web pages (.html), PowerPoint, Excel, ePub, RTF, OpenDocument (.odt) and JSON. Older Office files (.doc, .xls, .ppt) need saving as .docx / .xlsx / .pptx first. A Google Docs link file (.gdoc) is not the document itself — download it as Word or PDF from Google Docs first.</p>
+                <h3>If something goes wrong</h3>
+                <ul class="wlr-help-list">
+                    <li><strong>"Document database service not available"</strong> — the document store did not start. Stop the app and start it again; if it keeps happening, another copy of the app may be holding the store folder.</li>
+                    <li><strong>"I couldn't find any relevant documents"</strong> — upload the document the answer lives in first, then ask again.</li>
+                    <li><strong>Slow first answer</strong> — the first question after a restart can take a while; later ones are faster.</li>
+                </ul>
+                <h3>Where answers come from</h3>
+                <p>Your documents are searched first. The answer is written by Google Gemini, with Groq and Ollama as fallbacks; if no model is reachable, you get the retrieved document text instead of an error. Your files stay on this machine except for the call to the model provider you configured.</p>
             </section>
 
             <section id="ragWorkflowSection" class="content-section d-none">
-                <h2 id="ragWorkflowTitle">RAG Workflow</h2>
-                <div id="ragWorkflowContent">
-                    <!-- Dynamic content for selected RAG workflow -->
+                <div class="wlr-workflow-head">
+                    <h2 id="ragWorkflowTitle">RAG Workflow</h2>
+                    <p id="ragWorkflowTagline" class="wlr-lede"></p>
                 </div>
+                <div id="ragWorkflowContent"></div>
+                <button type="button" class="btn btn-primary mt-3" id="btnUseWorkflow">Use this workflow</button>
+                <p class="wlr-workflow-active mt-2" id="workflowActiveNote" role="status"></p>
             </section>
 
             <!-- Context rail: full-screen swaps below xl; persistent files + stats rail at xl+. -->
             <div class="context-rail">
                 <section id="documentsSection" class="content-section rail-panel d-none">
                     <h2>Documents</h2>
-                    <button id="btnListFiles" class="btn btn-secondary mb-3 w-100 w-sm-auto">List Files</button>
+                    <p class="wlr-lede">Your uploaded files. Ask about any of them in Chat.</p>
+                    <div class="d-flex gap-2 mb-3">
+                        <button id="btnListFiles" class="btn btn-secondary">Refresh list</button>
+                    </div>
+                    <div id="dropZone" class="wlr-dropzone" tabindex="0" role="button" aria-label="Drop a file here to upload">
+                        <p class="mb-1"><strong>Drop a file here to upload</strong></p>
+                        <p class="mb-0 text-muted small">or use the file picker below</p>
+                    </div>
                     <ul id="documentsList" class="documents-list list-group"></ul>
                     <form id="uploadForm" enctype="multipart/form-data" class="mt-3">
                         <div class="d-grid gap-2 d-sm-flex">
                             <input type="file" id="fileInput" name="file" class="form-control" accept=".txt,.pdf,.docx,.md,.csv,.html,.htm,.pptx,.xlsx,.epub,.rtf,.odt,.json" />
                             <button type="submit" class="btn btn-primary text-nowrap">Upload &amp; Index Document</button>
                         </div>
+                        <p class="text-muted small mt-2 mb-0">Accepted: PDF, Word (.docx), text, Markdown, CSV, web pages, PowerPoint, Excel, ePub, RTF, OpenDocument (.odt), JSON.</p>
                     </form>
                     <div id="uploadStatus" class="upload-status" role="status"></div>
                 </section>
 
                 <section id="statsSection" class="content-section rail-panel d-none">
                     <h2>System Stats</h2>
-                    <pre id="statsOutput" class="wlr-stats-output"></pre>
+                    <div class="d-flex gap-2 mb-3">
+                        <button id="btnRefreshStats" class="btn btn-secondary">Refresh</button>
+                    </div>
+                    <div id="statsOutput" class="wlr-stats-output" role="status"></div>
                 </section>
             </div>
         </div>
     </div>
 
     <footer class="app-footer text-center py-3">
-        WhiteLabelRAG © 2025 - Powered by Google Gemini
+        WhiteLabelRAG © 2025 · Answers come from your documents first
     </footer>
 
     <script src="/static/js/bootstrap.bundle.min.js"></script>
     <script>
+        // RAG workflows: the four real backend modes. The copy matches what
+        // rag_manager actually does for each one; the label is what Chat shows.
+        const WORKFLOWS = {
+            basic: {
+                label: 'Basic RAG',
+                tagline: 'One retrieval, straight answer. Best for most questions.',
+                steps: ['Retrieve the chunks most similar to your question', 'Answer from those chunks only', 'Show the sources used'],
+                bestFor: 'Everyday questions with a direct answer in your documents.'
+            },
+            advanced: {
+                label: 'Advanced RAG',
+                tagline: 'Expands the question, searches two ways, reranks, adds citations.',
+                steps: ['Expand the question for better recall', 'Retrieve twice — by meaning and by keywords — then merge', 'Rerank and keep the best 3', 'Answer with citations added'],
+                bestFor: 'Tricky wording, or when the first answer missed the right passage.'
+            },
+            recursive: {
+                label: 'Recursive RAG',
+                tagline: 'Plans the answer, then retrieves per part. Best for multi-part questions.',
+                steps: ['Retrieve once to plan the answer', 'Split the answer into parts', 'Retrieve again for each part', 'Write one structured answer from all parts'],
+                bestFor: 'Questions with several parts, comparisons, or summaries across documents.'
+            },
+            adaptive: {
+                label: 'Adaptive RAG',
+                tagline: 'Reads the question and picks the strategy itself.',
+                steps: ['Analyse the question — type and complexity', 'Pick the strategy that fits', 'Run it, check the answer, refine if needed'],
+                bestFor: 'When you do not want to choose — the app picks the workflow for each question.'
+            }
+        };
+        let activeWorkflow = 'basic';
+        const workflowLabel = (key) => (WORKFLOWS[key] && WORKFLOWS[key].label) || 'Basic RAG';
+
         document.addEventListener('DOMContentLoaded', () => {
             const navLinks = document.querySelectorAll('.main-nav-menu .nav-link, .rag-workflow-link');
             const sections = {
@@ -187,7 +255,6 @@
                 help: document.getElementById('helpSection'),
                 ragWorkflow: document.getElementById('ragWorkflowSection')
             };
-            const breadcrumb = document.querySelector('.page-breadcrumb');
             // At xl+ Documents/Stats live in the persistent right rail,
             // so nav taps highlight the rail and keep the chat visible.
             const railBp = window.matchMedia('(min-width: 1200px)');
@@ -197,43 +264,6 @@
                 if (sections[name]) {
                     sections[name].classList.remove('d-none');
                 }
-                updateBreadcrumb(name);
-            }
-
-            function updateBreadcrumb(name) {
-                if (!breadcrumb) return;
-                let items = [{ label: 'Home', url: '#' }];
-                switch (name) {
-                    case 'chat':
-                        items.push({ label: 'Chat' });
-                        break;
-                    case 'documents':
-                        items.push({ label: 'Documents' });
-                        break;
-                    case 'stats':
-                        items.push({ label: 'System Stats' });
-                        break;
-                    case 'help':
-                        items.push({ label: 'Help' });
-                        break;
-                    case 'ragWorkflow':
-                        items.push({ label: 'RAG Workflows' });
-                        break;
-                    default:
-                        break;
-                }
-                let html = '';
-                items.forEach((item, index) => {
-                    const isLast = index === items.length - 1;
-                    html += `<li class="breadcrumb-item${isLast ? ' active' : ''}"${isLast ? ' aria-current="page"' : ''}>`;
-                    if (!isLast) {
-                        html += `<a href="${item.url}">${item.label}</a>`;
-                    } else {
-                        html += item.label;
-                    }
-                    html += '</li>';
-                });
-                breadcrumb.innerHTML = html;
             }
 
             function flashRail(sectionId) {
@@ -251,23 +281,53 @@
                 if (chip) chip.textContent = label;
             }
 
+            // --- RAG workflow views: real content per workflow, not a placeholder. ---
+            let viewedWorkflow = 'basic';
+            function renderWorkflow(key) {
+                const w = WORKFLOWS[key] || WORKFLOWS.basic;
+                viewedWorkflow = key in WORKFLOWS ? key : 'basic';
+                document.getElementById('ragWorkflowTitle').textContent = 'RAG Workflow: ' + w.label;
+                document.getElementById('ragWorkflowTagline').textContent = w.tagline;
+                let html = '<h3>How it works</h3><ol class="wlr-steps">';
+                w.steps.forEach(step => { html += '<li>' + step + '</li>'; });
+                html += '</ol><h3>Best for</h3><p>' + w.bestFor + '</p>';
+                document.getElementById('ragWorkflowContent').innerHTML = html;
+                const note = document.getElementById('workflowActiveNote');
+                const btn = document.getElementById('btnUseWorkflow');
+                if (viewedWorkflow === activeWorkflow) {
+                    btn.style.display = 'none';
+                    note.textContent = w.label + ' is the active workflow — your questions already use it.';
+                } else {
+                    btn.style.display = '';
+                    note.textContent = '';
+                }
+            }
+
+            document.getElementById('btnUseWorkflow').addEventListener('click', () => {
+                activeWorkflow = viewedWorkflow;
+                setWorkflowLabel(activeWorkflow);
+                renderWorkflow(viewedWorkflow);
+                showSection('chat');
+                const input = document.getElementById('chatInput');
+                if (input) input.focus();
+            });
+
             navLinks.forEach(link => {
                 link.addEventListener('click', e => {
                     e.preventDefault();
                     const workflow = link.getAttribute('data-workflow');
                     const rag = link.getAttribute('data-rag');
                     if (workflow) {
-                        setWorkflowLabel(workflow);
+                        renderWorkflow(workflow);
                         showSection('ragWorkflow');
-                        document.getElementById('ragWorkflowTitle').textContent = `RAG Workflow: ${workflow.charAt(0).toUpperCase() + workflow.slice(1)}`;
-                        // TODO: Load workflow UI dynamically
-                        document.getElementById('ragWorkflowContent').textContent = `UI for ${workflow} RAG workflow coming soon.`;
                     } else if (rag) {
                         if ((rag === 'documents' || rag === 'stats') && railBp.matches) {
                             flashRail(rag === 'documents' ? 'documentsSection' : 'statsSection');
                         } else {
                             showSection(rag);
                         }
+                        if (rag === 'documents') loadFiles();
+                        if (rag === 'stats') loadStats();
                     }
                 });
             });
@@ -301,37 +361,86 @@
                 btn.addEventListener('click', () => btnClearChat.click());
             });
 
-            // Documents list button
-            const btnListFiles = document.getElementById('btnListFiles');
-            btnListFiles.addEventListener('click', () => {
+            // --- Documents: auto-load, file cards, drag-and-drop, ask-about-file. ---
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text == null ? '' : String(text);
+                return div.innerHTML;
+            }
+            function formatSize(bytes) {
+                if (bytes == null) return '';
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            }
+            function formatDate(iso) {
+                if (!iso) return '';
+                try { return new Date(iso).toLocaleString(); } catch (e) { return String(iso); }
+            }
+            function fileExt(name) {
+                const i = (name || '').lastIndexOf('.');
+                return i >= 0 ? name.slice(i + 1).toUpperCase() : 'FILE';
+            }
+            function renderFiles(files) {
+                const list = document.getElementById('documentsList');
+                list.innerHTML = '';
+                if (!files || !files.length) {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item wlr-empty';
+                    li.textContent = 'No documents yet — upload your first file below.';
+                    list.appendChild(li);
+                    return;
+                }
+                files.forEach(file => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item wlr-doc-card';
+                    li.innerHTML =
+                        '<span class="wlr-doc-badge">' + escapeHtml(fileExt(file.name)) + '</span>' +
+                        '<span class="wlr-doc-info"><span class="wlr-doc-name">' + escapeHtml(file.name) + '</span>' +
+                        '<span class="wlr-doc-meta">' + escapeHtml(formatSize(file.size)) +
+                        (file.modified ? ' · ' + escapeHtml(formatDate(file.modified)) : '') + '</span></span>' +
+                        '<button type="button" class="btn btn-sm btn-outline-primary wlr-doc-ask" data-ask-file="' + escapeHtml(file.name) + '">Ask about this file</button>';
+                    list.appendChild(li);
+                });
+            }
+            function loadFiles() {
+                const list = document.getElementById('documentsList');
                 fetch('/api/files')
                     .then(res => res.json())
                     .then(data => {
-                        const list = document.getElementById('documentsList');
-                        list.innerHTML = '';
-                        data.files.forEach(file => {
-                            const li = document.createElement('li');
-                            li.className = 'list-group-item';
-                            li.textContent = `${file.name} (Last modified: ${new Date(file.modified).toLocaleString()})`;
-                            list.appendChild(li);
-                        });
+                        if (data.error) {
+                            list.innerHTML = '<li class="list-group-item wlr-empty">Could not load files.</li>';
+                            return;
+                        }
+                        renderFiles(data.files || []);
+                    })
+                    .catch(() => {
+                        list.innerHTML = '<li class="list-group-item wlr-empty">Could not load files — is the server running?</li>';
                     });
+            }
+            document.getElementById('btnListFiles').addEventListener('click', loadFiles);
+            document.getElementById('documentsList').addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-ask-file]');
+                if (!btn) return;
+                const input = document.getElementById('chatInput');
+                if (input) input.value = 'What does ' + btn.getAttribute('data-ask-file') + ' contain?';
+                showSection('chat');
+                if (input) input.focus();
             });
 
-            // Upload document form
-            const uploadForm = document.getElementById('uploadForm');
-            uploadForm.addEventListener('submit', e => {
-                e.preventDefault();
-                const fileInput = document.getElementById('fileInput');
-                if (fileInput.files.length === 0) {
-                    alert('Please select a file to upload.');
+            function setUploadStatus(text, kind) {
+                const status = document.getElementById('uploadStatus');
+                status.textContent = text;
+                status.className = 'upload-status' + (kind ? ' ' + kind : '');
+            }
+            function uploadFile(file) {
+                if (!file) {
+                    setUploadStatus('Please select a file to upload.', 'error');
                     return;
                 }
                 const formData = new FormData();
-                formData.append('file', fileInput.files[0]);
-                const status = document.getElementById('uploadStatus');
-                status.textContent = 'Uploading and indexing…';
-                status.className = 'upload-status processing';
+                formData.append('file', file);
+                setUploadStatus('Uploading and indexing…', 'processing');
                 fetch('/api/documents/upload_and_ingest_document', {
                     method: 'POST',
                     body: formData
@@ -339,19 +448,85 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.error) {
-                        status.textContent = 'Upload failed: ' + data.error;
-                        status.className = 'upload-status error';
+                        setUploadStatus('Upload failed: ' + data.error, 'error');
                     } else {
-                        status.textContent = data.message || 'File uploaded and indexed.';
-                        status.className = 'upload-status success';
+                        setUploadStatus(data.message || 'File uploaded and indexed.', 'success');
+                        document.getElementById('fileInput').value = '';
+                        loadFiles();
                     }
-                    fileInput.value = '';
                 })
-                .catch(err => {
-                    status.textContent = 'Error uploading file.';
-                    status.className = 'upload-status error';
+                .catch(() => {
+                    setUploadStatus('Error uploading file.', 'error');
                 });
+            }
+            document.getElementById('uploadForm').addEventListener('submit', e => {
+                e.preventDefault();
+                uploadFile(document.getElementById('fileInput').files[0]);
             });
+            const dropZone = document.getElementById('dropZone');
+            if (dropZone) {
+                ['dragenter', 'dragover'].forEach(evt => dropZone.addEventListener(evt, e => {
+                    e.preventDefault();
+                    dropZone.classList.add('drag-over');
+                }));
+                ['dragleave', 'drop'].forEach(evt => dropZone.addEventListener(evt, e => {
+                    e.preventDefault();
+                    dropZone.classList.remove('drag-over');
+                }));
+                dropZone.addEventListener('drop', e => {
+                    const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+                    if (file) uploadFile(file);
+                });
+                dropZone.addEventListener('click', () => document.getElementById('fileInput').click());
+                dropZone.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        document.getElementById('fileInput').click();
+                    }
+                });
+            }
+
+            // --- Stats: cards from /api/stats + chain status + accuracy metrics. ---
+            function statCard(label, value) {
+                return '<div class="wlr-stat-card"><div class="wlr-stat-value">' + escapeHtml(String(value)) + '</div><div class="wlr-stat-label">' + escapeHtml(label) + '</div></div>';
+            }
+            function loadStats() {
+                const out = document.getElementById('statsOutput');
+                out.innerHTML = '<p class="wlr-empty">Loading stats…</p>';
+                Promise.allSettled([
+                    fetch('/api/stats').then(r => r.json()),
+                    fetch('/api/llm/status').then(r => r.json()),
+                    fetch('/api/metrics/accuracy_regression').then(r => r.json())
+                ]).then(([stats, llm, metrics]) => {
+                    const s = stats.status === 'fulfilled' ? stats.value : null;
+                    const l = llm.status === 'fulfilled' ? llm.value : null;
+                    const m = metrics.status === 'fulfilled' ? metrics.value : null;
+                    if (!s || s.error) {
+                        out.innerHTML = '<p class="wlr-empty">Stats unavailable — is the server running?</p>';
+                        return;
+                    }
+                    let html = '<div class="wlr-stat-grid">';
+                    html += statCard('Files uploaded', s.files);
+                    html += statCard('Chunks indexed', s.total_items);
+                    html += statCard('Documents in store', s.documents_count);
+                    html += statCard('LLM provider', l && l.provider ? l.provider : '—');
+                    if (m && m.accuracy_percent != null) html += statCard('Answer accuracy', m.accuracy_percent + '%');
+                    if (m && m.regression_percent != null) html += statCard('Regression', m.regression_percent + '%');
+                    html += '</div>';
+                    if (!s.chroma_available) {
+                        html += '<p class="wlr-stat-warn">Document store unavailable — answers fall back to retrieved text only. Restart the app if this persists.</p>';
+                    }
+                    if (l && l.chain) {
+                        html += '<p class="wlr-stat-note">Answer chain: ' + escapeHtml(l.chain.join(' → ')) + '</p>';
+                    }
+                    out.innerHTML = html;
+                });
+            }
+            document.getElementById('btnRefreshStats').addEventListener('click', loadStats);
+
+            // Populate the xl+ rail on load; nav taps refresh below xl.
+            loadFiles();
+            loadStats();
         });
     </script>
     <script>
@@ -369,7 +544,7 @@
                 return div.innerHTML;
             }
 
-            function addMessage(text, who, sources) {
+            function addMessage(text, who, sources, workflow) {
                 const welcome = document.getElementById('welcomeMessage');
                 if (welcome) welcome.style.display = 'none';
                 const wrap = document.createElement('div');
@@ -379,7 +554,30 @@
                     const names = sources.map(s => typeof s === 'string' ? s : (s.source || s.filename || s.id || JSON.stringify(s)));
                     html += '<div class="message-sources">Sources: ' + names.map(escapeHtml).join(', ') + '</div>';
                 }
+                if (workflow) {
+                    html += '<div class="message-meta">Answered with ' + escapeHtml(workflowLabel(workflow)) + '</div>';
+                }
+                if (text) {
+                    html += '<div class="message-time">' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) + '</div>';
+                    if (who === 'assistant') {
+                        html += '<button type="button" class="message-copy" aria-label="Copy answer">Copy</button>';
+                    }
+                }
                 wrap.innerHTML = html;
+                const copyBtn = wrap.querySelector('.message-copy');
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', () => {
+                        const done = () => {
+                            copyBtn.textContent = 'Copied';
+                            setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+                        };
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(text).then(done, () => { copyBtn.textContent = 'Copy failed'; });
+                        } else {
+                            copyBtn.textContent = 'Copy unavailable';
+                        }
+                    });
+                }
                 chatMessages.appendChild(wrap);
                 chatMessages.scrollTop = chatMessages.scrollHeight;
                 return wrap;
@@ -389,12 +587,13 @@
                 text = (text || '').trim();
                 if (!text) return;
                 addMessage(text, 'user');
-                const thinking = addMessage('Thinking…', 'assistant');
+                const thinking = addMessage('', 'assistant');
+                thinking.classList.add('message-thinking');
                 try {
                     const res = await fetch('/api/query', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ query: text })
+                        body: JSON.stringify({ query: text, workflow_type: activeWorkflow })
                     });
                     const data = await res.json();
                     const rag = data.rag_response || {};
@@ -402,7 +601,7 @@
                     if (rag.error) {
                         addMessage('Sorry — ' + (rag.text || 'the request failed. Try again.'), 'assistant');
                     } else {
-                        addMessage(rag.text || 'No answer returned.', 'assistant', rag.sources || []);
+                        addMessage(rag.text || 'No answer returned.', 'assistant', rag.sources || [], rag.workflow || null);
                     }
                 } catch (err) {
                     thinking.remove();
