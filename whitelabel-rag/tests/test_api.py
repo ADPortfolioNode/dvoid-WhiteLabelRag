@@ -55,7 +55,8 @@ def test_home_has_working_chat_wiring(app):
     assert b"chatForm" in resp.data
     assert b"/api/query" in resp.data
     assert b'src="/static/js/app.js"' not in resp.data  # no script tag loads it
-    assert b"Google Gemini" in resp.data
+    assert b"Answers come from your documents first" in resp.data  # footer names the doc-first chain
+    assert b"Google Gemini" in resp.data  # Help names Gemini as the first provider
     assert b"Azure AI" not in resp.data
 
 
@@ -132,3 +133,22 @@ def test_bootstrap_assets_serve(app):
     js = client.get("/static/js/bootstrap.bundle.min.js")
     assert js.status_code == 200
     assert b"Bootstrap" in js.data
+
+
+def test_home_workflow_views_complete(app):
+    """Complete-workflows pass: no 'coming soon' placeholder; the workflow,
+    documents, stats and help views all have their real markup."""
+    client = app.test_client()
+    resp = client.get("/")
+    assert resp.status_code == 200
+    html = resp.data.decode()
+    assert "coming soon" not in html
+    for element_id in ("ragWorkflowTitle", "ragWorkflowTagline", "ragWorkflowContent",
+                       "btnUseWorkflow", "workflowActiveNote", "dropZone",
+                       "statsOutput", "btnRefreshStats", "btnListFiles",
+                       "documentsList", "uploadForm", "fileInput", "uploadStatus"):
+        assert f'id="{element_id}"' in html, element_id
+    assert "workflow_type" in html  # chat sends the selected workflow
+    assert "Use this workflow" in html
+    assert "Drop a file here to upload" in html
+    assert "RAG workflows" in html  # Help explains the four workflows
