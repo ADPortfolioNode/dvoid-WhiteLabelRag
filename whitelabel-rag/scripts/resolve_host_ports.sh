@@ -12,6 +12,15 @@
 # moves. The resolved value is exported in the variable named by
 # the caller, which must match the variable the compose file reads
 # (PORT for the app service).
+#
+# Two blind spots the checks must not have:
+# - `docker ps -a` (not `docker ps`): a created-but-not-running
+#   container still holds its host-port mapping — Docker's allocator
+#   refuses the bind even though nothing listens on the port.
+# - Any host IP: a binding like 192.168.1.5:5000->5000/tcp holds the
+#   port just as 0.0.0.0:5000->5000/tcp does. The match is
+#   ":<port>->" — only the host port is followed by "->"; the
+#   container port is followed by "/tcp".
 
 WLR_OWN_MATCH="whitelabel-rag"
 
@@ -19,9 +28,18 @@ host_port_in_use() {
     local port="$1"
 
     if command -v docker >/dev/null 2>&1; then
-        if docker ps --format '{{.Ports}}' 2>/dev/null | grep -qE "(0\\.0\\.0\\.0|127\\.0\\.0\\.1|:::|\\[::\\]):${port}->"; then
-            return 0
-        fi
+        # -a: a created-but-not-running container still holds its
+        # host-port mapping. Any host IP: see the header note.
+        # Capture the output first, then match in the shell: piping
+        # straight into `grep -q` lets grep close the pipe on the
+        # first match, killing the producer with SIGPIPE — and under
+        # `set -o pipefail` that turns a held port into a false
+        # "free" (verified: producer exits 141 while grep exits 0).
+        local ps_out
+        ps_out=$(docker ps -a --format '{{.Ports}}' 2>/dev/null || true)
+        case "$ps_out" in
+            *":${port}->"*) return 0 ;;
+        esac
     fi
 
     case "$(uname -s 2>/dev/null || echo unknown)" in
@@ -52,10 +70,10 @@ host_port_in_use() {
 port_holder_container() {
     local port="$1"
     local ps_out name image ports
-    ps_out=$(docker ps --format '{{.Names}}|{{.Image}}|{{.Ports}}' 2>/dev/null || true)
+    ps_out=$(docker ps -a --format '{{.Names}}|{{.Image}}|{{.Ports}}' 2>/dev/null || true)
     while IFS='|' read -r name image ports; do
         case "$ports" in
-            *"0.0.0.0:${port}->"*|*"127.0.0.1:${port}->"*|*":::${port}->"*|*"[::]:${port}->"*)
+            *":${port}->"*)
                 printf '%s|%s' "$name" "$image"
                 return 0
                 ;;
