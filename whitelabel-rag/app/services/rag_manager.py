@@ -24,6 +24,7 @@ class RAGManager:
         if not hasattr(self, 'initialized'):
             self.initialized = True
             self.chroma_service = None
+            self.chroma_init_error = None
             self.llm = LLMFactory.get_llm()
             self.internet_search_agent = None
             # Ensure logger is available
@@ -37,9 +38,14 @@ class RAGManager:
             self.chroma_service = get_chroma_service_instance()
             if self.chroma_service is None:
                 logger.warning("RAGManager: get_chroma_service_instance() returned None.")
+            else:
+                self.chroma_init_error = None
         except Exception as e:
             logger.error(f"RAGManager: Failed to initialize chroma_service: {e}", exc_info=True)
             self.chroma_service = None # Ensure it's None on failure
+            # Keep the reason: the user-facing error names it instead of
+            # only ever saying the store is "not available".
+            self.chroma_init_error = str(e)
 
         try:
             self.internet_search_agent = get_internet_search_agent_instance()
@@ -71,7 +77,7 @@ class RAGManager:
             logger.error("RAGManager.query_documents: ChromaDB service is not available.")
             # Return an error structure consistent with other parts of the method
             rag_response_error = {
-                'text': "Error: Document database service not available.", 
+                'text': "Error: Document database service not available." + (f" Reason: {self.chroma_init_error}" if getattr(self, 'chroma_init_error', None) else ""),
                 'sources': [], 
                 'workflow': workflow_type, 
                 'results': [], 
