@@ -6,10 +6,26 @@ import os
 import logging
 import chromadb
 from chromadb.utils import embedding_functions
-import google.generativeai as genai
 from typing import List, Dict, Any, Optional
 
 logger = logging.getLogger(__name__)
+
+
+def _store_mismatch_error(e: Exception) -> RuntimeError:
+    """Name the one store failure the user can actually act on: the
+    existing store's vectors were embedded by a different model than the
+    app now uses, so every read/write against it fails on dimension."""
+    return RuntimeError(
+        "Document store embedding mismatch: this store was created with "
+        "a different embedding model, so its vectors cannot be read. "
+        "Move the store folder aside (CHROMA_DB_PATH, default "
+        "./chromadb_data) and restart the app, then re-upload your "
+        f"documents. Original error: {e}"
+    )
+
+
+def _is_dimension_mismatch(e: Exception) -> bool:
+    return "expecting embedding with dimension" in str(e)
 
 class ChromaService:
     """Service for managing ChromaDB operations.
@@ -66,30 +82,29 @@ class ChromaService:
             raise
     
     def _setup_embedding_function(self):
-        """Setup embedding function for ChromaDB."""
-        try:
-            # Use Google Generative AI embedding function
-            api_key = os.environ.get('GEMINI_API_KEY')
-            if api_key:
-                genai.configure(api_key=api_key)
-                self.embedding_function = embedding_functions.GoogleGenerativeAiEmbeddingFunction(
-                    api_key=api_key,
-                    model_name="models/embedding-001"
-                )
-                logger.info("✅ Google Generative AI embedding function configured")
-            else:
-                # Fallback to sentence transformers
-                logger.warning("⚠️ GEMINI_API_KEY not found, falling back to SentenceTransformer embeddings")
-                self.embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
-                    model_name="all-MiniLM-L6-v2"
-                )
-                logger.info("✅ SentenceTransformer embedding function configured")
-            
-        except Exception as e:
-            logger.error(f"Error setting up embedding function: {str(e)}")
-            logger.warning("⚠️ Falling back to default embedding function")
-            # Fallback to default
-            self.embedding_function = embedding_functions.DefaultEmbeddingFunction()
+        """Setup the embedding function for the vector store.
+
+        Deliberately the local default (ONNX MiniLM) in all cases:
+
+        - chromadb 1.x's GoogleGenerativeAiEmbeddingFunction cannot be
+          constructed against the current google-generativeai SDK — its
+          genai.configure(client_options={"headers": ...}) raises
+          "ClientOptions does not accept an option 'headers'" — and the
+          model it was pointed at (models/embedding-001) is retired.
+          The old code caught that throw and silently fell back, so the
+          store's real embedding model was never the documented one.
+        - The embedding function is part of a store's identity: vectors
+          embedded by one model cannot be read by another (dimension
+          mismatch). Letting the choice depend on whether a key happens
+          to be set, or on library versions, strands existing stores.
+          One local EF keeps every store created under chromadb 1.x
+          readable — they already use this EF via the old fallback —
+          and keeps ingest/query working offline. The Gemini key still
+          powers answers through the LLM chain; it is no longer
+          entangled with the store.
+        """
+        self.embedding_function = embedding_functions.DefaultEmbeddingFunction()
+        logger.info("✅ Local default embedding function configured (deterministic for the store)")
     
     def store_document(self, content: str, metadata: Dict[str, Any]) -> str:
         """Store a document chunk in the vector database."""
@@ -109,6 +124,8 @@ class ChromaService:
             
         except Exception as e:
             logger.error(f"Error storing document: {str(e)}")
+            if _is_dimension_mismatch(e):
+                raise _store_mismatch_error(e) from e
             raise
     
     def store_step_embedding(self, step_id: str, content: str, metadata: Dict[str, Any]) -> str:
@@ -142,6 +159,8 @@ class ChromaService:
             
         except Exception as e:
             logger.error(f"Error querying documents: {str(e)}")
+            if _is_dimension_mismatch(e):
+                raise _store_mismatch_error(e) from e
             return {'documents': [[]], 'metadatas': [[]], 'distances': [[]]}
     
     def query_steps(self, query: str, n_results: int = 3) -> Dict[str, Any]:
@@ -156,6 +175,8 @@ class ChromaService:
             
         except Exception as e:
             logger.error(f"Error querying steps: {str(e)}")
+            if _is_dimension_mismatch(e):
+                raise _store_mismatch_error(e) from e
             return {'documents': [[]], 'metadatas': [[]], 'distances': [[]]}
     
     def get_collection_stats(self) -> Dict[str, Any]:

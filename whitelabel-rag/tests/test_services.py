@@ -94,3 +94,84 @@ def test_chroma_init_failure_does_not_poison_retry(monkeypatch, tmp_path):
     assert svc.client is not None
     # And a healthy instance is still cached afterwards.
     assert cs.get_chroma_service_instance() is svc
+
+
+def test_chroma_embedding_function_is_the_local_default(monkeypatch, tmp_path):
+    """The store's embedding function must not depend on whether a
+    Gemini key is set: chromadb 1.x's Google embedding function cannot
+    be constructed against the current google SDK (its configure call
+    raises), and an EF that changes with key presence strands existing
+    stores. With a key set, the service must still pick the local
+    default EF."""
+    import app.services.chroma_service as cs
+    from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
+
+    monkeypatch.setenv("CHROMA_DB_PATH", str(tmp_path / "chroma"))
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key-present")
+    monkeypatch.setattr(cs, "_chroma_service_instance", None)
+
+    svc = cs.ChromaService()
+    assert isinstance(svc.embedding_function, DefaultEmbeddingFunction)
+    assert svc.documents_collection is not None
+    assert svc.steps_collection is not None
+
+
+def test_chroma_dimension_mismatch_names_the_store_problem(tmp_path):
+    """A store created with a different embedding model must fail with
+    the actionable mismatch message, not silent empty results."""
+    import chromadb
+    import app.services.chroma_service as cs
+
+    class TinyEF:
+        def __call__(self, input):
+            return [[0.1, 0.2, 0.3] for _ in input]
+
+        def embed_documents(self, input):
+            return self(input)
+
+        def embed_query(self, input):
+            return self(input)
+
+        @staticmethod
+        def name():
+            return "tiny_ef"
+
+        def get_config(self):
+            return {}
+
+        @staticmethod
+        def build_from_config(config):
+            return TinyEF()
+
+    class WideEF:
+        def __call__(self, input):
+            return [[0.0] * 384 for _ in input]
+
+        def embed_documents(self, input):
+            return self(input)
+
+        def embed_query(self, input):
+            return self(input)
+
+        @staticmethod
+        def name():
+            return "wide_ef"
+
+        def get_config(self):
+            return {}
+
+        @staticmethod
+        def build_from_config(config):
+            return WideEF()
+
+    store = str(tmp_path / "chroma")
+    client = chromadb.PersistentClient(path=store)
+    col = client.get_or_create_collection(name="documents", embedding_function=TinyEF())
+    col.add(documents=["hello"], ids=["1"])
+
+    svc = cs.ChromaService.__new__(cs.ChromaService)
+    svc.documents_collection = client.get_or_create_collection(
+        name="documents", embedding_function=WideEF()
+    )
+    with pytest.raises(RuntimeError, match="embedding mismatch"):
+        svc.query_documents("hello")
